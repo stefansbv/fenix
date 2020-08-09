@@ -7,6 +7,7 @@ use strict;
 use warnings;
 use utf8;
 use Type::Library 0.040 -base, -declare => qw(
+    AppLogger
     Path
     FenixCal
     FenixConfig
@@ -23,6 +24,8 @@ use Type::Library 0.040 -base, -declare => qw(
     FenixController
     FenixModel
     FenixRules
+    FenixEngine
+    FenixTarget
     FenixView
     TkFrame
     TkStatusbar
@@ -32,6 +35,12 @@ use Type::Library 0.040 -base, -declare => qw(
     TkMenu
     MailOutlook
     MailOutlookMessage
+    DBIdb
+    URIdb
+    DBIxConnector
+    FenixRecord
+    ListCompare
+    FenixCompare
 );
 use Type::Utils -all;
 use Types::Standard -types;
@@ -53,9 +62,13 @@ class_type FenixMenubar,    { class => 'App::Fenix::Menubar' };
 class_type FenixToolbar,    { class => 'App::Fenix::Toolbar' };
 class_type FenixNotebook,   { class => 'App::Fenix::Notebook' };
 class_type FenixRules,      { class => 'App::Fenix::Rules' };
+class_type FenixTarget,     { class => 'App::Fenix::Target' };
+class_type FenixEngine,     { class => 'App::Fenix::Engine' };
 class_type FenixState,      { class => 'App::Fenix::State' };
 class_type FenixStatus,     { class => 'App::Fenix::Status' };
 class_type FenixPanel,      { class => 'App::Fenix::Panel' };
+class_type FenixRecord,     { class => 'App::Fenix::Model::Table::Record' };
+class_type FenixCompare,    { class => 'App::Fenix::Model::Update::Compare' };
 
 class_type FenixController, { class => 'App::Fenix::Controller' };
 class_type TkStatusbar,     { class => 'Tk::StatusBar' };
@@ -66,9 +79,14 @@ class_type TkNB,            { class => 'Tk::NoteBook' };
 class_type TkTB,            { class => 'App::Fenix::Tk::TB' };
 
 # Other
+class_type AppLogger,          { class => 'Log::Log4perl::Logger' };
 class_type Path,               { class => 'Path::Tiny' };
 class_type MailOutlook,        { class => 'Mail::Outlook' };
 class_type MailOutlookMessage, { class => 'Mail::Outlook::Message' };
+class_type DBIdb,              { class => 'DBI::db' };
+class_type URIdb,              { class => 'URI::db' };
+class_type DBIxConnector,      { class => 'DBIx::Connector' };
+class_type ListCompare,        { class => 'List::Compare' };
 
 1;
 
