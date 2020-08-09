@@ -1,0 +1,34 @@
+---
+tb_sv:
+  tooltip: Save
+  help: Save the configuration
+  icon: filesave16
+  sep: none
+  type: _item_normal
+  id: 1001
+  state:
+    init: normal
+    idle: normal
+    work: disabled
+tb_rr:
+  tooltip: Reload
+  help: Reload the configuration
+  icon: actreload16
+  sep: after
+  type: _item_normal
+  id: 1002
+  state:
+    init: normal
+    idle: normal
+    work: disabled
+tb_qt:
+  tooltip: Quit
+  help: Quit the application
+  icon: actexit16
+  sep: none
+  type: _item_normal
+  id: 1003
+  state:
+    init: normal
+    idle: normal
+    work: disabled

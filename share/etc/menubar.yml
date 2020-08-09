@@ -1,0 +1,35 @@
+---
+menu_app:
+  id: 5001
+  label: App
+  underline: 0
+  popup:
+    1:
+      name: mn_pr
+      label: Print
+      underline: 0
+      key: Alt-P
+      sep: before
+    2:
+      name: mn_qt
+      label: Quit
+      underline: 1
+      key: Ctrl+Q
+      sep: before
+menu_help:
+  id: 5009
+  label: Help
+  underline: 0
+  popup:
+    1:
+      name: mn_gd
+      label: Manual
+      underline: 0
+      key:
+      sep: none
+    2:
+      name: mn_ab
+      label: About
+      underline: 0
+      key:
+      sep: none

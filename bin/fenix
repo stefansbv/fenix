@@ -1,0 +1,13 @@
+#!/usr/bin/env perl
+
+# ABSTRACT: Fenix
+# PODNAME: Fenix
+
+use strict;
+use warnings;
+
+use App::Fenix;
+
+my $app = App::Fenix->new;
+
+$app->run;
