@@ -46,13 +46,44 @@ sub _build_statusbar {
     my $ms = $sb->addLabel( -relief => 'flat' );
     $self->set_comp('ms', $ms);
 
-    # Dummy label for right space
-    $sb->addLabel(
-        -width  => 2,
+    # Connection icon
+    my $cn = $sb->addLabel(
+        -width  => 3,
+        -relief => 'raised',
         -anchor => 'center',
         -side   => 'right',
-        -relief => 'flat',
     );
+    $self->set_comp('cn', $cn);
+
+    # Database name
+    my $db = $sb->addLabel(
+        -width      => 13,
+        -anchor     => 'center',
+        -side       => 'right',
+        -background => 'lightyellow',
+    );
+    $self->set_comp('db', $db);
+
+    # Progress
+    $self->{progres} = 0;
+    my $pr = $sb->addProgressBar(
+        -length     => 100,
+        -from       => 0,
+        -to         => 100,
+        -variable   => \$self->{progres},
+        -foreground => 'blue',
+    );
+    $self->set_comp('pr', $pr);
+
+    # Second label for modified status
+    my $ss = $sb->addLabel(
+        -width      => 3,
+        -relief     => 'sunken',
+        -anchor     => 'center',
+        -side       => 'right',
+        -background => 'lightyellow',
+    );
+    $self->set_comp('ss', $ss);
 
     # Mode
     my $md = $sb->addLabel(
