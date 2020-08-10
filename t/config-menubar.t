@@ -1,7 +1,6 @@
-use 5.010001;
+# Test for App::Fenix::Config::Menubar
+#
 use utf8;
-use strict;
-use warnings;
 use Path::Tiny;
 use Test2::V0;
 
@@ -9,7 +8,7 @@ use App::Fenix::Config;
 use App::Fenix::Config::Menubar;
 
 my $args = {
-    cfname => 'test-tk',
+    mnemonic => 'test-tk',
     user   => 'user',
     pass   => 'pass',
     cfpath => 'share/',

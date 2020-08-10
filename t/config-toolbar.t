@@ -1,13 +1,23 @@
-use 5.010001;
+# Test for App::Fenix::Config::Toolbar
+#
 use utf8;
-use strict;
-use warnings;
 use Path::Tiny;
 use Test2::V0;
 
+use App::Fenix::Config;
 use App::Fenix::Config::Toolbar;
 
-my $toolbar_file = path 'share', 'etc', 'toolbar.yml';
+my $args = {
+    mnemonic => 'test-tk',
+    user   => 'user',
+    pass   => 'pass',
+    cfpath => 'share/',
+};
+
+ok my $conf = App::Fenix::Config->new($args), 'constructor';
+
+is $conf->sharedir, 'share', 'share dir';
+is $conf->toolbar_file, path( 'share', 'etc', 'toolbar.yml'), 'toolbar file';
 
 my $expected_tool = {
     tb_qt => {
@@ -26,7 +36,7 @@ my $expected_tool = {
 };
 
 ok my $tb = App::Fenix::Config::Toolbar->new(
-    toolbar_file => $toolbar_file,
+    toolbar_file => $conf->toolbar_file,
 ), 'new toolbar config';
 ok my @butt = sort( $tb->all_buttons ), 'get all_buttons';
 is \@butt, [qw(tb_qt tb_rr tb_sv)], 'tool names match';
