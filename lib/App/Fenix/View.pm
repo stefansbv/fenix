@@ -171,9 +171,24 @@ sub set_status {
 
     return unless ( $sb_label and $sb_label->isa('Tk::Label') );
 
-    $sb_label->configure( -text       => $text )  if defined $text;
-    $sb_label->configure( -foreground => $color ) if defined $color;
-
+    if ( $sb_id eq 'cn' ) {
+        $sb_label->configure( -image => $text ) if defined $text;
+    }
+    elsif ( $sb_id eq 'ss' ) {
+        my $str = !defined $text ? ''
+            : $text          ? 'M'
+            :                  'S';
+        $sb_label->configure( -text => $str ) if defined $str;
+    }
+    elsif ( $sb_id eq 'ms' ) {
+        $sb_label->configure( -text       => $text )  if defined $text;
+        $sb_label->configure( -foreground => $color ) if defined $color;
+        $self->temporized_clear($text) if $text; # in not a 'clear'
+    }
+    else {
+        $sb_label->configure( -text       => $text )  if defined $text;
+        $sb_label->configure( -foreground => $color ) if defined $color;
+    }
     return;
 }
 
@@ -342,6 +357,9 @@ sub BUILD {
     #$self->input_panel->make;
     $self->notebook->make;
     $self->logger_panel->make;
+
+    $self->set_status( 'connectno16', 'cn' );
+    #$self->set_status( 'connectyes16', 'cn' );
 
     return $self;
 }
