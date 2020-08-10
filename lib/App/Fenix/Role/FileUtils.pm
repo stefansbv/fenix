@@ -8,6 +8,7 @@ use Try::Tiny;
 use YAML::Tiny 1.57;                         # errstr deprecated
 use Tie::IxHash::Easy;
 use Config::General qw(ParseConfig);
+use Locale::TextDomain 1.20 qw(App-Fenix);
 use App::Fenix::X qw(hurl);
 use Moose::Role;
 
