@@ -13,7 +13,7 @@ if ( $^O eq 'MSWin32' ) {
     local $ENV{LINES}   = 25;
 }
 
-subtest 'Test with no config files' => sub {
+subtest 'Test Config' => sub {
     my $args = {
         mnemonic => 'test-tk',
         user   => 'user',
@@ -30,6 +30,10 @@ subtest 'Test with no config files' => sub {
 
     is $conf->sharedir, 'share', 'sharedir';
     is $conf->xresource, 'share/etc/xresource.xrdb', 'xresource';
+
+    is $conf->get_apps_exe_path('chm_viewer'), '/usr/bin/okular',
+        'get_apps_exe_path';
+
 };
 
 done_testing;

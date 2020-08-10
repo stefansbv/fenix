@@ -1,0 +1,14 @@
+---
+externalapps:
+  chm_viewer:
+    exe_path: /usr/bin/okular
+  latex:
+    exe_path: D:/dev/MikTex/miktex/bin/pdflatex.exe
+  repman:
+    exe_path: D:/dev/RepMan/printrepxp.exe
+resource:
+  icons: etc/interfaces/icons
+runtime:
+  docsbasepath: C:/Users/Me/Downloads
+  docsoutpath: C:/Users/Me/Documents
+  soemotherpath: C:/Users/Me/Projects

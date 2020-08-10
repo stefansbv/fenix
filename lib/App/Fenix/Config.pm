@@ -11,6 +11,7 @@ use App::Fenix::Types qw(
     Maybe
     Path
     Str
+    FenixConfigMain
 );
 use Path::Tiny;
 use Try::Tiny;
@@ -18,6 +19,8 @@ use File::HomeDir;
 use File::ShareDir qw(dist_dir);
 use Locale::TextDomain 1.20 qw(App-Fenix);
 use App::Fenix::X qw(hurl);
+
+use App::Fenix::Config::Main;
 
 #-- required
 
@@ -92,12 +95,30 @@ has 'cfgdefa' => (
     default => sub { 'etc/default.yml' },
 );
 
+has 'main_file' => (
+    is      => 'ro',
+    isa     => Path,
+    default => sub {
+        my $self = shift;
+        return path $self->sharedir, 'etc/main.yml';
+    },
+);
+
 has 'menubar_file' => (
     is      => 'ro',
     isa     => Path,
     default => sub {
         my $self = shift;
         return path $self->sharedir, 'etc/menubar.yml';
+    },
+);
+
+has 'toolbar_file' => (
+    is      => 'ro',
+    isa     => Path,
+    default => sub {
+        my $self = shift;
+        return path $self->sharedir, 'etc/toolbar.yml';
     },
 );
 
@@ -111,4 +132,37 @@ has 'xresource' => (
     },
 );
 
+has 'main' => (
+    is      => 'ro',
+    isa     => FenixConfigMain,
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return App::Fenix::Config::Main->new( main_file => $self->main_file, );
+    },
+    handles => [ 'get_apps_exe_path', 'get_resource_path', ],
+);
+
 1;
+
+__END__
+
+=encoding utf8
+
+=head1 SYNOPSIS
+
+
+=head1 DESCRIPTION
+
+
+=head1 INTERFACE
+
+=head2 ATTRIBUTES
+
+=head3 attr1
+
+=head2 INSTANCE METHODS
+
+=head3 meth1
+
+=cut
