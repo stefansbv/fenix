@@ -6,6 +6,12 @@ use 5.010;
 use Moo;
 use MooX::Options;
 
+option 'mnemonic' => (
+    is    => 'ro',
+    doc   => 'the mnemonic (configuration name)',
+    short => 'm',
+);
+
 option 'verbose' => (
     is    => 'ro',
     doc   => 'set verbose on',

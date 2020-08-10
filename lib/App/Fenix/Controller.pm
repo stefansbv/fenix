@@ -51,8 +51,9 @@ has config => (
 
 sub _build_config {
     my $self   = shift;
+    my $mnemonic = $self->options->mnemonic || 'test-tk';
     my $config = try {
-        App::Fenix::Config->new;
+        App::Fenix::Config->new( mnemonic => $mnemonic );
     }
     catch {
         hurl controller => 'EE Configuration error: "{error}"',

@@ -5,9 +5,20 @@ use warnings;
 use Path::Tiny;
 use Test2::V0;
 
+use App::Fenix::Config;
 use App::Fenix::Config::Menubar;
 
-my $menubar_file = path 'share', 'etc', 'menubar.yml';
+my $args = {
+    cfname => 'test-tk',
+    user   => 'user',
+    pass   => 'pass',
+    cfpath => 'share/',
+};
+
+ok my $conf = App::Fenix::Config->new($args), 'constructor';
+
+is $conf->sharedir, 'share', 'share dir';
+is $conf->menubar_file, path( 'share', 'etc', 'menubar.yml'), 'menubar file';
 
 my $expected_menu = {
     menu_app => {
@@ -34,7 +45,7 @@ my $expected_menu = {
 };
 
 ok my $tb = App::Fenix::Config::Menubar->new(
-    menubar_file => $menubar_file,
+    menubar_file => $conf->menubar_file,
 ), 'new menubar config';
 ok my @menus = sort( $tb->all_menus ), 'get all menus';
 is \@menus, [qw(menu_app menu_help)], 'menu names match';
