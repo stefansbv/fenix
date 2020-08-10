@@ -339,7 +339,7 @@ sub BUILD {
     $self->menu_bar->make;
     $self->tool_bar->make;
     $self->status->make;
-    $self->input_panel->make;
+    #$self->input_panel->make;
     $self->notebook->make;
     $self->logger_panel->make;
 

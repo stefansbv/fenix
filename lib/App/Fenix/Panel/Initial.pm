@@ -27,7 +27,9 @@ sub _build_panel {
 
     #--- Top
 
-    my $top = $self->frame->Frame();
+    my $top = $self->frame->Frame(
+        -background => 'green',
+    );
     $top->pack(
         -side   => 'top',
         -expand => 1,
