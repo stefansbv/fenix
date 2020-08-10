@@ -13,7 +13,6 @@ use Type::Library 0.040 -base, -declare => qw(
     FenixConfig
     FenixConfigMenu
     FenixConfigTool
-    FenixConfigUtils
     FenixMenubar
     FenixToolbar
     FenixState
@@ -57,7 +56,6 @@ class_type FenixOptions,    { class => 'App::Fenix::Options' };
 class_type FenixConfig,     { class => 'App::Fenix::Config' };
 class_type FenixConfigMenu, { class => 'App::Fenix::Config::Menubar' };
 class_type FenixConfigTool, { class => 'App::Fenix::Config::Toolbar' };
-class_type FenixConfigUtils, { class => 'App::Fenix::Config::Utils' };
 class_type FenixMenubar,    { class => 'App::Fenix::Menubar' };
 class_type FenixToolbar,    { class => 'App::Fenix::Toolbar' };
 class_type FenixNotebook,   { class => 'App::Fenix::Notebook' };

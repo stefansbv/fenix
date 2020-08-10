@@ -7,7 +7,6 @@ use Moo;
 use MooX::HandlesVia;
 use App::Fenix::Types qw(
     FenixConfig
-    FenixConfigUtils
     FenixCal
     Str
     Path
@@ -20,12 +19,6 @@ use Path::Tiny;
 has 'config' => (
     is       => 'ro',
     isa      => FenixConfig,
-    required => 1,
-);
-
-has 'utils' => (
-    is       => 'ro',
-    isa      => FenixConfigUtils,
     required => 1,
 );
 

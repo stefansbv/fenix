@@ -13,7 +13,6 @@ use App::Fenix::Types qw(
     Maybe
     FenixOptions
     FenixConfig
-    FenixConfigUtils
     FenixModel
     FenixState
     FenixView
@@ -23,7 +22,6 @@ use App::Fenix::Types qw(
 use App::Fenix::X qw(hurl);
 use App::Fenix::Options;
 use App::Fenix::Config;
-use App::Fenix::Config::Utils;
 use App::Fenix::Model;
 use App::Fenix::State;
 use App::Fenix::Refresh;
@@ -64,16 +62,6 @@ sub _build_config {
     return $config;
 }
 
-has utils => (
-    is      => 'ro',
-    isa     => FenixConfigUtils,
-    lazy    => 1,
-    default => sub {
-        my $self = shift;
-        return App::Fenix::Config::Utils->new( config => $self->config );
-    },
-);
-
 has 'model' => (
     is      => 'ro',
     isa     => FenixModel,
@@ -91,7 +79,6 @@ sub _build_model {
     my $model = try {
         App::Fenix::Model->new(
             config => $self->config,
-            utils  => $self->utils,
         );
     }
     catch {

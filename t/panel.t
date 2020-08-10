@@ -8,7 +8,6 @@ use Tk;
 use Tk::widgets qw(Text);
 
 use App::Fenix::Config;
-use App::Fenix::Config::Utils;
 use App::Fenix::Model;
 use App::Fenix::Ctrl;
 use App::Fenix::View;
@@ -49,12 +48,8 @@ use App::Fenix::View;
 
 ok my $mw    = Tk::MainWindow->new, 'new MW';
 ok my $conf  = App::Fenix::Config->new, 'new config';
-ok my $utils = App::Fenix::Config::Utils->new(
-    config => $conf,
-), 'new config utils instance';
 ok my $model = App::Fenix::Model->new(
     config => $conf,
-    utils  => $utils,
 ), 'new model instance';
 ok my $view  = App::Fenix::View->new(
         config => $conf,
