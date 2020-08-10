@@ -48,7 +48,7 @@ sub _build_statusbar {
 
     # Connection icon
     my $cn = $sb->addLabel(
-        -width  => 3,
+        -width  => 20,
         -relief => 'raised',
         -anchor => 'center',
         -side   => 'right',
