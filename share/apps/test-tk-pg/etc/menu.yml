@@ -1,0 +1,31 @@
+---
+appmenubar:
+  menu_user:
+    id: 1001
+    label: ClassicModels
+    underline: 0
+    popup:
+      1:
+        label: Products
+        name: Products
+        underline: 0
+        sep: none
+        key: 
+      2:
+        label: Customers
+        name: Customers
+        underline: 0
+        sep: none
+        key: 
+      3:
+        label: Orders
+        name: Orders
+        underline: 0
+        sep: none
+        key: 
+      4:
+        label: Employees
+        name: Employees
+        underline: 0
+        sep: before
+        key: 
