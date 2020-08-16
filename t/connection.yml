@@ -1,0 +1,9 @@
+# tpda3
+# Database connection configuration
+---
+connection:
+  driver: pg
+  host:   localhost
+  dbname: classicmodels
+  port:   5432
+  role:
