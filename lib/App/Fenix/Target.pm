@@ -3,7 +3,7 @@ package App::Fenix::Target;
 # ABSTRACT: Fenix database target
 
 use Moo;
-#use Locale::TextDomain qw(App-Fenix);
+use Locale::TextDomain qw(App-Fenix);
 use URI::db;
 use App::Fenix::Types qw(
     Str

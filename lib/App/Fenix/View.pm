@@ -338,13 +338,12 @@ sub set_tb_buton_state {
 }
 
 sub BUILD {
-    my ( $self, @params ) = @_;
-
+    my ( $self, $args ) = @_;
     $self->frame;
 
     # Load resource file, if found
     my $xres = $self->config->xresource;
-    if ($xres->is_file) {
+    if ( $xres->is_file ) {
         $self->frame->optionReadfile( $xres->stringify, 'widgetDefault' );
     }
     else {
@@ -354,14 +353,16 @@ sub BUILD {
     $self->menu_bar->make;
     $self->tool_bar->make;
     $self->status->make;
+
     #$self->input_panel->make;
     $self->notebook->make;
     $self->logger_panel->make;
 
     $self->set_status( 'connectno16', 'cn' );
+
     #$self->set_status( 'connectyes16', 'cn' );
 
-    return $self;
+    return;
 }
 
 #-- Quit
