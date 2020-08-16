@@ -19,7 +19,6 @@ use Try::Tiny;
 use File::HomeDir;
 use File::ShareDir qw(dist_dir);
 use Locale::TextDomain 1.20 qw(App-Fenix);
-# use Log::Log4perl qw(get_logger :levels);
 use App::Fenix::X qw(hurl);
 use App::Fenix::Config::Connection;
 use App::Fenix::Config::Main;
@@ -97,12 +96,22 @@ has 'sharedir' => (
 #     default => sub { 'etc/default.yml' },
 # );
 
+has 'etc_path' => (
+    is      => 'ro',
+    isa     => Path,
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return path $self->sharedir, 'etc';
+    },
+);
+
 has 'main_file' => (
     is      => 'ro',
     isa     => Path,
     default => sub {
         my $self = shift;
-        return path $self->sharedir, 'etc/main.yml';
+        return path $self->etc_path, 'main.yml';
     },
 );
 
@@ -111,7 +120,7 @@ has 'menubar_file' => (
     isa     => Path,
     default => sub {
         my $self = shift;
-        return path $self->sharedir, 'etc/menubar.yml';
+        return path $self->etc_path, 'menubar.yml';
     },
 );
 
@@ -120,7 +129,7 @@ has 'toolbar_file' => (
     isa     => Path,
     default => sub {
         my $self = shift;
-        return path $self->sharedir, 'etc/toolbar.yml';
+        return path $self->etc_path, 'toolbar.yml';
     },
 );
 
@@ -130,7 +139,7 @@ has 'xresource' => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        return path $self->sharedir, 'etc', 'xresource.xrdb';
+        return path $self->etc_path, 'xresource.xrdb';
     },
 );
 
@@ -169,22 +178,26 @@ has 'connection_config' => (
 );
 # handles => [ 'get_apps_exe_path', 'get_resource_path', ],
 
-sub BUILD {
-    my ( $self, $args ) = @_;
-    # my $mnemonic = $self->mnemonic;
+has 'log_file_path' => (
+    is       => 'ro',
+    isa      => Path,
+    lazy     => 1,
+    default  => sub {
+        my $self = shift;
+        return path( $ENV{FENIX_LOG_CONFIG} ) if $ENV{FENIX_LOG_CONFIG};
+        return path( $self->etc_path, 'log.conf' );
+    },
+);
 
-    # # Log init, can't do before we know the application config path
-    # my $log_fqn = path $self->cfpath, 'etc/log.conf';
-    # Log::Log4perl->init($log_fqn) if -f $log_fqn;
-
-    # $self->{_log} = get_logger();
-    # $self->{_log}->info('-------------------------');
-    # $self->{_log}->info('*** NEW SESSION BEGIN ***');
-    # $self->{_log}->info("*   $mnemonic   *");
-
-    return;
-}
-
+has 'log_file_name' => (
+    is      => 'ro',
+    isa     => Str,
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return path( File::HomeDir->my_data, 'fenix.log' )->stringify;
+    },
+);
 
 1;
 

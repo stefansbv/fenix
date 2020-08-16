@@ -29,6 +29,7 @@ subtest 'Test Config' => sub {
     is $conf->cfpath, 'share/',  'cfpath';
 
     is $conf->sharedir, 'share', 'sharedir';
+    is $conf->etc_path, 'share/etc', 'main config path (etc)';
     is $conf->xresource, 'share/etc/xresource.xrdb', 'xresource';
 
     is $conf->connection_file, 'share/apps/test-tk/etc/connection.yml',
@@ -44,6 +45,9 @@ subtest 'Test Config' => sub {
 
     is $conf->get_apps_exe_path('chm_viewer'), '/usr/bin/okular',
         'get_apps_exe_path';
+
+    is $conf->log_file_path, 'share/etc/log.conf', 'log_file_path';
+    like $conf->log_file_name, qr/fenix\.log$/, 'log_file_name';
 
 };
 

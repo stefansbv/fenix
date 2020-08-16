@@ -204,6 +204,11 @@ sub BUILD {
     return;
 }
 
+sub DEMOLISH {
+    my $log_file = App::Fenix::Config::log_file_name;
+    unlink $log_file if -f $log_file && -z $log_file;
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

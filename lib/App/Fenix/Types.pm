@@ -7,7 +7,6 @@ use strict;
 use warnings;
 use utf8;
 use Type::Library 0.040 -base, -declare => qw(
-    AppLogger
     Path
     FenixCal
     FenixConfig
@@ -83,7 +82,6 @@ class_type TkNB,            { class => 'Tk::NoteBook' };
 class_type TkTB,            { class => 'App::Fenix::Tk::TB' };
 
 # Other
-class_type AppLogger,          { class => 'Log::Log4perl::Logger' };
 class_type Path,               { class => 'Path::Tiny' };
 class_type MailOutlook,        { class => 'Mail::Outlook' };
 class_type MailOutlookMessage, { class => 'Mail::Outlook::Message' };

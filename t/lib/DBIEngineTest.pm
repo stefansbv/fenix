@@ -6,21 +6,14 @@ package DBIEngineTest;
 # Wide character in print at lib/site_perl/5.14.4/Test/Builder.pm line 1826.
 # when is_deeply reports failure
 #
-use 5.010;
-use strict;
-use warnings;
 use utf8;
+#use Moo;
 use Try::Tiny;
 use Test::Most;
 use Test::MockModule;
-use Log::Log4perl;
 use Locale::TextDomain qw(App-Fenix);
 
-# Just die on warnings. Init logger.
-use Carp; BEGIN {
-    $SIG{__WARN__} = \&Carp::confess;
-    Log::Log4perl->init('t/log.conf');
-}
+#with 'MooX::Log::Any';
 
 sub run {
     my ( $self, %p ) = @_;

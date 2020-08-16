@@ -8,23 +8,11 @@ use Moo::Role;
 use DBIx::Connector;
 use Try::Tiny;
 use Locale::TextDomain qw(App-Fenix);
-use Log::Log4perl qw(get_logger :levels);
-use App::Fenix::Types qw(
-    AppLogger
-);
 use namespace::autoclean;
-#with 'MooX::Log::Any';
+
+with 'MooX::Log::Any';
 
 requires 'dbh';
-
-has 'logger' => (
-    is      => 'ro',
-    isa     => AppLogger,
-    lazy    => 1,
-    default => sub {
-        return get_logger(),
-    },
-);
 
 sub begin_work {
     my $self = shift;
