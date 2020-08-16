@@ -6,7 +6,6 @@ use Moo;
 use Locale::TextDomain qw(App-Fenix);
 use Try::Tiny;
 use Regexp::Common;
-use Log::Log4perl qw(:levels);
 use App::Fenix::Types qw(
     DBIxConnector
     DBIdb

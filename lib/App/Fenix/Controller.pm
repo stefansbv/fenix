@@ -194,7 +194,7 @@ sub on_quit {
 }
 
 sub BUILD {
-    my $self = shift;
+    my ( $self, $args ) = @_;
     $self->_setup_events;
     $self->state->add_observer(
         App::Fenix::Refresh->new( view => $self->view ) );
