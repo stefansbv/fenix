@@ -2,19 +2,21 @@ package App::Fenix::Model;
 
 # ABSTRACT: The Model
 
-use 5.010;
+use feature 'say';
 use Moo;
 use MooX::HandlesVia;
+use Try::Tiny;
+#use Path::Tiny;
 use App::Fenix::Types qw(
+    Bool
     FenixConfig
-    FenixCal
-    Str
+    FenixModelDB
     Path
+    Str
 );
 use App::Fenix::X qw(hurl);
-use App::Fenix::Cal;
-use Try::Tiny;
-use Path::Tiny;
+use App::Fenix::Model::DB;
+use namespace::autoclean;
 
 has 'config' => (
     is       => 'ro',
@@ -22,39 +24,31 @@ has 'config' => (
     required => 1,
 );
 
-has 'cal' => (
+has 'verbose' => (
     is      => 'ro',
-    isa     => FenixCal,
-    lazy    => 1,
+    isa     => Bool,
     default => sub {
-        return App::Fenix::Cal->new;
-    },
-    handles => {
-        month_i => 'month',
-        year_i  => 'year',
+        my $self = shift;
+        return $self->config->verbose;
     },
 );
 
-#--  anul si luna de lucru
-
-has 'year_l' => (
-    is      => 'rw',
-    isa     => Str,
-    lazy    => 1,
+has 'debug' => (
+    is      => 'ro',
+    isa     => Bool,
     default => sub {
         my $self = shift;
-        return $self->year_i;
+        return $self->config->debug;
     },
 );
 
-has 'month_l' => (
-    is      => 'rw',
-    isa     => Str,
+has 'db' => (
+    is      => 'ro',
+    isa     => FenixModelDB,
     lazy    => 1,
-    coerce  => sub { length $_[0] == 1 ? sprintf("%02s", $_[0]) : $_[0] },
     default => sub {
         my $self = shift;
-        return $self->month_i;
+        return App::Fenix::Model::DB->new( config => $self->config, );
     },
 );
 
