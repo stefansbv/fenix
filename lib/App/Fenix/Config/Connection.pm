@@ -17,7 +17,7 @@ use App::Fenix::Types qw(
 with qw/App::Fenix::Role::FileUtils
         App::Fenix::Role::Utils/;
 
-has 'conn_yaml_file' => (
+has 'connection_file' => (
     is  => 'ro',
     isa => Maybe[Path],
 );
@@ -37,7 +37,7 @@ has 'uri_db' => (
             return $self->_build_uri_from_string;
         }
         else {
-            if ( $self->conn_yaml_file ) {
+            if ( $self->connection_file ) {
                 return $self->_build_uri_from_yaml;
             }
             else {
@@ -121,12 +121,12 @@ sub _build_uri_from_yaml {
     my $self = shift;
     my $data;
     try {
-        $data = $self->load_yaml( $self->conn_yaml_file->stringify );
+        $data = $self->load_yaml( $self->connection_file->stringify );
     }
     catch {
         hurl info_conn =>
             __x( "[EE] Failed to read the connection configuration file:\n    '{file}'",
-                 file => $self->conn_yaml_file );
+                 file => $self->connection_file );
     };
     my $conn = $data->{connection};
     my $uri  = URI::db->new;

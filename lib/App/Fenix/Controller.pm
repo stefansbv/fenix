@@ -34,10 +34,13 @@ has options => (
     default => sub {
         return App::Fenix::Options->new_with_options;
     },
-    handles => [qw(
-        verbose
-        debug
-    )],
+    handles => [
+        qw(
+            mnemonic
+            verbose
+            debug
+            )
+    ],
 );
 
 has config => (
@@ -49,7 +52,8 @@ has config => (
 
 sub _build_config {
     my $self   = shift;
-    my $mnemonic = $self->options->mnemonic || 'test-tk';
+    my $mnemonic = $self->mnemonic || 'test-tk';
+    say "mnemonic = $mnemonic";
     my $config = try {
         App::Fenix::Config->new( mnemonic => $mnemonic );
     }
@@ -198,7 +202,13 @@ sub BUILD {
     $self->_setup_events;
     $self->state->add_observer(
         App::Fenix::Refresh->new( view => $self->view ) );
-    $self->log_message('[II] Welcome to Fenix (GUI)!');
+    $self->log_message('[II] Welcome to Fenix!');
+    my $cc = $self->config->connection_config;
+    say $cc->driver;
+    say $cc->dbname;
+    #say $cc->user;
+
+    say $self->model->db->dbh;
     $self->state->set_state('idle');
     $self->_init;
     return;

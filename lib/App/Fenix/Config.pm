@@ -172,7 +172,7 @@ has 'connection_config' => (
     default => sub {
         my $self = shift;
         return App::Fenix::Config::Connection->new(
-            conn_yaml_file => $self->connection_file,
+            connection_file => $self->connection_file,
         );
     },
 );

@@ -18,7 +18,6 @@ my $CLASS;
 BEGIN {
     $CLASS = 'App::Fenix::Engine';
     use_ok $CLASS or die;
-    # $ENV{TRANSFER_CONFIG} = 'nonexistent.conf';
 }
 
 can_ok $CLASS, qw(load new name uri);

@@ -10,7 +10,7 @@ my $conn_uri  = q(db:pg://localhost:5432/classicmodels);
 
 subtest 'Connection config from yaml file' => sub {
     ok my $cc = App::Fenix::Config::Connection->new(
-        conn_yaml_file => $conn_file,
+        connection_file => $conn_file,
     ), 'new instance';
     isa_ok $cc, ['App::Fenix::Config::Connection'],'config connection instance';
     is $cc->driver, 'pg', 'the engine';

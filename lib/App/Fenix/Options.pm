@@ -7,9 +7,10 @@ use Moo;
 use MooX::Options;
 
 option 'mnemonic' => (
-    is    => 'ro',
-    doc   => 'the mnemonic (configuration name)',
-    short => 'm',
+    is     => 'ro',
+    format => 's',
+    doc    => 'the mnemonic (configuration name)',
+    short  => 'm',
 );
 
 option 'verbose' => (
