@@ -22,6 +22,7 @@ use Locale::TextDomain 1.20 qw(App-Fenix);
 use App::Fenix::X qw(hurl);
 use App::Fenix::Config::Connection;
 use App::Fenix::Config::Main;
+use namespace::autoclean;
 
 #-- required
 
@@ -82,20 +83,6 @@ has 'sharedir' => (
 
 #-- hardcoded
 
-# main config file
-# has 'cfgmain' => (
-#     is      => 'ro',
-#     isa     => Str,
-#     default => sub { 'etc/main.yml' },
-# );
-
-# and app default config file
-# has 'cfgdefa' => (
-#     is      => 'ro',
-#     isa     => Str,
-#     default => sub { 'etc/default.yml' },
-# );
-
 has 'etc_path' => (
     is      => 'ro',
     isa     => Path,
@@ -106,12 +93,23 @@ has 'etc_path' => (
     },
 );
 
+# cfgmain
 has 'main_file' => (
     is      => 'ro',
     isa     => Path,
     default => sub {
         my $self = shift;
         return path $self->etc_path, 'main.yml';
+    },
+);
+
+# cfgdefa
+has 'default_file' => (
+    is      => 'ro',
+    isa     => Path,
+    default => sub {
+        my $self = shift;
+        return path $self->etc_path, 'default.yml';
     },
 );
 
@@ -198,6 +196,8 @@ has 'log_file_name' => (
         return path( File::HomeDir->my_data, 'fenix.log' )->stringify;
     },
 );
+
+__PACKAGE__->meta->make_immutable;
 
 1;
 
