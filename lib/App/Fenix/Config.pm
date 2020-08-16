@@ -12,14 +12,16 @@ use App::Fenix::Types qw(
     Path
     Str
     FenixConfigMain
+    FenixConfigConn
 );
 use Path::Tiny;
 use Try::Tiny;
 use File::HomeDir;
 use File::ShareDir qw(dist_dir);
 use Locale::TextDomain 1.20 qw(App-Fenix);
+# use Log::Log4perl qw(get_logger :levels);
 use App::Fenix::X qw(hurl);
-
+use App::Fenix::Config::Connection;
 use App::Fenix::Config::Main;
 
 #-- required
@@ -70,7 +72,7 @@ has 'sharedir' => (
         my $dir;
         return path $self->cfpath if $self->cfpath;
         try {
-            $dir = dist_dir('Fenix');
+            $dir = dist_dir('Fapp-Fenix');
         }
         catch {
             $dir = 'share';
@@ -82,18 +84,18 @@ has 'sharedir' => (
 #-- hardcoded
 
 # main config file
-has 'cfgmain' => (
-    is      => 'ro',
-    isa     => Str,
-    default => sub { 'etc/main.yml' },
-);
+# has 'cfgmain' => (
+#     is      => 'ro',
+#     isa     => Str,
+#     default => sub { 'etc/main.yml' },
+# );
 
 # and app default config file
-has 'cfgdefa' => (
-    is      => 'ro',
-    isa     => Str,
-    default => sub { 'etc/default.yml' },
-);
+# has 'cfgdefa' => (
+#     is      => 'ro',
+#     isa     => Str,
+#     default => sub { 'etc/default.yml' },
+# );
 
 has 'main_file' => (
     is      => 'ro',
@@ -142,6 +144,47 @@ has 'main' => (
     },
     handles => [ 'get_apps_exe_path', 'get_resource_path', ],
 );
+
+has 'connection_file' => (
+    is      => 'ro',
+    isa     => Path,
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return path $self->sharedir, 'apps', $self->mnemonic,
+            'etc/connection.yml';
+    },
+);
+
+has 'connection_config' => (
+    is      => 'ro',
+    isa     => FenixConfigConn,
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return App::Fenix::Config::Connection->new(
+            conn_yaml_file => $self->connection_file,
+        );
+    },
+);
+# handles => [ 'get_apps_exe_path', 'get_resource_path', ],
+
+sub BUILD {
+    my ( $self, $args ) = @_;
+    # my $mnemonic = $self->mnemonic;
+
+    # # Log init, can't do before we know the application config path
+    # my $log_fqn = path $self->cfpath, 'etc/log.conf';
+    # Log::Log4perl->init($log_fqn) if -f $log_fqn;
+
+    # $self->{_log} = get_logger();
+    # $self->{_log}->info('-------------------------');
+    # $self->{_log}->info('*** NEW SESSION BEGIN ***');
+    # $self->{_log}->info("*   $mnemonic   *");
+
+    return;
+}
+
 
 1;
 
