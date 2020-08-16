@@ -41,6 +41,8 @@ use Type::Library 0.040 -base, -declare => qw(
     FenixRecord
     ListCompare
     FenixCompare
+    FenixConfigConn
+    FenixModelDB
 );
 use Type::Utils -all;
 use Types::Standard -types;
@@ -69,8 +71,10 @@ class_type FenixStatus,     { class => 'App::Fenix::Status' };
 class_type FenixPanel,      { class => 'App::Fenix::Panel' };
 class_type FenixRecord,     { class => 'App::Fenix::Model::Table::Record' };
 class_type FenixCompare,    { class => 'App::Fenix::Model::Update::Compare' };
-
+class_type FenixConfigConn, { class => 'App::Fenix::Config::Connection' };
+class_type FenixModelDB,    { class => 'App::Fenix::Model::DB' };
 class_type FenixController, { class => 'App::Fenix::Controller' };
+
 class_type TkStatusbar,     { class => 'Tk::StatusBar' };
 class_type TkFrame,         { class => 'Tk::Frame' };
 class_type TkMenu,          { class => 'Tk::Menu' };
