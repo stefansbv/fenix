@@ -17,12 +17,13 @@ use App::Fenix::Types qw(
 use Path::Tiny;
 use Try::Tiny;
 use File::HomeDir;
-use File::ShareDir qw(dist_dir);
 use Locale::TextDomain 1.20 qw(App-Fenix);
 use App::Fenix::X qw(hurl);
 use App::Fenix::Config::Connection;
 use App::Fenix::Config::Main;
 use namespace::autoclean;
+
+with 'App::Fenix::Role::Paths';
 
 #-- required
 
@@ -61,37 +62,7 @@ has 'debug' => (
     default => sub {0},
 );
 
-#---
-
-has 'sharedir' => (
-    is      => 'ro',
-    isa     => Path,
-    lazy    => 1,
-    default => sub {
-        my $self = shift;
-        my $dir;
-        return path $self->cfpath if $self->cfpath;
-        try {
-            $dir = dist_dir('Fapp-Fenix');
-        }
-        catch {
-            $dir = 'share';
-        };
-        return path $dir;
-    },
-);
-
 #-- hardcoded
-
-has 'etc_path' => (
-    is      => 'ro',
-    isa     => Path,
-    lazy    => 1,
-    default => sub {
-        my $self = shift;
-        return path $self->sharedir, 'etc';
-    },
-);
 
 # cfgmain
 has 'main_file' => (
@@ -99,7 +70,7 @@ has 'main_file' => (
     isa     => Path,
     default => sub {
         my $self = shift;
-        return path $self->etc_path, 'main.yml';
+        return path $self->user_sys_path_for('etc'), 'main.yml';
     },
 );
 
@@ -109,7 +80,7 @@ has 'default_file' => (
     isa     => Path,
     default => sub {
         my $self = shift;
-        return path $self->etc_path, 'default.yml';
+        return path $self->user_sys_path_for('etc'), 'default.yml';
     },
 );
 
@@ -118,7 +89,7 @@ has 'menubar_file' => (
     isa     => Path,
     default => sub {
         my $self = shift;
-        return path $self->etc_path, 'menubar.yml';
+        return path $self->user_sys_path_for('etc'), 'menubar.yml';
     },
 );
 
@@ -127,7 +98,7 @@ has 'toolbar_file' => (
     isa     => Path,
     default => sub {
         my $self = shift;
-        return path $self->etc_path, 'toolbar.yml';
+        return path $self->user_sys_path_for('etc'), 'toolbar.yml';
     },
 );
 
@@ -137,7 +108,7 @@ has 'xresource' => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        return path $self->etc_path, 'xresource.xrdb';
+        return path $self->user_sys_path_for('etc'), 'xresource.xrdb';
     },
 );
 
@@ -147,7 +118,9 @@ has 'main' => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        return App::Fenix::Config::Main->new( main_file => $self->main_file, );
+        my $main_yml = $self->main_file;
+        say "# main_yml = $main_yml";
+        return App::Fenix::Config::Main->new( main_file => $main_yml );
     },
     handles => [ 'get_apps_exe_path', 'get_resource_path', ],
 );
@@ -158,8 +131,7 @@ has 'connection_file' => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        return path $self->sharedir, 'apps', $self->mnemonic,
-            'etc/connection.yml';
+        return path $self->user_path_for('etc'), 'connection.yml';
     },
 );
 
@@ -183,7 +155,7 @@ has 'log_file_path' => (
     default  => sub {
         my $self = shift;
         return path( $ENV{FENIX_LOG_CONFIG} ) if $ENV{FENIX_LOG_CONFIG};
-        return path( $self->etc_path, 'log.conf' );
+        return path( $self->user_path_for('etc'), 'log.conf' );
     },
 );
 
