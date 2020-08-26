@@ -202,7 +202,7 @@ sub BUILD {
     $self->state->add_observer(
         App::Fenix::Refresh->new( view => $self->view ) );
     $self->log_message('[II] Welcome to Fenix!');
-    my $cc = $self->config->connection_config;
+    my $cc = $self->config->connection;
     say "# mnemonic  = ", $self->mnemonic;
     say "# driver    = ", $cc->driver;
     say "# dbname    = ", $cc->dbname;

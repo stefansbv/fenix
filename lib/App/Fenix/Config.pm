@@ -163,7 +163,7 @@ has 'connection_file' => (
     },
 );
 
-has 'connection_config' => (
+has 'connection' => (
     is      => 'ro',
     isa     => FenixConfigConn,
     lazy    => 1,

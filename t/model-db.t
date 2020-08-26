@@ -16,7 +16,7 @@ my $args = {
 
 ok my $config = App::Fenix::Config->new($args), 'constructor';
 isa_ok $config, ['App::Fenix::Config'], 'Fenix::Config';
-ok my $cc = $config->connection_config, 'config  connection';
+ok my $cc = $config->connection, 'config  connection';
 isa_ok $cc, ['App::Fenix::Config::Connection'],'config connection instance';
 
 subtest_streamed 'Info DB without parameters' => sub {
@@ -32,7 +32,7 @@ subtest_streamed 'Info DB with URI' => sub {
         config => $config,
     ), 'new db instance';
 
-    ok my $cc = $config->connection_config, 'config  connection';
+    ok my $cc = $config->connection, 'config  connection';
     isa_ok $cc, ['App::Fenix::Config::Connection'],'config connection instance';
     is $cc->driver, 'sqlite', 'the engine';
     is $cc->dbname, 'classicmodels.db', 'the dbname';

@@ -35,7 +35,7 @@ subtest 'Test Config test-tk' => sub {
     is $conf->connection_file, 'share/apps/test-tk/etc/connection.yml',
         'connection config file';
 
-    ok my $cc = $conf->connection_config, 'config  connection';
+    ok my $cc = $conf->connection, 'config  connection';
     isa_ok $cc, ['App::Fenix::Config::Connection'],'config connection instance';
     is $cc->driver, 'sqlite', 'the engine';
     is $cc->dbname, 'classicmodels.db', 'the dbname';
@@ -73,7 +73,7 @@ subtest 'Test Config test-tk-pg' => sub {
     is $conf->connection_file, 'share/apps/test-tk-pg/etc/connection.yml',
         'connection config file';
 
-    ok my $cc = $conf->connection_config, 'config  connection';
+    ok my $cc = $conf->connection, 'config  connection';
     isa_ok $cc, ['App::Fenix::Config::Connection'],'config connection instance';
     is $cc->driver, 'pg', 'the engine';
     is $cc->dbname, 'classicmodels', 'the dbname';

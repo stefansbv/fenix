@@ -50,7 +50,7 @@ has 'target' => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        my $conf = $self->config->connection_config;
+        my $conf = $self->config->connection;
         return App::Fenix::Target->new(
             uri => $conf->uri,
         );
