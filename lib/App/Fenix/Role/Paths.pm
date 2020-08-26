@@ -1,10 +1,10 @@
-package App::Fenix::Config::Paths;
+package App::Fenix::Role::Paths;
 
-# ABSTRACT: Fenix configuration paths
+# ABSTRACT: role for Fenix configuration paths
 
 use 5.010001;
 use utf8;
-use Moo;
+use Moo::Role;
 use File::UserConfig;
 use Path::Tiny qw(cwd path);
 use File::ShareDir qw(dist_dir);
@@ -16,17 +16,11 @@ use App::Fenix::Types qw(
 );
 use namespace::autoclean;
 
-has 'mnemonic' => (
-    is       => 'rw',
-    isa      => Str,
-    required => 1,
-);
-
 has 'module_path' => (
     is      => 'ro',
     isa     => Path,
     default => sub {
-        return path( qw(lib Fenix Tk App) );
+        return path( qw(lib App Fenix Tk App) );
     },
 );
 
@@ -40,11 +34,22 @@ has 'screen_module_path' => (
     },
 );
 
-has 'dist_sharedir' => (
-    is      => 'ro',
-    isa     => Path,
-    default => sub {
-        return path( qw(share apps) );
+has 'sharedir' => (
+    is       => 'ro',
+    isa      => Path,
+    init_arg => undef,
+    lazy     => 1,
+    default  => sub {
+        my $self = shift;
+        my $dir;
+        return path $self->cfpath if $self->cfpath;
+        try {
+            $dir = dist_dir('Fenix');
+        }
+        catch {
+            $dir = 'share';
+        };
+        return path $dir;
     },
 );
 
@@ -101,7 +106,7 @@ sub dist_path_for {
     my $mnemonic = $mnemo || $self->mnemonic;
     die "No parameter provided for 'dist_path_for'" unless $dir;
     if ( $self->configdir && $mnemonic ) {
-        return path $self->dist_sharedir, $mnemonic, $dir;
+        return path $self->sharedir, $mnemonic, $dir;
     }
     return;
 }
@@ -127,7 +132,7 @@ sub exists_dist_sys_path_for {
     return;
 }
 
-__PACKAGE__->meta->make_immutable;
+no Moo::Role;
 
 1;
 
@@ -145,7 +150,7 @@ __END__
 
 =head3 mnemonic
 
-The name of the directory under L<dist_sharedir>.  By default it is a
+The name of the directory under L<sharedir>.  By default it is a
 lower case of the C<module> attribute.
 
 =head3 module_path
@@ -159,7 +164,7 @@ distribution.
 
 Return the relative path to the screen modules of a Fenix application.
 
-=head3 dist_sharedir
+=head3 sharedir
 
 Returns the relative path to the configurations of Fenix applications.
 
