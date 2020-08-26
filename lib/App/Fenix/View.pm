@@ -362,6 +362,46 @@ sub BUILD {
 
     #$self->set_status( 'connectyes16', 'cn' );
 
+    $self->get_geometry;
+    $self->set_geometry_main;
+    
+    return;
+}
+
+sub get_geometry {
+    my $self = shift;
+    my $win  = $self->frame;
+    my $wsys = $win->windowingsystem;
+    my $name = $win->name;
+    my $geom = $win->geometry;
+
+    # All dimensions are in pixels.
+    my $sh = $win->screenheight;
+    my $sw = $win->screenwidth;
+    say "---";
+    print "# system   = $wsys\n";
+    print "# name     = $name\n";
+    print "# geometry = $geom\n";
+    print "# screen   = $sw x $sh\n";
+    say "---";
+    return $geom;
+}
+
+sub set_geometry_main {
+    my $self = shift;
+
+    # $self->cfg->config_load_instance();
+    my $geom;
+    # if ( $self->cfg->can('geometry') ) {
+    #     my $go = $self->cfg->geometry();
+    #     if (exists $go->{main}) {
+    #         $geom = $go->{main};
+    #     }
+    # }
+    unless ($geom) {
+        $geom = '800x600+20+20';              # default geom
+    }
+    $self->frame->geometry($geom);
     return;
 }
 
