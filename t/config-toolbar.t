@@ -17,7 +17,11 @@ my $args = {
 ok my $conf = App::Fenix::Config->new($args), 'constructor';
 
 is $conf->sharedir, 'share', 'share dir';
-is $conf->toolbar_file, path( 'share', 'etc', 'toolbar.yml'), 'toolbar file';
+
+my $rx = ( $^O eq 'MSWin32' )
+    ? qr{etc\\}
+    : qr{etc/};
+like $conf->toolbar_file, qr/${rx}toolbar\.yml$/, 'toolbar config file (yml) path';
 
 my $expected_tool = {
     tb_qt => {
