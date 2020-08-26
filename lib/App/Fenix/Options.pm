@@ -7,7 +7,7 @@ use Moo;
 use MooX::Options;
 
 option 'mnemonic' => (
-    is     => 'ro',
+    is     => 'rw',
     format => 's',
     doc    => 'the mnemonic (configuration name)',
     short  => 'm',

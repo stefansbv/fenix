@@ -52,10 +52,9 @@ has config => (
 
 sub _build_config {
     my $self   = shift;
-    my $mnemonic = $self->mnemonic || 'test-tk';
-    say "mnemonic = $mnemonic";
+    $self->mnemonic('test-tk') if !$self->mnemonic; # default mnemonic
     my $config = try {
-        App::Fenix::Config->new( mnemonic => $mnemonic );
+        App::Fenix::Config->new( mnemonic => $self->mnemonic );
     }
     catch {
         hurl controller => 'EE Configuration error: "{error}"',
@@ -204,11 +203,10 @@ sub BUILD {
         App::Fenix::Refresh->new( view => $self->view ) );
     $self->log_message('[II] Welcome to Fenix!');
     my $cc = $self->config->connection_config;
-    say $cc->driver;
-    say $cc->dbname;
-    #say $cc->user;
-
-    say $self->model->db->dbh;
+    say "# mnemonic  = ", $self->mnemonic;
+    say "# driver    = ", $cc->driver;
+    say "# dbname    = ", $cc->dbname;
+    say "# connected = ", $self->model->db->dbh->isa('DBI::db') ? 'yes' : 'no';
     $self->state->set_state('idle');
     $self->_init;
     return;
