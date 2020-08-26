@@ -6,7 +6,7 @@ use 5.0100;
 use utf8;
 use Try::Tiny;
 use App::Fenix::X qw(hurl);
-use Moose::Role;
+use Moo::Role;
 
 sub sort_hash_by_id {
     my ( $self, $attribs ) = @_;
