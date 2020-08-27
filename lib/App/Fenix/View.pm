@@ -14,14 +14,14 @@ use App::Fenix::Types qw(
     TkFrame
     FenixPanel
     FenixNotebook
-    FenixStatus
+    FenixStatusbar
 );
 use Tk;
 use App::Fenix::X qw(hurl);
 use App::Fenix::Menubar;
 use App::Fenix::Toolbar;
 use App::Fenix::Notebook;
-use App::Fenix::Status;
+use App::Fenix::Tk::Statusbar;
 use App::Fenix::Panel::Initial;
 use App::Fenix::Panel::Logger;
 
@@ -72,13 +72,13 @@ has 'tool_bar' => (
     },
 );
 
-has 'status' => (
+has 'status_bar' => (
     is      => 'ro',
-    isa     => FenixStatus,
+    isa     => FenixStatusbar,
     lazy    => 1,
     default => sub {
         my $self = shift;
-        return App::Fenix::Status->new(
+        return App::Fenix::Tk::Statusbar->new(
             frame  => $self->frame,
             config => $self->config,
         );
@@ -167,7 +167,7 @@ sub set_status {
     my ( $self, $text, $sb_id, $color ) = @_;
 
     $sb_id //= 'ms';
-    my $sb_label = $self->status->get_comp($sb_id);
+    my $sb_label = $self->status_bar->get_comp($sb_id);
 
     return unless ( $sb_label and $sb_label->isa('Tk::Label') );
 
@@ -308,7 +308,7 @@ sub control_read_t {
 
 sub set_control_state {
     my ( $self, $state, $rules ) = @_;
-    # $self->set_status( $state, 'md' );
+    $self->set_status( $state, 'md' );
     return;
 }
 
@@ -352,19 +352,16 @@ sub BUILD {
 
     $self->menu_bar->make;
     $self->tool_bar->make;
-    $self->status->make;
+    $self->status_bar->make;
 
     #$self->input_panel->make;
     $self->notebook->make;
     $self->logger_panel->make;
 
     $self->set_status( 'connectno16', 'cn' );
-
-    #$self->set_status( 'connectyes16', 'cn' );
-
     $self->get_geometry;
     $self->set_geometry_main;
-    
+
     return;
 }
 

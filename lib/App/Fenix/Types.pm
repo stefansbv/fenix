@@ -16,7 +16,7 @@ use Type::Library 0.040 -base, -declare => qw(
     FenixMenubar
     FenixToolbar
     FenixState
-    FenixStatus
+    FenixStatusbar
     FenixPanel
     FenixNotebook
     FenixOptions
@@ -66,7 +66,7 @@ class_type FenixRules,      { class => 'App::Fenix::Rules' };
 class_type FenixTarget,     { class => 'App::Fenix::Target' };
 class_type FenixEngine,     { class => 'App::Fenix::Engine' };
 class_type FenixState,      { class => 'App::Fenix::State' };
-class_type FenixStatus,     { class => 'App::Fenix::Status' };
+class_type FenixStatusbar,  { class => 'App::Fenix::Tk::Statusbar' };
 class_type FenixPanel,      { class => 'App::Fenix::Panel' };
 class_type FenixRecord,     { class => 'App::Fenix::Model::Table::Record' };
 class_type FenixCompare,    { class => 'App::Fenix::Model::Update::Compare' };

@@ -1,4 +1,4 @@
-package App::Fenix::Status;
+package App::Fenix::Tk::Statusbar;
 
 # ABSTRACT: Statusbar
 
