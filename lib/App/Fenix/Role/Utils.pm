@@ -29,9 +29,7 @@ sub sort_hash_by_id {
     return wantarray ? @attribs : \@attribs;
 }
 
-
-
-no Moose::Role;
+no Moo::Role;
 
 1;
 
@@ -49,14 +47,11 @@ __END__
 
 =head2 ATTRIBUTES
 
-=head3 sub conf_new
-
 =head2 INSTANCE METHODS
 
-=head3 load_conf
+=head2 sort_hash_by_id
 
-=head3 load_yaml
-
-=head3 conf_new
+Use ST to sort hash by value (Id), returns an array or an array
+reference of the sorted items.
 
 =cut
