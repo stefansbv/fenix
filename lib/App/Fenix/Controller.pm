@@ -26,6 +26,8 @@ use App::Fenix::Model;
 use App::Fenix::State;
 use App::Fenix::Refresh;
 use App::Fenix::View;
+use App::Fenix::Exceptions;
+use App::Fenix::Tk::Dialog::Message;
 
 with 'MooX::Log::Any';
 
@@ -135,6 +137,34 @@ sub log_message {
 
 sub _init {
     my $self = shift;
+    my $error;
+    $self->delay_start(
+        sub {
+            say 'connecting...';
+            try {
+                $self->model->db->dbh;
+            }
+            catch {
+                if ( my $e = Exception::Base->catch($_) ) {
+                    if ( $e->isa('Exception::Db::Connect') ) {
+                        $error = $e->usermsg;
+                    }
+                }
+                say "[EE] $error" if $self->debug;
+                $self->message_dialog( "No connection!",
+                    $error, 'error', 'close' );
+            };
+            say "# connected = ",
+              $self->model->db->dbh->isa('DBI::db') ? 'yes' : 'no';
+        }
+    );
+    return;
+}
+
+sub message_dialog {
+    my ( $self, $message, $details, $icon, $type ) = @_;
+    my $dlg = App::Fenix::Tk::Dialog::Message->new( view => $self->view );
+    $dlg->message_dialog( $message, $details, $icon, $type );
     return;
 }
 
@@ -199,6 +229,12 @@ sub on_quit {
     $self->view->on_close_window(@_);
 }
 
+sub delay_start {
+    my ($self, $code) = @_;
+    $self->view->frame->after( 1500, $code );
+    return;
+}
+
 sub BUILD {
     my ( $self, $args ) = @_;
     $self->_setup_events;
@@ -209,7 +245,6 @@ sub BUILD {
     say "# mnemonic  = ", $self->mnemonic;
     say "# driver    = ", $cc->driver;
     say "# dbname    = ", $cc->dbname;
-    say "# connected = ", $self->model->db->dbh->isa('DBI::db') ? 'yes' : 'no';
     $self->state->set_state('idle');
     $self->_init;
     return;
