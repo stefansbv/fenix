@@ -19,22 +19,16 @@ has 'view' => (
 );
 
 sub message_dialog {
-    my ( $self, $message, $details, $icon, $type ) = @_;
+    my ( $self, $message, $details, $icon, $type, $geom ) = @_;
 
     #--- Dialog Box
-
-    # # Make all buttons same width
-    # my $len = max map { length } ($b_yes, $b_cancel, $b_no);
-    # my $len_l = int($len / 2);
-    # my $len_r = $len - $len_l;
-    # $padded = sprintf("%*s", $len_l, $text);
-    # $padded = sprintf("%-*s", $len_r, $text);
 
     my $default_buttons = [ __ 'OK' ];
     my $buttons =
                   $type eq q{}     ?  $default_buttons
                 : $type eq 'ok'    ?  [ __ 'OK' ]
                 : $type eq 'close' ?  [ __ 'Close' ]
+                : $type eq 'quit'  ?  [ __ 'Quit' ]
                 : $type eq 'yn'    ?  [ __ 'Yes', __ 'No' ]
                 : $type eq 'ycn'   ?  [ __ 'Yes', __ 'Cancel', __ 'No' ]
                 :                     $default_buttons
@@ -44,6 +38,8 @@ sub message_dialog {
         -title   => __ 'Dialog',
         -buttons => $buttons,
     );
+    print " $geom\n";
+    $dlg->geometry($geom) if $geom;
 
     #--- Frame top
 
@@ -301,9 +297,9 @@ static unsigned char w3_bits[] = {
 
 =head1 SYNOPSIS
 
-    require Fenix::Tk::Dialog::Message;
+    use App::Fenix::Tk::Dialog::Message;
 
-    my $dlg = Fenix::Tk::Dialog::Message->new($self->view);
+    my $dlg = App::Fenix::Tk::Dialog::Message->new($self->view);
 
     $dlg->message_dialog($message, $details, 'icon', 'type');
 
