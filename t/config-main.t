@@ -16,9 +16,7 @@ ok my $conf = App::Fenix::Config->new($args), 'constructor';
 
 is $conf->sharedir, 'share', 'share dir';
 
-my $rx = ( $^O eq 'MSWin32' )
-    ? qr{etc\\}
-    : qr{etc/};
+my $rx = qr{etc/};
 like $conf->main_file, qr/${rx}main\.yml$/, 'main config file (yml) path';
 
 ok my $cm = App::Fenix::Config::Main->new(
