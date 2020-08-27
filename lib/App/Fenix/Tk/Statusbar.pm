@@ -57,7 +57,7 @@ sub _build_statusbar {
 
     # Database name
     my $db = $sb->addLabel(
-        -width      => 13,
+        -width      => 18,
         -anchor     => 'center',
         -side       => 'right',
         -background => 'lightyellow',
