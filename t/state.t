@@ -34,12 +34,12 @@ subtest 'GUI State' => sub {
     ok $status->add_observer( $gui_ref ), 'add observer';
 
     for my $state (qw(init idle work)) {
-        ok $status->set_state($state), "set state $state";
-        is $status->get_state, $state, "get state ($state)";
-        ok $status->is_state($state), "is state $state";
+        ok $status->set_state('gui_state', $state), "set state $state";
+        is $status->get_state('gui_state'), $state, "get state ($state)";
+        ok $status->is_state('gui_state', $state), "is state $state";
     }
 
-    throws_ok { $status->set_state('unknown') }
+    throws_ok { $status->set_state('gui_state', 'unknown') }
         qr/\QValue "unknown" did not pass type constraint "Enum[idle,init,work]"/,
         qq{'unknown' should not be a valid mode};
 };

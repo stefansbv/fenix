@@ -152,10 +152,16 @@ sub _init {
                 }
                 say "[EE] $error" if $self->debug;
                 $self->message_dialog( "No connection!",
-                    $error, 'error', 'close' );
+                                       $error, 'error', 'close' );
+            }
+            finally {
+                my $state = $error ? 'not_connected' : 'connected';
+                $self->log_message("# connection status = $state");
+                $self->state->set_state( 'conn_state', $state );
+                if ($error) {
+                    $self->on_quit;
+                }
             };
-            say "# connected = ",
-              $self->model->db->dbh->isa('DBI::db') ? 'yes' : 'no';
         }
     );
     return;
@@ -245,7 +251,7 @@ sub BUILD {
     say "# mnemonic  = ", $self->mnemonic;
     say "# driver    = ", $cc->driver;
     say "# dbname    = ", $cc->dbname;
-    $self->state->set_state('idle');
+    $self->state->set_state('gui_state', 'idle');
     $self->_init;
     return;
 }

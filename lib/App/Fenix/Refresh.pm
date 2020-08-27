@@ -32,9 +32,15 @@ sub _build_rules {
 
 sub update {
     my ( $self, $subject ) = @_;
-    say "refresh: update event";
-    my $state = $subject->get_state;
-    $self->view->set_control_state( $state, $self->get_rules($state) );
+
+    # GUI
+    my $gui_state = $subject->get_state('gui_state');
+    my $con_state = $subject->get_state('conn_state');
+    $self->view->set_control_state( $gui_state, $self->get_rules($gui_state) );
+
+    # Connection
+    my $icon = $con_state eq 'connected' ? 'connectyes16' : 'connectno16';
+    $self->view->set_status( $icon, 'cn' );
     return;
 }
 
