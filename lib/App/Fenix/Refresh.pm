@@ -2,7 +2,7 @@ package App::Fenix::Refresh;
 
 # ABSTRACT: An Observer for the GUI
 
-use 5.010;
+use feature 'say';
 use Moo;
 use App::Fenix::Types qw(
     FenixRules
@@ -32,6 +32,7 @@ sub _build_rules {
 
 sub update {
     my ( $self, $subject ) = @_;
+    say "refresh: update event";
     my $state = $subject->get_state;
     $self->view->set_control_state( $state, $self->get_rules($state) );
     return;
