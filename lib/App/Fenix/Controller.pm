@@ -152,7 +152,7 @@ sub _init {
                 }
                 say "[EE] $error" if $self->debug;
                 $self->message_dialog( "No connection!",
-                                       $error, 'error', 'close' );
+                                       $error, 'error', 'quit', '280x130' );
             }
             finally {
                 my $state = $error ? 'not_connected' : 'connected';
@@ -168,9 +168,9 @@ sub _init {
 }
 
 sub message_dialog {
-    my ( $self, $message, $details, $icon, $type ) = @_;
+    my ( $self, $message, $details, $icon, $type, $geom ) = @_;
     my $dlg = App::Fenix::Tk::Dialog::Message->new( view => $self->view );
-    $dlg->message_dialog( $message, $details, $icon, $type );
+    $dlg->message_dialog( $message, $details, $icon, $type, $geom );
     return;
 }
 
@@ -252,6 +252,7 @@ sub BUILD {
     say "# driver    = ", $cc->driver;
     say "# dbname    = ", $cc->dbname;
     $self->state->set_state('gui_state', 'idle');
+    $self->state->set_state('db_name', $cc->dbname);
     $self->_init;
     return;
 }

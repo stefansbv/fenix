@@ -4,6 +4,9 @@ package App::Fenix::State;
 
 use Moo;
 use Type::Utils qw(enum);
+use App::Fenix::Types qw(
+    Str
+);
 use namespace::autoclean;
 
 with 'App::Fenix::Role::Observable';
@@ -22,6 +25,14 @@ has conn_state => (
     isa      => enum([ qw(connected not_connected) ]),
     required => 1,
     default  => 'not_connected',
+);
+
+# dbname state
+has 'db_name' => (
+    is       => 'rw',
+    isa      => Str,
+    required => 1,
+    default  => '',
 );
 
 sub set_state {

@@ -35,12 +35,19 @@ sub update {
 
     # GUI
     my $gui_state = $subject->get_state('gui_state');
-    my $con_state = $subject->get_state('conn_state');
     $self->view->set_control_state( $gui_state, $self->get_rules($gui_state) );
 
     # Connection
-    my $icon = $con_state eq 'connected' ? 'connectyes16' : 'connectno16';
-    $self->view->set_status( $icon, 'cn' );
+    my $con_state = $subject->get_state('conn_state');
+    my $dbname    = $subject->get_state('db_name');
+    if ( $con_state eq 'connected' ) {
+        $self->view->set_status( 'connectyes16', 'cn' );
+        $self->view->set_status( $dbname, 'db', 'darkgreen' );
+    }
+    else {
+        $self->view->set_status( 'connectno16', 'cn' );
+        $self->view->set_status( $dbname, 'db', 'darkred' );
+    }
     return;
 }
 
