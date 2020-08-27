@@ -27,6 +27,8 @@ use App::Fenix::State;
 use App::Fenix::Refresh;
 use App::Fenix::View;
 
+with 'MooX::Log::Any';
+
 has options => (
     is      => 'ro',
     isa     => FenixOptions,
@@ -193,6 +195,7 @@ sub _setup_events {
 sub on_quit {
     my $self = shift;
     print "Shutting down...\n";
+    $self->log->info("done.");
     $self->view->on_close_window(@_);
 }
 

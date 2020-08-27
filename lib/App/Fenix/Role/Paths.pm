@@ -72,32 +72,32 @@ sub module_path_exists {
     return;
 }
 
-sub user_path_for {
+sub app_path_for {
     my ($self, $dir, $mnemo) = @_;
     my $mnemonic = $mnemo || $self->mnemonic;
-    die "No parameter provided for 'user_path_for'" unless $dir;
+    die "No parameter provided for 'app_path_for'" unless $dir;
     return path( $self->configdir, 'apps', $mnemonic, $dir )
         if $self->configdir && $mnemonic;
     return;
 }
 
-sub user_sys_path_for {
+sub framework_path_for {
     my ( $self, $dir ) = @_;
-    die "No parameter provided for 'user_sys_path_for'" unless $dir;
+    die "No parameter provided for 'framework_path_for'" unless $dir;
     return path( $self->configdir, $dir )
       if $self->configdir;
     return;
 }
 
-sub exists_user_path_for {
+sub exists_app_path_for {
     my ($self, $dir) = @_;
-    return 1 if $self->user_path_for($dir)->is_dir;
+    return 1 if $self->app_path_for($dir)->is_dir;
     return;
 }
 
-sub exists_user_sys_path_for {
+sub exists_framework_path_for {
     my ($self, $dir) = @_;
-    return 1 if $self->user_sys_path_for($dir)->is_dir;
+    return 1 if $self->framework_path_for($dir)->is_dir;
     return;
 }
 
@@ -174,9 +174,9 @@ Returns the relative path to the configurations of Fenix applications.
 
 Returns the path to the user configurations.
 
-For example, on my box:
+For example:
 
-    L</home/user/.local/share/.fenix/apps>
+    L</home/me/.local/share/.fenix/apps>
 
 =head2 INSTANCE METHODS
 
@@ -188,17 +188,29 @@ Return true if C<module_path> exists.
 
 Returns a path relative to the new dist.
 
-=head3 user_path_for
+=head3 app_path_for
 
-Return the user configurations path.
+Return the application specific configurations path a specific
+subdirectory in L<configdir>, provided as a parameter.
 
-=head3 user_sys_path_for
+For example with L<etc> as parameter:
 
-=head3 exists_user_path_for
+    L</home/me/.local/share/.fenix/etc>
+
+=head3 framework_path_for
+
+Return the framework (Fenix) configurations path for a specific
+subdirectory in L<configdir>, provided as a parameter.
+
+For example with L<etc> as parameter:
+
+    L</home/me/.local/share/.fenix/apps/etc>
+
+=head3 exists_app_path_for
 
 Returns true if the user configurations path exists.
 
-=head3 exists_user_sys_path_for
+=head3 exists_framework_path_for
 
 =head3 dist_path_for
 

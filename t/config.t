@@ -23,18 +23,20 @@ subtest 'Test Config test-tk, sharedir = share' => sub {
 
     ok my $conf = App::Fenix::Config->new($args), 'constructor';
 
-    like $conf->user_path_for('etc'), qr/etc$/, 'the etc user config path';
+    like $conf->app_path_for('etc'), qr/etc$/, 'the etc user config path';
 
     is $conf->mnemonic, 'test-tk', 'mnemonic (mnemonic)';
     is $conf->user,   'user',    'user';
     is $conf->pass,   'pass',    'pass';
     is $conf->cfpath, 'share/',  'cfpath is defined';
 
-    my $rx = qr{etc/};
+    my $rx = qr{(Fenix|.fenix)/etc/};
     like $conf->main_file, qr/${rx}main\.yml$/, 'main config file (yml) path';
     like $conf->default_file, qr/${rx}default\.yml$/,
         'default config file (yml)';
     like $conf->xresource, qr/${rx}xresource\.xrdb$/, 'xresource file';
+    like $conf->log_file_path, qr/${rx}log\.conf$/, 'log_file_path';
+    like $conf->log_file_name, qr/fenix\.log$/, 'log_file_name';
 
     $rx = qr{apps/test-tk/etc/};
     like $conf->connection_file, qr/${rx}connection\.yml$/,
@@ -50,9 +52,6 @@ subtest 'Test Config test-tk, sharedir = share' => sub {
 
     is $conf->get_apps_exe_path('chm_viewer'), '/usr/bin/okular',
         'get_apps_exe_path';
-
-    like $conf->log_file_path, qr/${rx}log\.conf$/, 'log_file_path';
-    like $conf->log_file_name, qr/fenix\.log$/, 'log_file_name';
 };
 
 subtest 'Test Config test-tk, sharedir = dist-dir' => sub {
@@ -64,18 +63,20 @@ subtest 'Test Config test-tk, sharedir = dist-dir' => sub {
 
     ok my $conf = App::Fenix::Config->new($args), 'constructor';
 
-    like $conf->user_path_for('etc'), qr/etc$/, 'the etc user config path';
+    like $conf->app_path_for('etc'), qr/etc$/, 'the etc user config path';
 
     is $conf->mnemonic, 'test-tk', 'mnemonic (mnemonic)';
     is $conf->user,   'user',    'user';
     is $conf->pass,   'pass',    'pass';
     is $conf->cfpath, undef,  'cfpath is not defined';
 
-    my $rx = qr{etc/};
+    my $rx = qr{(Fenix|.fenix)/etc/};
     like $conf->main_file, qr/${rx}main\.yml$/, 'main config file (yml) path';
     like $conf->default_file, qr/${rx}default\.yml$/,
         'default config file (yml)';
     like $conf->xresource, qr/${rx}xresource\.xrdb$/, 'xresource file';
+    like $conf->log_file_path, qr/${rx}log\.conf$/, 'log_file_path';
+    like $conf->log_file_name, qr/fenix\.log$/, 'log_file_name';
 
     $rx = qr{apps/test-tk/etc/};
     like $conf->connection_file, qr/${rx}connection\.yml$/,
@@ -91,9 +92,6 @@ subtest 'Test Config test-tk, sharedir = dist-dir' => sub {
 
     is $conf->get_apps_exe_path('chm_viewer'), '/usr/bin/okular',
         'get_apps_exe_path';
-
-    like $conf->log_file_path, qr/${rx}log\.conf$/, 'log_file_path';
-    like $conf->log_file_name, qr/fenix\.log$/, 'log_file_name';
 };
 
 subtest 'Test Config test-tk-pg' => sub {
@@ -106,18 +104,20 @@ subtest 'Test Config test-tk-pg' => sub {
 
     ok my $conf = App::Fenix::Config->new($args), 'constructor';
 
-    like $conf->user_path_for('etc'), qr/etc$/, 'the etc user config path';
+    like $conf->app_path_for('etc'), qr/etc$/, 'the etc user config path';
 
     is $conf->mnemonic, 'test-tk-pg', 'mnemonic (mnemonic)';
     is $conf->user,   'user',    'user';
     is $conf->pass,   'pass',    'pass';
     is $conf->cfpath, 'share/',  'cfpath';
 
-    my $rx = qr{etc/};
+    my $rx = qr{(Fenix|.fenix)/etc/};
     like $conf->main_file, qr/${rx}main\.yml$/, 'main config file (yml) path';
     like $conf->default_file, qr/${rx}default\.yml$/,
         'default config file (yml)';
     like $conf->xresource, qr/${rx}xresource\.xrdb$/, 'xresource file';
+    like $conf->log_file_path, qr/${rx}log\.conf$/, 'log_file_path';
+    like $conf->log_file_name, qr/fenix\.log$/, 'log_file_name';
 
     $rx = qr{apps/test-tk-pg/etc/};
     like $conf->connection_file, qr/${rx}connection\.yml$/,
@@ -133,9 +133,6 @@ subtest 'Test Config test-tk-pg' => sub {
 
     is $conf->get_apps_exe_path('chm_viewer'), '/usr/bin/okular',
         'get_apps_exe_path';
-
-    like $conf->log_file_path, qr/${rx}log\.conf$/, 'log_file_path';
-    like $conf->log_file_name, qr/fenix\.log$/, 'log_file_name';
 };
 
 done_testing;

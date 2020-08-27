@@ -15,16 +15,16 @@ subtest 'Test paths' => sub {
     is $conf->mnemonic, 'test-tk', 'the mnemonic';
 
     note "sharedir is '" . $conf->sharedir . "'";
-    
+
     like $conf->sharedir, qr/share/,      'the dist share rel path';
     like $conf->configdir, qr/\.?fenix$/i, 'the app config abs path';
     like(
-        dies { $conf->user_path_for },
+        dies { $conf->app_path_for },
         qr/No parameter/,
-        'To few parameters for user_path_for'
+        'To few parameters for app_path_for'
     );
-    like $conf->user_path_for('etc'), qr/etc$/, 'the etc user config path';
-    ok $conf->exists_user_path_for('etc'), 'exists etc user config path';
+    like $conf->app_path_for('etc'), qr/etc$/, 'the etc user config path';
+    ok $conf->exists_app_path_for('etc'), 'exists etc user config path';
     like(
         dies { $conf->dist_path_for },
         qr/No parameter/,

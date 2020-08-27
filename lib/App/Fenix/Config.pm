@@ -70,7 +70,7 @@ has 'main_file' => (
     isa     => Path,
     default => sub {
         my $self = shift;
-        return path $self->user_sys_path_for('etc'), 'main.yml';
+        return path $self->framework_path_for('etc'), 'main.yml';
     },
 );
 
@@ -80,7 +80,7 @@ has 'default_file' => (
     isa     => Path,
     default => sub {
         my $self = shift;
-        return path $self->user_sys_path_for('etc'), 'default.yml';
+        return path $self->framework_path_for('etc'), 'default.yml';
     },
 );
 
@@ -89,7 +89,7 @@ has 'menubar_file' => (
     isa     => Path,
     default => sub {
         my $self = shift;
-        return path $self->user_sys_path_for('etc'), 'menubar.yml';
+        return path $self->framework_path_for('etc'), 'menubar.yml';
     },
 );
 
@@ -98,7 +98,7 @@ has 'toolbar_file' => (
     isa     => Path,
     default => sub {
         my $self = shift;
-        return path $self->user_sys_path_for('etc'), 'toolbar.yml';
+        return path $self->framework_path_for('etc'), 'toolbar.yml';
     },
 );
 
@@ -108,7 +108,7 @@ has 'xresource' => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        return path $self->user_sys_path_for('etc'), 'xresource.xrdb';
+        return path $self->framework_path_for('etc'), 'xresource.xrdb';
     },
 );
 
@@ -131,7 +131,7 @@ has 'connection_file' => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        return path $self->user_path_for('etc'), 'connection.yml';
+        return path $self->app_path_for('etc'), 'connection.yml';
     },
 );
 
@@ -155,7 +155,7 @@ has 'log_file_path' => (
     default  => sub {
         my $self = shift;
         return path( $ENV{FENIX_LOG_CONFIG} ) if $ENV{FENIX_LOG_CONFIG};
-        return path( $self->user_path_for('etc'), 'log.conf' );
+        return path( $self->framework_path_for('etc'), 'log.conf' );
     },
 );
 
@@ -165,7 +165,7 @@ has 'log_file_name' => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        return path( File::HomeDir->my_data, 'fenix.log' )->stringify;
+        return path( File::HomeDir->home, 'fenix.log' )->stringify;
     },
 );
 
