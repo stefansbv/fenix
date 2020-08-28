@@ -46,8 +46,15 @@ use App::Fenix::View;
     }
 }
 
+my $args = {
+    mnemonic => 'test-tk',
+    user   => 'user',
+    pass   => 'pass',
+    cfpath => 'share/',
+};
+
+ok my $conf = App::Fenix::Config->new($args), 'constructor';
 ok my $mw    = Tk::MainWindow->new, 'new MW';
-ok my $conf  = App::Fenix::Config->new, 'new config';
 ok my $model = App::Fenix::Model->new(
     config => $conf,
 ), 'new model instance';
