@@ -68,6 +68,7 @@ has 'debug' => (
 has 'main_file' => (
     is      => 'ro',
     isa     => Path,
+    lazy    => 1,
     default => sub {
         my $self = shift;
         return path $self->framework_path_for('etc'), 'main.yml';
@@ -78,6 +79,7 @@ has 'main_file' => (
 has 'default_file' => (
     is      => 'ro',
     isa     => Path,
+    lazy    => 1,
     default => sub {
         my $self = shift;
         return path $self->framework_path_for('etc'), 'default.yml';
@@ -87,15 +89,27 @@ has 'default_file' => (
 has 'menubar_file' => (
     is      => 'ro',
     isa     => Path,
+    lazy    => 1,
     default => sub {
         my $self = shift;
         return path $self->framework_path_for('etc'), 'menubar.yml';
     },
 );
 
+has 'app_menubar_file' => (
+    is      => 'ro',
+    isa     => Path,
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return path $self->app_path_for('etc'), 'menu.yml';
+    },
+);
+
 has 'toolbar_file' => (
     is      => 'ro',
     isa     => Path,
+    lazy    => 1,
     default => sub {
         my $self = shift;
         return path $self->framework_path_for('etc'), 'toolbar.yml';
@@ -187,10 +201,40 @@ __END__
 
 =head2 ATTRIBUTES
 
-=head3 attr1
+=head3 mnemonic
+
+=head3 user
+
+=head3 pass
+
+=head3 cfpath
+
+=head3 verbose
+
+=head3 debug
+
+=head3 main_file
+
+=head3 default_file
+
+=head3 menubar_file
+
+=head3 app_menubar_file
+
+=head3 toolbar_file
+
+=head3 xresource
+
+=head3 main
+
+=head3 connection_file
+
+=head3 connection
+
+=head3 log_file_path
+
+=head3 log_file_name
 
 =head2 INSTANCE METHODS
-
-=head3 meth1
 
 =cut

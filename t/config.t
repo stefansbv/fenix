@@ -37,10 +37,14 @@ subtest 'Test Config test-tk, sharedir = share' => sub {
     like $conf->xresource, qr/${rx}xresource\.xrdb$/, 'xresource file';
     like $conf->log_file_path, qr/${rx}log\.conf$/, 'log_file_path';
     like $conf->log_file_name, qr/fenix\.log$/, 'log_file_name';
+    like $conf->menubar_file, qr/${rx}menubar\.yml$/,
+        'menubar config file (yml) path';
 
     $rx = qr{apps/test-tk/etc/};
     like $conf->connection_file, qr/${rx}connection\.yml$/,
       'connection config file';
+    like $conf->app_menubar_file, qr/${rx}menu\.yml$/,
+        'menubar config file (yml) path';
 
     ok my $cc = $conf->connection, 'config  connection';
     isa_ok $cc, ['App::Fenix::Config::Connection'],'config connection instance';
@@ -77,10 +81,14 @@ subtest 'Test Config test-tk, sharedir = dist-dir' => sub {
     like $conf->xresource, qr/${rx}xresource\.xrdb$/, 'xresource file';
     like $conf->log_file_path, qr/${rx}log\.conf$/, 'log_file_path';
     like $conf->log_file_name, qr/fenix\.log$/, 'log_file_name';
+    like $conf->menubar_file, qr/${rx}menubar\.yml$/,
+        'menubar config file (yml) path';
 
     $rx = qr{apps/test-tk/etc/};
     like $conf->connection_file, qr/${rx}connection\.yml$/,
         'connection config file';
+    like $conf->app_menubar_file, qr/${rx}menu\.yml$/,
+        'menubar config file (yml) path';
 
     ok my $cc = $conf->connection, 'config  connection';
     isa_ok $cc, ['App::Fenix::Config::Connection'],'config connection instance';
@@ -118,10 +126,14 @@ subtest 'Test Config test-tk-pg' => sub {
     like $conf->xresource, qr/${rx}xresource\.xrdb$/, 'xresource file';
     like $conf->log_file_path, qr/${rx}log\.conf$/, 'log_file_path';
     like $conf->log_file_name, qr/fenix\.log$/, 'log_file_name';
+    like $conf->menubar_file, qr/${rx}menubar\.yml$/,
+        'menubar config file (yml) path';
 
     $rx = qr{apps/test-tk-pg/etc/};
     like $conf->connection_file, qr/${rx}connection\.yml$/,
         'connection config file';
+    like $conf->app_menubar_file, qr/${rx}menu\.yml$/,
+        'menubar config file (yml) path';
 
     ok my $cc = $conf->connection, 'config  connection';
     isa_ok $cc, ['App::Fenix::Config::Connection'],'config connection instance';

@@ -1,34 +1,261 @@
 ---
-tb_sv:
-  tooltip: Save
-  help: Save the configuration
-  icon: filesave16
+tb_ad:
+  id: '1009'
+  help: 'Add record'
+  icon: actitemadd16
   sep: none
-  type: _item_normal
-  id: 1001
   state:
-    init: normal
-    idle: normal
-    work: disabled
+    det:
+      add: disabled
+      edit: disabled
+      find: disabled
+      idle: disabled
+      sele: disabled
+    rec:
+      add: normal
+      edit: normal
+      find: disabled
+      idle: normal
+      sele: disabled
+  tooltip: 'Add record'
+  type: _item_check
+tb_at:
+  id: '1012'
+  help: 'Save current window geometry'
+  icon: actattach16
+  sep: after
+  state:
+    det:
+      add: disabled
+      edit: disabled
+      find: disabled
+      idle: disabled
+      sele: disabled
+    rec:
+      add: normal
+      edit: normal
+      find: disabled
+      idle: normal
+      sele: normal
+  tooltip: 'Save current window geometry'
+  type: _item_normal
+tb_fc:
+  id: '1003'
+  help: 'Execute count'
+  icon: acthelp16
+  sep: after
+  state:
+    det:
+      add: disabled
+      edit: disabled
+      find: disabled
+      idle: disabled
+      sele: disabled
+    rec:
+      add: disabled
+      edit: disabled
+      find: normal
+      idle: disabled
+      sele: disabled
+  tooltip: 'Execute count'
+  type: _item_normal
+tb_fe:
+  id: '1002'
+  help: 'Execute search'
+  icon: actcheck16
+  sep: none
+  state:
+    det:
+      add: disabled
+      edit: disabled
+      find: disabled
+      idle: disabled
+      sele: disabled
+    rec:
+      add: disabled
+      edit: disabled
+      find: normal
+      idle: disabled
+      sele: disabled
+  tooltip: 'Execute search'
+  type: _item_normal
+tb_fm:
+  id: '1001'
+  help: 'Toggle find mode'
+  icon: filefind16
+  sep: none
+  state:
+    det:
+      add: disabled
+      edit: disabled
+      find: disabled
+      idle: disabled
+      sele: disabled
+    rec:
+      add: disabled
+      edit: normal
+      find: normal
+      idle: normal
+      sele: disabled
+  tooltip: 'Toggle find mode'
+  type: _item_check
+tb_gr:
+  id: '1005'
+  help: 'Generate default document'
+  icon: edit16
+  sep: after
+  state:
+    det:
+      add: disabled
+      edit: normal
+      find: disabled
+      idle: disabled
+      sele: disabled
+    rec:
+      add: disabled
+      edit: normal
+      find: disabled
+      idle: disabled
+      sele: disabled
+  tooltip: 'Generate document'
+  type: _item_normal
+tb_pr:
+  id: '1004'
+  help: 'Print preview default report'
+  icon: fileprint16
+  sep: none
+  state:
+    det:
+      add: disabled
+      edit: normal
+      find: disabled
+      idle: disabled
+      sele: disabled
+    rec:
+      add: disabled
+      edit: normal
+      find: disabled
+      idle: disabled
+      sele: disabled
+  tooltip: 'Print preview'
+  type: _item_normal
+tb_qt:
+  id: '1013'
+  help: 'Quit the application'
+  icon: actexit16
+  sep: after
+  state:
+    det:
+      add: disabled
+      edit: normal
+      find: disabled
+      idle: normal
+      sele: disabled
+    rec:
+      add: disabled
+      edit: normal
+      find: disabled
+      idle: normal
+      sele: disabled
+  tooltip: Quit
+  type: _item_normal
+tb_rm:
+  id: '1010'
+  help: 'Remove record'
+  icon: actitemdelete16
+  sep: none
+  state:
+    det:
+      add: disabled
+      edit: disabled
+      find: disabled
+      idle: disabled
+      sele: disabled
+    rec:
+      add: disabled
+      edit: normal
+      find: disabled
+      idle: disabled
+      sele: disabled
+  tooltip: 'Remove record'
+  type: _item_normal
 tb_rr:
-  tooltip: Reload
-  help: Reload the configuration
+  id: '1008'
+  help: 'Reload record'
   icon: actreload16
   sep: after
-  type: _item_normal
-  id: 1002
   state:
-    init: normal
-    idle: normal
-    work: disabled
-tb_qt:
-  tooltip: Quit
-  help: Quit the application
-  icon: actexit16
+    det:
+      add: disabled
+      edit: normal
+      find: disabled
+      idle: disabled
+      sele: disabled
+    rec:
+      add: disabled
+      edit: normal
+      find: disabled
+      idle: disabled
+      sele: disabled
+  tooltip: 'Reload record'
+  type: _item_normal
+tb_sv:
+  id: '1011'
+  help: 'Save record'
+  icon: filesave16
+  sep: after
+  state:
+    det:
+      add: disabled
+      edit: normal
+      find: disabled
+      idle: disabled
+      sele: disabled
+    rec:
+      add: normal
+      edit: normal
+      find: disabled
+      idle: disabled
+      sele: disabled
+  tooltip: 'Save record'
+  type: _item_normal
+tb_tn:
+  id: '1006'
+  help: 'Copy record'
+  icon: editcopy16
   sep: none
-  type: _item_normal
-  id: 1003
   state:
-    init: normal
-    idle: normal
-    work: disabled
+    det:
+      add: disabled
+      edit: disabled
+      find: disabled
+      idle: disabled
+      sele: disabled
+    rec:
+      add: normal
+      edit: normal
+      find: disabled
+      idle: disabled
+      sele: disabled
+  tooltip: 'Copy record'
+  type: _item_normal
+tb_tr:
+  id: '1007'
+  help: 'Paste record'
+  icon: editpaste16
+  sep: after
+  state:
+    det:
+      add: disabled
+      edit: disabled
+      find: disabled
+      idle: disabled
+      sele: disabled
+    rec:
+      add: normal
+      edit: normal
+      find: disabled
+      idle: disabled
+      sele: disabled
+  tooltip: 'Paste record'
+  type: _item_normal

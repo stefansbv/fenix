@@ -12,9 +12,10 @@ use App::Fenix::Types qw(
 );
 use Path::Tiny;
 use Tk;
-# use Locale::TextDomain 1.20 qw(App-Fenix);
 
 use App::Fenix::Config::Menubar;
+
+with 'App::Fenix::Role::Utils';
 
 has 'frame' => (
     is       => 'ro',
@@ -55,10 +56,34 @@ has 'menu_config' => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        my $file = path $self->config->sharedir, 'etc', 'menubar.yml';
+        my $file = path $self->config->menubar_file;
         return App::Fenix::Config::Menubar->new( menubar_file => $file, );
     },
 );
+
+has 'app_menu_config' => (
+    is      => 'ro',
+    isa     => FenixConfigMenu,
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        my $file = path $self->config->app_menubar_file;
+        return App::Fenix::Config::Menubar->new( menubar_file => $file, );
+    },
+);
+
+sub make_app_menu {
+    my $self = shift;
+    my $conf = $self->app_menu_config;
+    #my $menus   = $self->sort_hash_by_id($conf);
+    my $pos = 2;                             # start with pos=2
+    #foreach my $name ( @{$menus} ) {
+    foreach my $name ( $conf->all_menubar_names ) {
+        my $attribs_app = $conf->get_menu($name);
+        $pos = $self->make_menus( $name, $attribs_app, $pos );
+    }
+    return;
+}
 
 sub make {
     my $self = shift;
@@ -69,6 +94,7 @@ sub make {
         $poz = $self->make_menus($name, $attribs_app, $poz );
     }
     $self->frame->configure( -menu => $self->menu_bar );
+    $self->make_app_menu;    # insert the current app menu
     return;
 }
 
@@ -115,9 +141,9 @@ sub get_menu_popup_item {
 }
 
 sub set_menu_state {
-        my ( $self, $menu, $state ) = @_;
-        $self->get_menu_popup_item($menu)->configure( -state => $state );
-        return;
+    my ( $self, $menu, $state ) = @_;
+    $self->get_menu_popup_item($menu)->configure( -state => $state );
+    return;
 }
 
 1;
@@ -136,10 +162,30 @@ __END__
 
 =head2 ATTRIBUTES
 
-=head3 attr1
+=head3 frame
+
+=head3 config
+
+=head3 menu_bar
+
+=head3 _menus
+
+=head3 menu_config
+
+=head3 app_menu_config
 
 =head2 INSTANCE METHODS
 
-=head3 meth1
+=head3 make_app_menu
+
+=head3 make
+
+=head3 make_menus
+
+=head3 make_popup_item
+
+=head3 get_menu_popup_item
+
+=head3 set_menu_state
 
 =cut

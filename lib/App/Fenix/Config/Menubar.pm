@@ -1,6 +1,6 @@
 package App::Fenix::Config::Menubar;
 
-# ABSTRACT: Menu configurations
+# ABSTRACT: Menu configurations from YAML files
 
 use Moo;
 use MooX::HandlesVia;
@@ -54,3 +54,29 @@ has '_menubar_names' => (
 __PACKAGE__->meta->make_immutable;
 
 1;
+
+__END__
+
+=encoding utf8
+
+=head1 SYNOPSIS
+
+
+=head1 DESCRIPTION
+
+
+=head1 INTERFACE
+
+=head2 ATTRIBUTES
+
+=head3 menubar_file
+
+=head3 _menubar
+
+=head3 _menubar_names
+
+=head2 INSTANCE METHODS
+
+=head3 _build_menubar
+
+=cut

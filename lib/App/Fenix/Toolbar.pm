@@ -45,7 +45,7 @@ has 'tool_config' => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        my $file = path $self->config->sharedir, 'etc', 'toolbar.yml';
+        my $file = $self->config->toolbar_file;
         return App::Fenix::Config::Toolbar->new( toolbar_file => $file, );
     },
 );

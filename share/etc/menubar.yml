@@ -1,35 +1,94 @@
 ---
+menu_admin:
+  id: '5008'
+  label: Admin
+  popup:
+    '1':
+      key: ~
+      label: 'Default app'
+      name: mn_mn
+      sep: none
+      underline: 0
+    '2':
+      key: ~
+      label: Configurations
+      name: mn_cf
+      sep: none
+      underline: 0
+    '3':
+      key: ~
+      label: 'Reports data'
+      name: mn_er
+      sep: before
+      underline: 0
+    '4':
+      key: ~
+      label: 'Templates data'
+      name: mn_et
+      sep: none
+      underline: 0
+    '5':
+      key: ~
+      label: 'Configurations (new)'
+      name: mn_cfg
+      sep: none
+      underline: 0
+  underline: '1'
 menu_app:
-  id: 5001
+  id: '5001'
   label: App
-  underline: 0
   popup:
-    1:
-      name: mn_pr
-      label: Print
+    '1':
+      key: F7
+      label: 'Toggle find mode'
+      name: mn_fm
+      sep: none
       underline: 0
+    '2':
+      key: F8
+      label: 'Execute search'
+      name: mn_fe
+      sep: none
+      underline: 0
+    '3':
+      key: F9
+      label: 'Execute count'
+      name: mn_fc
+      sep: none
+      underline: 0
+    '4':
       key: Alt-P
+      label: 'Preview report'
+      name: mn_pr
       sep: before
-    2:
-      name: mn_qt
-      label: Quit
-      underline: 1
+      underline: 0
+    '5':
+      key: Alt-G
+      label: 'Generate document'
+      name: mn_tt
+      sep: none
+      underline: 0
+    '6':
       key: Ctrl+Q
+      label: Quit
+      name: mn_qt
       sep: before
-menu_help:
-  id: 5009
-  label: Help
+      underline: '1'
   underline: 0
+menu_help:
+  id: '5009'
+  label: Help
   popup:
-    1:
-      name: mn_gd
+    '1':
+      key: ~
       label: Manual
-      underline: 0
-      key:
+      name: mn_gd
       sep: none
-    2:
-      name: mn_ab
+      underline: 0
+    '2':
+      key: ~
       label: About
-      underline: 0
-      key:
+      name: mn_ab
       sep: none
+      underline: 0
+  underline: 0
