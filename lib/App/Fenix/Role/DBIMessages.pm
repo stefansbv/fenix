@@ -2,7 +2,6 @@ package App::Fenix::Role::DBIMessages;
 
 # ABSTRACT: Database engines error messages
 
-use 5.0100;
 use utf8;
 use Moo::Role;
 use MooX::HandlesVia;
