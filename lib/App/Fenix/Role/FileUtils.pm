@@ -6,11 +6,14 @@ use 5.0100;
 use utf8;
 use Try::Tiny;
 use YAML::Tiny 1.57;                         # errstr deprecated
+use File::HomeDir;
 use Tie::IxHash::Easy;
 use Config::General qw(ParseConfig);
 use Locale::TextDomain 1.20 qw(App-Fenix);
 use App::Fenix::X qw(hurl);
-use Moose::Role;
+use Moo::Role;
+
+use App::Fenix::Exceptions;
 
 sub load_conf {
     my ($self, $file) = @_;
@@ -70,7 +73,42 @@ sub write_yaml {
     return;
 }
 
-no Moose::Role;
+sub get_sqlitedb_filename {
+    my ($self, $dbname) = @_;
+    die "get_testdb_filename: A 'dbname' parameter is required\n" unless $dbname;
+    my $dbpath = path $dbname;
+    if ( $dbpath->is_absolute ) {
+        return $dbpath->stringify;
+    }
+    $dbname .= '.db' unless $dbname =~ m{\.db$}i;
+    return path( File::HomeDir->my_data, $dbname )->stringify;
+}
+
+sub check_path {
+    my ($self, $path) = @_;
+    die "check_path: A 'path' parameter is required\n" unless $path;
+    unless ($path and -d $path) {
+        Exception::IO::PathNotFound->throw(
+            pathname => $path,
+            message  => 'Path not found',
+        );
+    }
+    return;
+}
+
+sub check_file {
+    my ($self, $file) = @_;
+    die "check_file: A 'file' parameter is required\n" unless $file;
+    unless ($file and -f $file) {
+        Exception::IO::FileNotFound->throw(
+            filename => $file,
+            message  => 'File not found',
+        );
+    }
+    return;
+}
+
+no Moo::Role;
 
 1;
 
@@ -97,5 +135,22 @@ __END__
 =head3 load_yaml
 
 =head3 conf_new
+
+=head2 get_sqlitedb_filename
+
+Returns the absolute path and file name of the SQLite database.
+file.
+
+If the configured path is an absolute path and a file name, retur it,
+else make a path from the user data path (as returned by
+File::HomeDir), and the configured path and file name.
+
+=head2 check_path
+
+Check a path and throw an exception if not valid.
+
+=head2 check_file
+
+Check a file path and throw an exception if not valid.
 
 =cut

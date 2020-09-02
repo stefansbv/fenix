@@ -29,6 +29,36 @@ sub sort_hash_by_id {
     return wantarray ? @attribs : \@attribs;
 }
 
+sub trim {
+    my ( $self, @text ) = @_;
+    for (@text) {
+        s/^\s+//;
+        s/\s+$//;
+    }
+    return wantarray ? @text : "@text";
+}
+
+# Was parse_message
+sub categorize_message {
+    my ($self, $text) = @_;
+    (my $type, $text) = split /#/, $text, 2;
+
+    # Allow empty type
+    unless ($text) {
+        $text = $type;
+        $type = q{};
+    }
+    my $color;
+  SWITCH: {
+        $type eq 'error' && do { $color = 'darkred';   last SWITCH; };
+        $type eq 'info'  && do { $color = 'darkgreen'; last SWITCH; };
+        $type eq 'warn'  && do { $color = 'orange';    last SWITCH; };
+        $color = 'black';                    # default
+    }
+    # return ($text, $color, $type);
+    return ($text, $color);
+}
+
 no Moo::Role;
 
 1;
