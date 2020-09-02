@@ -9,7 +9,8 @@ use Tk::DialogBox;
 use App::Fenix::Types qw(
     FenixView
 );
-use App::Fenix::Utils;
+
+with 'App::Fenix::Role::Utils';
 
 has 'view' => (
     is       => 'ro',
@@ -108,7 +109,7 @@ sub message_dialog {
     #-- label
 
     my ( $text, $color )
-        = $details ? App::Fenix::Utils->parse_message($details) : q{};
+        = $details ? categorize_message($details) : q{};
     $color ||= 'black';
 
     my $lmessage = $mid_frame->Label( -text => $message )->pack;
