@@ -19,7 +19,7 @@ isa_ok $config, ['App::Fenix::Config'], 'Fenix::Config';
 ok my $cc = $config->connection, 'config  connection';
 isa_ok $cc, ['App::Fenix::Config::Connection'],'config connection instance';
 
-subtest_streamed 'Info DB without parameters' => sub {
+subtest_streamed 'Model DB without parameters' => sub {
     like(
         dies { my $db = App::Fenix::Model::DB->new },
         qr/\QMissing required arguments:/,
@@ -27,7 +27,7 @@ subtest_streamed 'Info DB without parameters' => sub {
     );
 };
 
-subtest_streamed 'Info DB with URI' => sub {
+subtest_streamed 'Model DB with URI' => sub {
     ok my $db = App::Fenix::Model::DB->new(
         config => $config,
     ), 'new db instance';
@@ -44,6 +44,14 @@ subtest_streamed 'Info DB with URI' => sub {
 
     isa_ok $db->target, ['App::Fenix::Target'], 'target';
     isa_ok $db->target->engine->dbh, ['DBI::db'], 'db';
+
+    like(
+        dies { $db->cmp_function },
+        qr/\Qcmp_function: missing required arguments:/,
+        'Should get an exception for missing params'
+    );
+    is $db->cmp_function('%model'), '-LIKE', 'compare function';
+
 };
 
 
