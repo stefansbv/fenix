@@ -46,18 +46,18 @@ sub set_state {
 
 sub get_state {
     my ( $self, $which ) = @_;
-    die "set_state: required params \$which!" unless $which;
+    die "get_state: required params \$which!" unless $which;
     die "get_state: $which state not implemented!" unless $self->can($which);
     return $self->$which;
 }
 
 sub is_state {
-    my ( $self, $which, $state ) = @_;    
-    die "set_state: required params \$which and \$state!"
+    my ( $self, $which, $state ) = @_;
+    die "is_state: required params \$which and \$state!"
       unless $which and $state;
     die "is_state: $which state not implemented!" unless $self->can($which);
     return 1 if $self->gui_state eq $state;
-    return $self;
+    return;
 }
 
 after set_state => sub {

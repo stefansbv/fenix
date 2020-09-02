@@ -39,9 +39,31 @@ subtest 'GUI State' => sub {
         ok $status->is_state('gui_state', $state), "is state $state";
     }
 
+    is $status->is_state('gui_state', 'unknown'), undef, "is state unknown undefined";
+
+    throws_ok { $status->get_state() }
+        qr/\Qget_state: required params/,
+        qq{'get_state' should have been called with one param};
+
+    throws_ok { $status->get_state('unknown_state') }
+        qr/\Qget_state: unknown_state state not implemented/,
+        qq{'unknown_state' should not be a valid state};
+
+    throws_ok { $status->is_state() }
+        qr/\Qis_state: required params/,
+        qq{'is_state' should have been called with two params};
+
+    throws_ok { $status->is_state('gui_state') }
+        qr/\Qis_state: required params/,
+        qq{'is_state' should have been called with two params};
+
+    throws_ok { $status->is_state('unknown_state', 'idle') }
+        qr/\Qis_state: unknown_state state not implemented/,
+        qq{'unknown_state' should not be a valid state};
+
     throws_ok { $status->set_state('gui_state', 'unknown') }
         qr/\QValue "unknown" did not pass type constraint "Enum[idle,init,work]"/,
-        qq{'unknown' should not be a valid mode};
+        qq{'unknown' should not be a valid mode for the gui_state};
 };
 
 done_testing;
