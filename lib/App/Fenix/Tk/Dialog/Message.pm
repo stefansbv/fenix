@@ -19,7 +19,7 @@ has 'view' => (
     handles  => [qw( frame config model )],
 );
 
-sub message_dialog {
+sub message {
     my ( $self, $message, $details, $icon, $type, $geom ) = @_;
 
     #--- Dialog Box
@@ -108,8 +108,9 @@ sub message_dialog {
 
     #-- label
 
-    my ( $text, $color )
-        = $details ? categorize_message($details) : q{};
+    my ( $text, $color ) = $details
+        ? $self->categorize_message($details)
+        : q{};
     $color ||= 'black';
 
     my $lmessage = $mid_frame->Label( -text => $message )->pack;

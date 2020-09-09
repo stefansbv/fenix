@@ -150,7 +150,7 @@ sub _init {
                         $error = $e->usermsg;
                     }
                 }
-                say "[EE] $error" if $self->debug;
+                say "[EE] '$error'" if $self->debug;
                 $self->message_dialog( "No connection!",
                                        $error, 'error', 'quit', '280x130' );
             }
@@ -170,7 +170,7 @@ sub _init {
 sub message_dialog {
     my ( $self, $message, $details, $icon, $type, $geom ) = @_;
     my $dlg = App::Fenix::Tk::Dialog::Message->new( view => $self->view );
-    $dlg->message_dialog( $message, $details, $icon, $type, $geom );
+    $dlg->message( $message, $details, $icon, $type, $geom );
     return;
 }
 

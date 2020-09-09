@@ -41,7 +41,9 @@ sub trim {
 # Was parse_message
 sub categorize_message {
     my ($self, $text) = @_;
-    (my $type, $text) = split /#/, $text, 2;
+    die "categorize_message: missing required parameter \$text"
+        unless $text;
+    ( my $type, $text ) = split /#/, $text, 2;
 
     # Allow empty type
     unless ($text) {
