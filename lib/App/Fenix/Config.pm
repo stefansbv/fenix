@@ -34,12 +34,12 @@ has 'mnemonic' => (
 );
 
 has 'user' => (
-    is       => 'ro',
+    is       => 'rw',
     isa      => Maybe[Str],
 );
 
 has 'pass' => (
-    is       => 'ro',
+    is       => 'rw',
     isa      => Maybe[Str],
 );
 
