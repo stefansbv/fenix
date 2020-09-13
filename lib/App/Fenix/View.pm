@@ -8,13 +8,14 @@ use Moo;
 use Scalar::Util qw(blessed);
 use App::Fenix::Types qw(
     FenixConfig
-    FenixModel
     FenixMenubar
-    FenixToolbar
-    TkFrame
-    FenixPanel
+    FenixModel
     FenixNotebook
+    FenixPanel
     FenixStatusbar
+    FenixToolbar
+    Int
+    TkFrame
 );
 use Tk;
 use App::Fenix::X qw(hurl);
@@ -45,6 +46,13 @@ sub _build_frame {
     my $mw = MainWindow->new;
     return $mw;
 }
+
+# temporizer
+has '_tset' => (
+    is      => 'rw',
+    isa     => Int,
+    default => sub {0},
+);
 
 has 'menu_bar' => (
     is      => 'ro',
@@ -399,6 +407,20 @@ sub set_geometry_main {
         $geom = '800x600+20+20';              # default geom
     }
     $self->frame->geometry($geom);
+    return;
+}
+
+sub temporized_clear {
+    my $self = shift;
+    return if $self->_tset == 1;
+    $self->after(
+        50000,    # miliseconds
+        sub {
+            $self->set_status( '', 'ms' );
+            $self->_tset(0);
+        }
+    );
+    $self->_tset(1);
     return;
 }
 
