@@ -57,11 +57,15 @@ has 'configdir' => (
     is      => 'ro',
     isa     => Path,
     default => sub {
-        my $configdir = File::UserConfig->new(
+        my $self = shift;
+        my $configpath
+            = $self->cfpath
+            ? $self->cfpath
+            : File::UserConfig->new(
             dist     => 'Fenix',
             sharedir => 'share',
         )->configdir;
-        return path($configdir);
+        return path $configpath ;
     },
 );
 

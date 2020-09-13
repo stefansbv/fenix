@@ -30,17 +30,16 @@ subtest 'Test Config test-tk, sharedir = share' => sub {
     is $conf->pass,   'pass',    'pass';
     is $conf->cfpath, 'share/',  'cfpath is defined';
 
-    my $rx = qr{(Fenix|.fenix)/etc/};
-    like $conf->main_file, qr/${rx}main\.yml$/, 'main config file (yml) path';
-    like $conf->default_file, qr/${rx}default\.yml$/,
-        'default config file (yml)';
-    like $conf->xresource, qr/${rx}xresource\.xrdb$/, 'xresource file';
-    like $conf->log_file_path, qr/${rx}log\.conf$/, 'log_file_path';
+    like $conf->main_file, 'share/etc/main.yml', 'main config file (yml) path from dist share/';
+    like $conf->default_file, 'share/etc/default.yml',
+        'default config file (yml) from dist share';
+    like $conf->xresource, 'share/etc/xresource.xrdb', 'xresource file from dist share';
+    like $conf->log_file_path, 'share/etc/log.conf', 'log_file_path from dist share';
     like $conf->log_file_name, qr/fenix\.log$/, 'log_file_name';
-    like $conf->menubar_file, qr/${rx}menubar\.yml$/,
-        'menubar config file (yml) path';
+    like $conf->menubar_file, 'share/etc/menubar.yml',
+        'menubar config file (yml) path from dist share';
 
-    $rx = qr{apps/test-tk/etc/};
+    my $rx = qr{apps/test-tk/etc/};
     like $conf->connection_file, qr/${rx}connection\.yml$/,
       'connection config file';
     like $conf->app_menubar_file, qr/${rx}menu\.yml$/,
@@ -119,17 +118,16 @@ subtest 'Test Config test-tk-pg' => sub {
     is $conf->pass,   'pass',    'pass';
     is $conf->cfpath, 'share/',  'cfpath';
 
-    my $rx = qr{(Fenix|.fenix)/etc/};
-    like $conf->main_file, qr/${rx}main\.yml$/, 'main config file (yml) path';
-    like $conf->default_file, qr/${rx}default\.yml$/,
-        'default config file (yml)';
-    like $conf->xresource, qr/${rx}xresource\.xrdb$/, 'xresource file';
-    like $conf->log_file_path, qr/${rx}log\.conf$/, 'log_file_path';
+    like $conf->main_file, 'share/etc/main.yml', 'main config file (yml) path from dist share/';
+    like $conf->default_file, 'share/etc/default.yml',
+        'default config file (yml) from dist share';
+    like $conf->xresource, 'share/etc/xresource.xrdb', 'xresource file from dist share';
+    like $conf->log_file_path, 'share/etc/log.conf', 'log_file_path from dist share';
     like $conf->log_file_name, qr/fenix\.log$/, 'log_file_name';
-    like $conf->menubar_file, qr/${rx}menubar\.yml$/,
-        'menubar config file (yml) path';
+    like $conf->menubar_file, 'share/etc/menubar.yml',
+        'menubar config file (yml) path from dist share';
 
-    $rx = qr{apps/test-tk-pg/etc/};
+    my $rx = qr{apps/test-tk-pg/etc/};
     like $conf->connection_file, qr/${rx}connection\.yml$/,
         'connection config file';
     like $conf->app_menubar_file, qr/${rx}menu\.yml$/,
