@@ -28,6 +28,7 @@ use App::Fenix::Refresh;
 use App::Fenix::View;
 use App::Fenix::Exceptions;
 use App::Fenix::Tk::Dialog::Message;
+use App::Fenix::Tk::Dialog::Login;
 
 with 'MooX::Log::Any';
 
@@ -151,8 +152,9 @@ sub _init {
                     }
                 }
                 say "[EE] '$error'" if $self->debug;
-                $self->message_dialog( "No connection!",
-                                       $error, 'error', 'quit', '280x130' );
+                # $self->message_dialog( "No connection!", $error,
+                #                        'error', 'quit', '280x230' );
+                $self->connect_dialog;
             }
             finally {
                 my $state = $error ? 'not_connected' : 'connected';
@@ -167,11 +169,55 @@ sub _init {
     return;
 }
 
+sub is_connected {
+    my $self = shift;
+    return $self->state->get_state('conn_state') eq 'connected';
+}
+
+sub connect_dialog {
+    my $self = shift;
+    my $error;
+  TRY:
+    while ( not $self->is_connected ) {
+
+        # Show login dialog if still not connected
+        my $return_string = $self->login_dialog($error);
+        if ($return_string eq 'cancel') {
+            $self->view->set_status( 'Login cancelled', 'ms' );
+            last TRY;
+        }
+
+        # Try to connect only if user and pass are provided
+        if ($self->config->user and $self->config->pass ) {
+            try {
+                $self->model->db_connect();
+            }
+            catch {
+                if ( my $e = Exception::Base->catch($_) ) {
+                    if ( $e->isa('Exception::Db::Connect') ) {
+                        $error = $e->usermsg;
+                    }
+                }
+            };
+        }
+        else {
+            $error = 'error#User and password are required';
+        }
+    }
+    return;
+}
+
 sub message_dialog {
     my ( $self, $message, $details, $icon, $type, $geom ) = @_;
     my $dlg = App::Fenix::Tk::Dialog::Message->new( view => $self->view );
     $dlg->message( $message, $details, $icon, $type, $geom );
     return;
+}
+
+sub login_dialog {
+    my ($self, $error) = @_;
+    my $pd = App::Fenix::Tk::Dialog::Login->new( view => $self->view );
+    return $pd->login( $self->view, $error );
 }
 
 sub _setup_events {
