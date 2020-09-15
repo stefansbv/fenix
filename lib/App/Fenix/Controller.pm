@@ -120,13 +120,21 @@ has 'frame' => (
     },
 );
 
-has 'state' => (
+has '_state' => (
     is      => 'rw',
     isa     => FenixState,
     lazy    => 1,
     default => sub {
         return App::Fenix::State->new;
-    }
+    },
+    handles => [qw(
+        add_observer
+        conn_state
+        db_name
+        set_state
+        get_state
+        is_state
+    )],
 );
 
 sub log_message {
@@ -154,12 +162,12 @@ sub _init {
                 say "[EE] '$error'" if $self->debug;
                 # $self->message_dialog( "No connection!", $error,
                 #                        'error', 'quit', '280x230' );
-                $self->connect_dialog;
+                $error = $self->connect_dialog($error);
             }
             finally {
                 my $state = $error ? 'not_connected' : 'connected';
                 $self->log_message("# connection status = $state");
-                $self->state->set_state( 'conn_state', $state );
+                $self->set_state( 'conn_state', $state );
                 if ($error) {
                     $self->on_quit;
                 }
@@ -171,14 +179,13 @@ sub _init {
 
 sub is_connected {
     my $self = shift;
-    return $self->state->get_state('conn_state') eq 'connected';
+    return $self->get_state('conn_state') eq 'connected';
 }
 
 sub connect_dialog {
-    my $self = shift;
-    my $error;
+    my ($self, $error) = @_;
   TRY:
-    while ( not $self->is_connected ) {
+    # while ( not $self->is_connected ) {
 
         # Show login dialog if still not connected
         my $return_string = $self->login_dialog($error);
@@ -188,9 +195,20 @@ sub connect_dialog {
         }
 
         # Try to connect only if user and pass are provided
-        if ($self->config->user and $self->config->pass ) {
+        if ( $self->config->user and $self->config->password ) {
             try {
-                $self->model->db_connect();
+                $error = '';
+                say "try again...";
+                say 'with:';
+                say " user: ", $self->config->user;
+                say " pass: ", $self->config->password;
+                $self->model->db->target->username( $self->config->user );
+                $self->model->db->target->password( $self->config->password );
+                say 'target:';
+                say $self->model->db->target->username;
+                say $self->model->db->target->password;
+                $self->model->db->reset_connector;
+                $self->model->db->dbh;
             }
             catch {
                 if ( my $e = Exception::Base->catch($_) ) {
@@ -203,8 +221,8 @@ sub connect_dialog {
         else {
             $error = 'error#User and password are required';
         }
-    }
-    return;
+    #}
+    return $error;
 }
 
 sub message_dialog {
@@ -215,9 +233,9 @@ sub message_dialog {
 }
 
 sub login_dialog {
-    my ($self, $error) = @_;
-    my $pd = App::Fenix::Tk::Dialog::Login->new( view => $self->view );
-    return $pd->login( $self->view, $error );
+    my ( $self, $error ) = @_;
+    my $dlg = App::Fenix::Tk::Dialog::Login->new( view => $self->view );
+    return $dlg->login($error);
 }
 
 sub _setup_events {
@@ -290,15 +308,15 @@ sub delay_start {
 sub BUILD {
     my ( $self, $args ) = @_;
     $self->_setup_events;
-    $self->state->add_observer(
+    $self->add_observer(
         App::Fenix::Refresh->new( view => $self->view ) );
     $self->log_message('[II] Welcome to Fenix!');
     my $cc = $self->config->connection;
     say "# mnemonic  = ", $self->mnemonic;
     say "# driver    = ", $cc->driver;
     say "# dbname    = ", $cc->dbname;
-    $self->state->set_state('gui_state', 'idle');
-    $self->state->set_state('db_name', $cc->dbname);
+    $self->set_state('gui_state', 'idle');
+    $self->set_state('db_name', $cc->dbname);
     $self->_init;
     return;
 }
