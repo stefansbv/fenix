@@ -117,9 +117,8 @@ sub login {
     if ( $answer eq $option_y ) {
         my $user = $euser->get;
         my $pass = $epass->get;
-
         $self->config->user($user) if $user;
-        $self->config->pass($pass) if $pass;
+        $self->config->password($pass) if $pass;
     }
     else {
         $return_choice = 'cancel';
