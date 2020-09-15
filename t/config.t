@@ -16,9 +16,9 @@ if ( $^O eq 'MSWin32' ) {
 subtest 'Test Config test-tk, sharedir = share' => sub {
     my $args = {
         mnemonic => 'test-tk',
-        user   => 'user',
-        pass   => 'pass',
-        cfpath => 'share/',
+        user     => 'user',
+        password => 'pass',
+        cfpath   => 'share/',
     };
 
     ok my $conf = App::Fenix::Config->new($args), 'constructor';
@@ -27,7 +27,7 @@ subtest 'Test Config test-tk, sharedir = share' => sub {
 
     is $conf->mnemonic, 'test-tk', 'mnemonic (mnemonic)';
     is $conf->user,   'user',    'user';
-    is $conf->pass,   'pass',    'pass';
+    is $conf->password,   'pass',    'pass';
     is $conf->cfpath, 'share/',  'cfpath is defined';
 
     like $conf->main_file, 'share/etc/main.yml', 'main config file (yml) path from dist share/';
@@ -60,8 +60,8 @@ subtest 'Test Config test-tk, sharedir = share' => sub {
 subtest 'Test Config test-tk, sharedir = dist-dir' => sub {
     my $args = {
         mnemonic => 'test-tk',
-        user   => 'user',
-        pass   => 'pass',
+        user     => 'user',
+        password => 'pass',
     };
 
     ok my $conf = App::Fenix::Config->new($args), 'constructor';
@@ -70,7 +70,7 @@ subtest 'Test Config test-tk, sharedir = dist-dir' => sub {
 
     is $conf->mnemonic, 'test-tk', 'mnemonic (mnemonic)';
     is $conf->user,   'user',    'user';
-    is $conf->pass,   'pass',    'pass';
+    is $conf->password,   'pass',    'pass';
     is $conf->cfpath, undef,  'cfpath is not defined';
 
     my $rx = qr{(Fenix|.fenix)/etc/};
@@ -104,9 +104,9 @@ subtest 'Test Config test-tk, sharedir = dist-dir' => sub {
 subtest 'Test Config test-tk-pg' => sub {
     my $args = {
         mnemonic => 'test-tk-pg',
-        user   => 'user',
-        pass   => 'pass',
-        cfpath => 'share/',
+        user     => 'user',
+        password => 'pass',
+        cfpath   => 'share/',
     };
 
     ok my $conf = App::Fenix::Config->new($args), 'constructor';
@@ -115,7 +115,7 @@ subtest 'Test Config test-tk-pg' => sub {
 
     is $conf->mnemonic, 'test-tk-pg', 'mnemonic (mnemonic)';
     is $conf->user,   'user',    'user';
-    is $conf->pass,   'pass',    'pass';
+    is $conf->password,   'pass',    'pass';
     is $conf->cfpath, 'share/',  'cfpath';
 
     like $conf->main_file, 'share/etc/main.yml', 'main config file (yml) path from dist share/';

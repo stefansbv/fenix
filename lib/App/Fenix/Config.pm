@@ -38,7 +38,7 @@ has 'user' => (
     isa      => Maybe[Str],
 );
 
-has 'pass' => (
+has 'password' => (
     is       => 'rw',
     isa      => Maybe[Str],
 );
