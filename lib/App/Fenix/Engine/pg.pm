@@ -29,7 +29,9 @@ has 'connector' => (
         my $uri  = $self->uri;
         my $dsn  = $uri->dbi_dsn;
         $self->use_driver;
-        $self->logger->debug("Connecting: $dsn");
+        $self->logger->debug("connector: connecting to '$dsn'");
+        $self->logger->debug(" user: " . (defined( $uri->user)     ? $uri->user     : 'undefined') );
+        $self->logger->debug(" pass: " . (defined( $uri->password) ? $uri->password : 'undefined') );
         return DBIx::Connector->new($dsn, $uri->user, $uri->password, {
             $uri->query_params,
             PrintError       => 0,

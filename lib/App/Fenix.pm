@@ -47,6 +47,7 @@ sub _init_logger {
     if ( $log_fqn->is_file ) {
         Log::Log4perl->init( $log_fqn->stringify );
         say "Log file config is '$log_fqn'.\n" if $self->debug;
+        $self->log->info("***");
         $self->log->info("Logging system initialized");
         $self->has_logger(1);
     }
