@@ -7,6 +7,7 @@ use Test2::Tools::Subtest qw/subtest_streamed/;
 use App::Fenix::Config;
 use App::Fenix::Model::DB;
 
+use Data::Dump;
 my $args = {
     mnemonic => 'test-tk',
     user     => 'user',
@@ -51,6 +52,14 @@ subtest_streamed 'Model DB with URI' => sub {
         'Should get an exception for missing params'
     );
     is $db->cmp_function('%model'), '-LIKE', 'compare function';
+
+    my $opts = {
+        table   => 'products',
+        columns => undef,
+        where   => undef,
+    };
+    ok my $rec = $db->query_record($opts), 'query';
+    dd $rec;
 
 };
 

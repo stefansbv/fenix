@@ -4,10 +4,8 @@ package App::Fenix::Model::DB;
 
 use feature 'say';
 use Moo;
-# use Data::Compare;
-# use List::Compare;
-# use Regexp::Common;
 use Try::Tiny;
+use SQL::Abstract;
 use App::Fenix::Types qw(
     Bool
     DBIdb
@@ -16,16 +14,12 @@ use App::Fenix::Types qw(
     FenixEngine
     FenixTarget
 );
-# use App::Fenix::Exceptions;
+use App::Fenix::Exceptions;
 use App::Fenix::Config;
-#use App::Fenix::Codings;
-#use App::Fenix::Observable;
 use App::Fenix::Target;
-#use App::Fenix::Model::Update;
-#use App::Fenix::Model::Update::Compare;
 use namespace::autoclean;
 
-#use Data::Dump qw/dump/;
+use Data::Dump qw/dump/;
 
 with 'App::Fenix::Role::DBUtils';
 
@@ -180,6 +174,92 @@ sub cmp_function {
     }
 
     return $cmp;
+}
+
+sub query_record {
+    my ( $self, $opts ) = @_;
+
+    my $table = $opts->{table};
+    my $cols  = $opts->{columns};
+    my $where = $opts->{where};
+
+    my $sql = SQL::Abstract->new; # ( special_ops =>
+                                  # Tpda3::Utils->special_ops );
+
+    my ( $stmt, @bind ) = $sql->select( $table, $cols, $where );
+    $self->debug_print_sql('query_record', $stmt, \@bind) if $self->debug;
+
+    my $hash_ref;
+    try {
+        $hash_ref = $self->dbh->selectrow_hashref( $stmt, undef, @bind );
+    }
+    catch {
+        $self->db_exception($_, 'Query failed');
+    };
+
+    return $hash_ref;
+}
+
+sub debug_print_sql {
+    my ( $self, $meth, $stmt, $bind ) = @_;
+    warn "debug_print_sql: wrong params!"
+        unless $meth and $stmt and ref $bind;
+    my $bind_params_no = scalar @{$bind};
+    my $params = 'none';
+    if ( $bind_params_no > 0 ) {
+        my @para = map { defined $_ ? $_ : 'undef' } @{$bind};
+        $params  = scalar @para > 0 ? join( ', ', @para ) : 'none';
+    }
+    say "---";
+    say "$meth:";
+    say "  SQL=$stmt";
+    say "  Params=($params)";
+    say "---";
+    return;
+}
+
+sub db_exception {
+    my ( $self, $exc, $context ) = @_;
+
+    say "Exception: '$exc'";
+    say "Context  : '$context'";
+
+    if ( my $e = Exception::Base->catch($exc) ) {
+        say "Catched!";
+
+        if ( $e->isa('Exception::Db::Connect') ) {
+            my $logmsg  = $e->logmsg;
+            my $usermsg = $e->usermsg;
+            say "ExceptionConnect: $usermsg :: $logmsg";
+            $e->throw;    # rethrow the exception
+        }
+        elsif ( $e->isa('Exception::Db::SQL') ) {
+            my $logmsg  = $e->logmsg;
+            my $usermsg = $e->usermsg;
+            say "ExceptionSQL: $usermsg :: $logmsg";
+            $e->throw;    # rethrow the exception
+        }
+        else {
+
+            # Throw other exception
+            say "ExceptioOther new";
+            my $message = $self->user_message($exc);
+            say "Message:   '$message'";
+            Exception::Db::SQL->throw(
+                logmsg  => $message,
+                usermsg => $context,
+            );
+        }
+    }
+    else {
+        say "New thrown (model)";
+        Exception::Db::SQL->throw(
+            logmsg  => "error#$exc",
+            usermsg => $context,
+        );
+    }
+
+    return;
 }
 
 # params:
