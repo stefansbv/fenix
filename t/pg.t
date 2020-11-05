@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use 5.010;
 use Test::More;
-use Path::Class;
 use Try::Tiny;
 use Test::Exception;
 use File::Spec::Functions;
@@ -38,7 +37,7 @@ my $target = App::Fenix::Target->new(
 isa_ok my $pg = $CLASS->new( target => $target ),
     $CLASS;
 
-is $pg->uri->dbname, file('foo.fdb'), 'dbname should be filled in';
+is $pg->uri->dbname, 'foo.fdb', 'dbname should be filled in';
 
 ##############################################################################
 # Can we do live tests?
