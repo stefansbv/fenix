@@ -413,7 +413,7 @@ sub set_geometry_main {
 sub temporized_clear {
     my $self = shift;
     return if $self->_tset == 1;
-    $self->after(
+    $self->frame->after(
         50000,    # miliseconds
         sub {
             $self->set_status( '', 'ms' );
