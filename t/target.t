@@ -28,7 +28,7 @@ can_ok $target, qw(
 # Look at default values.
 is $target->uri, URI::db->new('db:pg:'), 'URI should be "db:pg:"';
 is $target->engine_key, 'pg', 'Engine key should be "pg"';
-#isa_ok $target->engine, 'App::Fenix::Engine::pg', 'Engine';
+isa_ok $target->engine, 'App::Fenix::Engine::pg', 'Engine';
 
 my $uri = $target->uri;
 is $target->dsn, $uri->dbi_dsn, 'DSN should be from URI';
