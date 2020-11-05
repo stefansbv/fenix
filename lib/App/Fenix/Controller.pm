@@ -146,7 +146,7 @@ sub log_message {
 
 sub _init {
     my $self = shift;
-    my $error;
+    my $error = '';
     $self->delay_start(
         sub {
             say 'connecting...';
@@ -157,12 +157,13 @@ sub _init {
                 if ( my $e = Exception::Base->catch($_) ) {
                     if ( $e->isa('Exception::Db::Connect') ) {
                         $error = $e->usermsg;
+                        say "[EE] '$error'" if $self->debug;
+                        $error = $self->connect_dialog($error);
+                    }
+                    else {
+                        die "[EE] '$_'";
                     }
                 }
-                say "[EE] '$error'" if $self->debug;
-                # $self->message_dialog( "No connection!", $error,
-                #                        'error', 'quit', '280x230' );
-                $error = $self->connect_dialog($error);
             }
             finally {
                 my $state = $error ? 'not_connected' : 'connected';
@@ -183,45 +184,53 @@ sub is_connected {
 }
 
 sub connect_dialog {
-    my ($self, $error) = @_;
+    my ( $self, $error ) = @_;
   TRY:
-    # while ( not $self->is_connected ) {
+    while ( not $self->is_connected ) {
 
         # Show login dialog if still not connected
         my $return_string = $self->login_dialog($error);
-        if ($return_string eq 'cancel') {
+        if ( $return_string eq 'cancel' ) {
             $self->view->set_status( 'Login cancelled', 'ms' );
             last TRY;
         }
 
         # Try to connect only if user and pass are provided
         if ( $self->config->user and $self->config->password ) {
+            $error = '';
+            # say "try again...";
+            # say 'with:';
+            # say " user: ", $self->config->user;
+            # say " pass: ", $self->config->password;
+            $self->model->db->target->username( $self->config->user );
+            $self->model->db->target->password( $self->config->password );
+            # say 'target:';
+            # say " user: ", $self->model->db->target->username;
+            # say " pass: ", $self->model->db->target->password;
+            $self->model->db->target->engine->reset_connector;
             try {
-                $error = '';
-                say "try again...";
-                say 'with:';
-                say " user: ", $self->config->user;
-                say " pass: ", $self->config->password;
-                $self->model->db->target->username( $self->config->user );
-                $self->model->db->target->password( $self->config->password );
-                say 'target:';
-                say $self->model->db->target->username;
-                say $self->model->db->target->password;
-                $self->model->db->reset_connector;
                 $self->model->db->dbh;
             }
             catch {
                 if ( my $e = Exception::Base->catch($_) ) {
                     if ( $e->isa('Exception::Db::Connect') ) {
                         $error = $e->usermsg;
+                        say "[EE] '$error'" if $self->debug;
                     }
                 }
+                else {
+                    die "[EE] '$_'";
+                }
+            }
+            finally {
+                my $state = $error ? 'not_connected' : 'connected';
+                $self->set_state( 'conn_state', $state );
             };
         }
         else {
             $error = 'error#User and password are required';
         }
-    #}
+    }
     return $error;
 }
 
