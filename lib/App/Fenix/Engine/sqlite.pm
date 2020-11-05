@@ -15,9 +15,6 @@ use App::Fenix::Exceptions;
 use namespace::autoclean;
 
 extends 'App::Fenix::Engine';
-sub dbh;                                     # required by DBIEngine;
-with qw(App::Fenix::Role::DBIEngine
-        App::Fenix::Role::DBIMessages);
 
 has 'connector' => (
     is      => 'rw',
@@ -61,6 +58,10 @@ has 'connector' => (
         return $connector;
     },
 );
+
+# Need to wait until dbh is defined. (from Sqitch)
+with qw(App::Fenix::Role::DBIEngine
+        App::Fenix::Role::DBIMessages);
 
 has 'dbh' => (
     is      => 'rw',

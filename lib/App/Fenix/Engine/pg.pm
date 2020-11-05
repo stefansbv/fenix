@@ -15,9 +15,6 @@ use App::Fenix::Exceptions;
 use namespace::autoclean;
 
 extends 'App::Fenix::Engine';
-sub dbh;                                     # required by DBIEngine;
-with qw(App::Fenix::Role::DBIEngine
-        App::Fenix::Role::DBIMessages);
 
 has 'connector' => (
     is      => 'rw',
@@ -27,11 +24,13 @@ has 'connector' => (
     default => sub {
         my $self = shift;
         my $uri  = $self->uri;
-        my $dsn  = $uri->dbi_dsn;
+        my $dsn = $uri->dbi_dsn;
         $self->use_driver;
         $self->logger->debug("connector: connecting to '$dsn'");
-        $self->logger->debug(" user: " . (defined( $uri->user)     ? $uri->user     : 'undefined') );
-        $self->logger->debug(" pass: " . (defined( $uri->password) ? $uri->password : 'undefined') );
+        $self->logger->debug(
+            " user: " . ( defined( $uri->user ) ? $uri->user : 'undef' ) );
+        $self->logger->debug( " pass: "
+                . ( defined( $uri->password ) ? $uri->password : 'undef' ) );
         return DBIx::Connector->new($dsn, $uri->user, $uri->password, {
             $uri->query_params,
             PrintError       => 0,
@@ -53,6 +52,10 @@ has 'dbh' => (
         $self->connector->dbh;
     },
 );
+
+# Need to wait until dbh is defined. (from Sqitch)
+with qw(App::Fenix::Role::DBIEngine
+        App::Fenix::Role::DBIMessages);
 
 sub parse_error {
     my ($self, $err) = @_;
