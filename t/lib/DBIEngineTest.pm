@@ -13,8 +13,6 @@ use Test::Most;
 use Test::MockModule;
 use Locale::TextDomain qw(App-Fenix);
 
-#with 'MooX::Log::Any';
-
 sub run {
     my ( $self, %p ) = @_;
 
