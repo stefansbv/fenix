@@ -5,6 +5,7 @@ package App::Fenix::Engine::sqlite;
 use Moo;
 use Locale::TextDomain 1.20 qw(Fenix);
 use Try::Tiny;
+use File::HomeDir;
 use Regexp::Common;
 use Path::Tiny;
 use App::Fenix::Types qw(
@@ -24,8 +25,8 @@ has 'connector' => (
     default => sub {
         my $self = shift;
         $self->alter_dsn;
-        my $uri  = $self->uri;
-        my $dsn  = $uri->dbi_dsn;
+        my $uri = $self->uri;
+        my $dsn = $uri->dbi_dsn;
         $self->use_driver;
         $self->logger->debug("Connecting: $dsn");
         my $connector = DBIx::Connector->new($dsn, undef, undef, {
@@ -59,10 +60,6 @@ has 'connector' => (
     },
 );
 
-# Need to wait until dbh is defined. (from Sqitch)
-with qw(App::Fenix::Role::DBIEngine
-        App::Fenix::Role::DBIMessages);
-
 has 'dbh' => (
     is      => 'rw',
     isa     => DBIdb,
@@ -72,6 +69,10 @@ has 'dbh' => (
         $self->connector->dbh;
     },
 );
+
+# Need to wait until dbh is defined. (from Sqitch)
+with qw(App::Fenix::Role::DBIEngine
+        App::Fenix::Role::DBIMessages);
 
 sub parse_error {
     my ($self, $err) = @_;

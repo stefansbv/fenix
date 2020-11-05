@@ -23,7 +23,7 @@ has 'connector' => (
     clearer => 'reset_connector',
     default => sub {
         my $self = shift;
-        my $uri  = $self->uri;
+        my $uri = $self->uri;
         my $dsn = $uri->dbi_dsn;
         $self->use_driver;
         $self->logger->debug("connector: connecting to '$dsn'");
