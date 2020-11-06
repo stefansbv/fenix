@@ -6,7 +6,6 @@ use Moo;
 use Try::Tiny;
 use URI::db;
 use Locale::TextDomain qw(App-Fenix);
-use App::Fenix::X qw(hurl);
 use App::Fenix::Types qw(
     Path
     Maybe
@@ -124,9 +123,10 @@ sub _build_uri_from_yaml {
         $data = $self->load_yaml( $self->connection_file->stringify );
     }
     catch {
-        hurl info_conn =>
-            __x( "[EE] Failed to read the connection configuration file:\n    '{file}'",
-                 file => $self->connection_file );
+        my $name
+            = die "The connection configuration '"
+            . $self->connection_file
+            . "' was not found!";
     };
     my $conn = $data->{connection};
     my $uri  = URI::db->new;

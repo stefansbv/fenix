@@ -20,6 +20,18 @@ subtest 'Connection config from yaml file' => sub {
     like  $cc->uri, qr/classicmodels$/, 'the uri';
 };
 
+subtest 'Connection config from nonexistent yaml file' => sub {
+    ok my $cc = App::Fenix::Config::Connection->new(
+        connection_file => path('nonexistent.yaml'),
+    ), 'new instance';
+    isa_ok $cc, ['App::Fenix::Config::Connection'],'config connection instance';
+	like (
+		dies { $cc->driver },
+		qr/The connection configuration 'nonexistent.yaml' was not found/,
+		"throws: connection configuration not found"
+	);
+};
+
 subtest 'Connection config from URI string' => sub {
     ok my $cc = App::Fenix::Config::Connection->new(
         uri => $conn_uri,
