@@ -74,16 +74,44 @@ has 'dbh' => (
 
 #---
 
+=head2 build_sql_where
+
+Return a hash reference suitable for L<SQL::Abstract>, containing
+where clause attributes.
+
+Table columns (fields) used in the screen have a configuration named
+I<findtype> that is used to build the appropriate where clause.
+
+Valid configuration options are:
+
+=over
+
+=item contains - the field value contains the search string
+
+=item full   - the field value equals the search string
+
+=item date     - special case for date type fields
+
+=item none     - no search for this field
+
+=back
+
+Second parameter 'option' is passed to quote4like.
+
+If the search string equals with I<%> or I<!>, then generated where
+clause will be I<field1> IS NOT NULL and respectively I<field2> IS
+NULL.
+
+=cut
+
 sub build_sql_where {
     my ( $self, $opts ) = @_;
 
     my $where = {};
-
     foreach my $field ( keys %{ $opts->{where} } ) {
         my $attrib    = $opts->{where}{$field};
         my $searchstr = $attrib->[0];
         my $find_type = $attrib->[1];
-
         unless ($find_type) {
             die "Unknown 'find_type': $find_type for '$field'";
         }
@@ -91,12 +119,13 @@ sub build_sql_where {
         if ( $find_type eq 'contains' ) {
             my $cmp = $self->cmp_function($searchstr);
             if ($cmp eq '-CONTAINING') {
+
                 # Firebird specific
                 $where->{$field} = { $cmp => $searchstr };
             }
             else {
                 $where->{$field} = {
-                    $cmp => Tpda3::Utils->quote4like(
+                    $cmp => $self->quote4like(
                         $searchstr, $opts->{options}
                     )
                 };
@@ -106,9 +135,10 @@ sub build_sql_where {
             $where->{$field} = $searchstr;
         }
         elsif ( $find_type eq 'date' ) {
-            my $ret = Tpda3::Utils->process_date_string($searchstr);
+            my $ret = $self->process_date_string($searchstr);
             if ( $ret eq 'dataerr' ) {
-                $self->_print('warn#Wrong search parameter');
+                # $self->_print('warn#Wrong search parameter');
+                say 'warn#Wrong search parameter';
                 return;
             }
             else {
@@ -131,7 +161,6 @@ sub build_sql_where {
             die "Unknown 'find_type': $find_type for '$field'";
         }
     }
-
     return $where;
 }
 
@@ -183,8 +212,7 @@ sub query_record {
     my $cols  = $opts->{columns};
     my $where = $opts->{where};
 
-    my $sql = SQL::Abstract->new; # ( special_ops =>
-                                  # Tpda3::Utils->special_ops );
+    my $sql = SQL::Abstract->new( special_ops => $self->special_ops );
 
     my ( $stmt, @bind ) = $sql->select( $table, $cols, $where );
     $self->debug_print_sql('query_record', $stmt, \@bind) if $self->debug;

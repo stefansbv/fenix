@@ -7,7 +7,7 @@ use Test2::Tools::Subtest qw/subtest_streamed/;
 use App::Fenix::Config;
 use App::Fenix::Model::DB;
 
-use Data::Dump;
+use Data::Dump qw/dump/;
 my $args = {
     mnemonic => 'test-tk',
     user     => 'user',
@@ -74,6 +74,29 @@ subtest_streamed 'Model DB with URI' => sub {
             end;    # no more elements.
         },
         'the record should match'
+    );
+
+    # build_sql_where
+    $opts = {
+      where   => { fact_inreg => ["2020.10", "date"], id_firma => [1, "full"] },
+    };
+    # where:
+    # {
+    #   fact_inreg => { -extractmonth => [10], -extractyear => [2020] },
+    #   id_firma   => 1,
+    # }
+    ok my $where = $db->build_sql_where($opts), 'build_sql_where';
+    is( $where,
+        hash {
+            field fact_inreg => hash {
+                field '-extractmonth' => array { item   10; end; };
+                field '-extractyear'  => array { item 2020; end; };
+                end;
+            };
+            field id_firma   => match qr/\d+/;
+            end;    # no more elements.
+        },
+        'the where record should match'
     );
 };
 
