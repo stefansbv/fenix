@@ -75,10 +75,10 @@ subtest_streamed 'Model DB with URI' => sub {
         },
         'the record should match'
     );
-
+    
     # build_sql_where
     $opts = {
-      where   => { fact_inreg => ["2020.10", "date"], id_firma => [1, "full"] },
+      where => { fact_inreg => ["2020.10", "date"], id_firma => [1, "full"] },
     };
     # where:
     # {
@@ -98,6 +98,24 @@ subtest_streamed 'Model DB with URI' => sub {
         },
         'the where record should match'
     );
+
+    $opts = {
+      where => { fact_inreg => ["2020.10"], id_firma => [1, "full"] },
+    };
+	like (
+		dies { $db->build_sql_where($opts) },
+		qr/Undefined 'find_type' for 'fact_inreg'/,
+		"throws: Undefined 'find_type'"
+	);
+    $opts = {
+      where => { fact_inreg => ["2020.10", "partialdate"], id_firma => [1, "full"] },
+    };
+	like (
+		dies { $db->build_sql_where($opts) },
+		qr/Unknown 'find_type': partialdate for 'fact_inreg'/,
+		"throws: Unknown 'find_type'"
+	);
+
 };
 
 

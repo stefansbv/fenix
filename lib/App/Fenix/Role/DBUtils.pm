@@ -177,7 +177,7 @@ sub identify_date_string {
     my $so = qr![/]|[.]!;
     my $sa = qr![/]|[.]|[-]!;
 
-    #            When date format is...                     Type is ...
+    #             when date format is...               type is ...
     return
           $str eq q{}                                ? 'nothing'
         : $str =~ m/^(\d{4})$si(\d{2})$si(\d{2})$/   ? "dateiso:$str"
@@ -198,9 +198,7 @@ sub format_query {
         $where = $self->$meth( $year, $month );
     }
     else {
-
-        # warn "Unrecognized directive '$directive'";
-        $where = $directive;
+        die "format_query: unknown transformation directive '$directive'";
     }
     return $where;
 }

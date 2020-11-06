@@ -1,8 +1,9 @@
 #
-#
+# Test the DBUtils role methods
 #
 use utf8;
 use Path::Tiny;
+use SQL::Abstract;
 use Test2::V0;
 
 use lib 't/lib';
@@ -35,12 +36,19 @@ subtest 'test dateentry_parse_date' => sub {
     is $m2, 12,   'month';
     is $d2, 31,   'day';
 
-    # usa
-    ok my ( $y3, $m3, $d3 ) = $u->dateentry_parse_date( '12/31/2019', 'usa' ),
-        'parse a date in "usa" format';
+    # default iso
+    ok my ( $y3, $m3, $d3 ) = $u->dateentry_parse_date( '2019-12-31' ),
+        'parse a date in default "iso" format';
     is $y3, 2019, 'year';
     is $m3, 12,   'month';
     is $d3, 31,   'day';
+
+    # usa
+    ok my ( $y4, $m4, $d4 ) = $u->dateentry_parse_date( '12/31/2019', 'usa' ),
+        'parse a date in "usa" format';
+    is $y4, 2019, 'year';
+    is $m4, 12,   'month';
+    is $d4, 31,   'day';
 
     like(
         dies { $u->dateentry_parse_date( '12/31/2019', 'unknown' ) },
@@ -103,7 +111,41 @@ subtest 'test quote4like' => sub {
     is $u->quote4like('testtext', 'E'), '%testtext', 'quote4like: use default';
 };
 
-# special_ops
+subtest 'test special_ops' => sub {
+
+    # extractmonth & extractyear
+    my $where = {
+        fact_inreg => { -extractmonth => [10], -extractyear => [2020] },
+        id_firma   => 1,
+    };
+    my $sql = SQL::Abstract->new( special_ops => $u->special_ops );
+    my ( $stmt, @bind ) = $sql->select( 'table', undef, $where );
+    like $stmt, qr/SELECT \* FROM table/, 'select * part';
+    like $stmt, qr/EXTRACT \(MONTH FROM fact_inreg\) = \?/, 'extract month';
+    like $stmt, qr/AND EXTRACT \(YEAR FROM fact_inreg\) = \?/, 'extract year';
+    like $stmt, qr/AND id_firma = \?/, 'field id_firma part';
+    is \@bind, [ 10, 2020, 1 ], 'bind 3 params';
+
+    # similar_to
+    $where = {
+        description => { -similar_to => '%(b|d)%' },
+    };
+    $sql = SQL::Abstract->new( special_ops => $u->special_ops );
+    ( $stmt, @bind ) = $sql->select( 'table', undef, $where );
+    like $stmt, qr/SELECT \* FROM table/, 'select * part';
+    like $stmt, qr/WHERE \( description SIMILAR TO\s+\?\s+\)/, 'similar to';
+    is \@bind, ['%(b|d)%'], 'bind 1 params';
+
+    # match
+    $where = {
+        description => { -match => '%(b|d)%' },
+    };
+    $sql = SQL::Abstract->new( special_ops => $u->special_ops );
+    ( $stmt, @bind ) = $sql->select( 'table', undef, $where );
+    like $stmt, qr/SELECT \* FROM table/, 'select * part';
+    like $stmt, qr/WHERE \( description ~\s+\?\s+\)/, 'match';
+    is \@bind, ['%(b|d)%'], 'bind 1 params';
+};
 
 subtest 'test process_date_string' => sub {
     ok my $rez1 = $u->process_date_string('2020-08-29'), 'process iso date string';
@@ -112,17 +154,20 @@ subtest 'test process_date_string' => sub {
     is $rez2, { '-extractmonth' => ['08'], '-extractyear' => [2020] }, 'where href for datemy';
 };
 
-subtest 'test quote4like' => sub {
+subtest 'test identify_date_string' => sub {
     my $si = qr![-]!;
     my $so = qr![/]|[.]!;
-    like $u->identify_date_string('2020-08-29'), qr/dateiso:\d{4}$si\d{2}$si\d{2}/, 'iso date';
+    is $u->identify_date_string('2020-08-29'), 'dateiso:2020-08-29', 'iso date';
     like $u->identify_date_string('08/29/2020'), qr/dateamb:\d{2}$so\d{2}$so\d{4}/, 'ambigous date';
     like $u->identify_date_string('29.08.2020'), qr/dateamb:\d{2}$so\d{2}$so\d{4}/, 'ambigous date';
-    like $u->identify_date_string('08.2020'), qr/datemy:\d{4}:\d{2}/, 'month and year';
-    like $u->identify_date_string('2020.08'), qr/dateym:\d{4}:\d{2}/, 'year and month';
+    is $u->identify_date_string('08.2020'), 'datemy:2020:08', 'month.year';
+    is $u->identify_date_string('2020.08'), 'dateym:2020:08', 'year.month';
+    is $u->identify_date_string('1993/02'), 'dateym:1993:02', 'year/month';
+    is $u->identify_date_string('02/1993'), 'datemy:1993:02', 'month/year';
+    is $u->identify_date_string('2020-04'), 'dateym:2020:04', 'year-month';
+    is $u->identify_date_string('04-2020'), 'datemy:2020:04', 'month-year';
     like $u->identify_date_string('2020'), qr/datey:\d{4}/, 'year';
-    like $u->identify_date_string('2020'), qr/datey:\d{4}/, 'year';
-    like $u->identify_date_string(''), 'nothing', 'empty string';
+    is $u->identify_date_string(''), 'nothing', 'empty string';
     like $u->identify_date_string('29.08.20'), qr/error:/, 'errorneous date';
 };
 
@@ -133,7 +178,11 @@ subtest 'test format_query' => sub {
     is $rez1, { '-extractmonth' => ['08'], '-extractyear' => [2020] }, 'where href for datemy';
     ok my $rez2 = $u->format_query('dateym:2020:08'), 'year and month';
     is $rez2, { '-extractmonth' => ['08'], '-extractyear' => [2020] }, 'where href for datemy';
-
+    like(
+        dies { $u->format_query('unknown') },
+        qr/\Qformat_query: unknown transformation directive 'unknown'/,
+        'Should get an exception for unknown transformation directive'
+    );
     like(
         dies { $u->format_query('error') },
         qr/\QString not identified or empty/,

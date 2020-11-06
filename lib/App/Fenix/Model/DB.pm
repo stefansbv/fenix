@@ -113,7 +113,7 @@ sub build_sql_where {
         my $searchstr = $attrib->[0];
         my $find_type = $attrib->[1];
         unless ($find_type) {
-            die "Unknown 'find_type': $find_type for '$field'";
+            die "Undefined 'find_type' for '$field'";
         }
 
         if ( $find_type eq 'contains' ) {
