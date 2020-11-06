@@ -175,7 +175,7 @@ sub cmp_function {
         $ignore_case = 0;
     }
 
-    my $driver = $self->config->connection->driver;
+    my $driver = $self->config->connection->driver; # make this a parameter?
 
     my $cmp;
   SWITCH: for ($driver) {
