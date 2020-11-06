@@ -2,8 +2,6 @@
 # Test the Model::DB
 #
 use Test2::V0;
-use Test2::Tools::Subtest qw/subtest_streamed/;
-
 use App::Fenix::Config;
 use App::Fenix::Model::DB;
 
@@ -20,7 +18,7 @@ isa_ok $config, ['App::Fenix::Config'], 'Fenix::Config';
 ok my $cc = $config->connection, 'config  connection';
 isa_ok $cc, ['App::Fenix::Config::Connection'],'config connection instance';
 
-subtest_streamed 'Model DB without parameters' => sub {
+subtest 'Model DB without parameters' => sub {
     like(
         dies { my $db = App::Fenix::Model::DB->new },
         qr/\QMissing required arguments:/,
@@ -28,7 +26,7 @@ subtest_streamed 'Model DB without parameters' => sub {
     );
 };
 
-subtest_streamed 'Model DB with URI' => sub {
+subtest 'Model DB with URI' => sub {
     ok my $db = App::Fenix::Model::DB->new(
         config => $config,
     ), 'new db instance';
