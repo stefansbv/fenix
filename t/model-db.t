@@ -51,16 +51,30 @@ subtest_streamed 'Model DB with URI' => sub {
         qr/\Qcmp_function: missing required arguments:/,
         'Should get an exception for missing params'
     );
-    is $db->cmp_function('%model'), '-LIKE', 'compare function';
+    is $db->cmp_function('%model%'), '-LIKE', 'compare function';
 
+    # query_record
     my $opts = {
         table   => 'products',
         columns => undef,
-        where   => undef,
+        where   => { productcode => "S10_1678" },
     };
     ok my $rec = $db->query_record($opts), 'query';
-    dd $rec;
-
+    is( $rec,
+        hash {
+            field buyprice           => match qr/\d+/;
+            field msrp               => match qr/\d+/;
+            field productcode        => match qr/\w\d+/;
+            field productdescription => match qr/[\w\s]+/;
+            field productlinecode    => match qr/\d+/;
+            field productname        => match qr/[\w\s]+/;
+            field productscale       => match qr/1:\d+/;
+            field productvendor      => match qr/[\w\s]+/;
+            field quantityinstock    => match qr/\d+/;
+            end;    # no more elements.
+        },
+        'the record should match'
+    );
 };
 
 
