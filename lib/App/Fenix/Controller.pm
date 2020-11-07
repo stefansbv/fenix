@@ -114,6 +114,7 @@ sub _build_view {
 has 'frame' => (
     is      => 'ro',
     isa     => TkFrame,
+    lazy    => 1,
     default => sub {
         my $self = shift;
         return $self->view->frame;
