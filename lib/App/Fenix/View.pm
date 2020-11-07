@@ -352,6 +352,7 @@ sub BUILD {
     # Load resource file, if found
     my $xres = $self->config->xresource;
     if ( $xres->is_file ) {
+        say "Loading resource file: $xres" if $self->config->debug;
         $self->frame->optionReadfile( $xres->stringify, 'widgetDefault' );
     }
     else {
