@@ -13,7 +13,6 @@ use App::Fenix::Types qw(
 );
 use Data::Diver qw( Dive ); #  DiveError
 use Hash::Merge;
-use App::Fenix::Config;
 
 with qw/App::Fenix::Role::FileUtils
         App::Fenix::Role::Utils/;
