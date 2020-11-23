@@ -27,6 +27,13 @@ with 'App::Fenix::Role::Paths';
 
 #-- required
 
+=head3 mnemonic
+
+The name of the directory under L<sharedir>.  By default it is a
+lower case of the C<module> attribute.
+
+=cut
+
 has 'mnemonic' => (
     is       => 'ro',
     isa      => Str,
@@ -161,6 +168,28 @@ has 'connection' => (
     },
 );
 # handles => [ 'get_apps_exe_path', 'get_resource_path', ],
+
+has 'application_file' => (
+    is      => 'ro',
+    isa     => Path,
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return path $self->app_path_for('etc'), 'application.yml';
+    },
+);
+
+has 'application' => (
+    is      => 'ro',
+    isa     => FenixConfigConn,
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return App::Fenix::Config::Application->new(
+            application_file => $self->application_file,
+        );
+    },
+);
 
 has 'log_file_path' => (
     is       => 'ro',
