@@ -4,13 +4,19 @@ package App::Fenix::Options;
 
 use 5.010;
 use Moo;
-use MooX::Options;
+use MooX::Options;                           # Getopt::Long::Descriptive
 
 option 'mnemonic' => (
     is     => 'rw',
     format => 's',
     doc    => 'the mnemonic (configuration name)',
     short  => 'm',
+);
+
+option 'list' => (
+    is       => 'rw',
+    doc      => 'list mnemonics (configuration names)',
+    short    => 'l',
 );
 
 option 'verbose' => (

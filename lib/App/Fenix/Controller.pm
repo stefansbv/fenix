@@ -44,11 +44,12 @@ has options => (
             mnemonic
             verbose
             debug
+            list
             )
     ],
 );
 
-has config => (
+has 'config' => (
     is      => 'ro',
     isa     => FenixConfig,
     lazy    => 1,
@@ -318,6 +319,10 @@ sub delay_start {
 sub BUILD {
     my ( $self, $args ) = @_;
     $self->_setup_events;
+    if ($self->list) {
+        $self->show_mnemonics;
+        exit;
+    }
     $self->add_observer(
         App::Fenix::Refresh->new( view => $self->view ) );
     $self->log_message('[II] Welcome to Fenix!');
@@ -330,6 +335,41 @@ sub BUILD {
     $self->_init;
     return;
 }
+
+sub show_mnemonics {
+    my $self = shift;
+    my $apps_path = path $self->config->sharedir, 'apps';
+    my $iter = $apps_path->iterator;
+    say "Mnemonics (configurations):";
+    while ( my $path = $iter->() ) {
+        my $name = $path->basename;
+        my $v = ' '; # $self->validate_config($name) ? ' ' : '!';
+        my $d = ' '; # $default eq $name             ? '*' : ' ';
+        say " ${d}>${v}$name";
+    }
+    say " in $apps_path";
+    say "";
+    return;
+}
+
+sub application_class {
+    my ( $self, $module ) = @_;
+    $module //= $self->config->get_application('module');
+    return qq{App::Fenix::Tk::App::${module}};
+}
+
+# sub validate_config {
+#     my ( $self, $cfname ) = @_;
+#     my $cfg_file
+#         = catfile( $self->configdir($cfname), 'etc', 'application.yml' );
+#     my $cfg_href = $self->config_data_from($cfg_file);
+#     my $widgetset   = $cfg_href->{application}{widgetset};
+#     my $module_name = $cfg_href->{application}{module};
+#     my $module_class = $self->application_class( $widgetset, $module_name );
+#     ( my $module_file = "$module_class.pm" ) =~ s{::}{/}g;
+#     eval { require $module_file };
+#     return $@ ? 0 : 1;
+# }
 
 sub DEMOLISH {
     my $log_file = App::Fenix::Config::log_file_name;
