@@ -9,6 +9,7 @@ use Try::Tiny;
 use Path::Tiny;
 use File::Basename;
 use IPC::System::Simple 1.17 qw(run);
+use English;                                 # for $PERL_VERSION
 use App::Fenix::Types qw(
     Maybe
     FenixOptions
@@ -260,6 +261,84 @@ sub _setup_events {
         sub { $self->on_quit }
     );
 
+    #-- Help
+    $self->view->event_handler_for_menu(
+        'mn_gd',
+        sub {
+            $self->guide;
+        }
+    );
+
+    #-- About
+    $self->view->event_handler_for_menu(
+        'mn_ab',
+        sub {
+            $self->about;
+        }
+    );
+
+    #-- Preview RepMan report
+    $self->view->event_handler_for_menu(
+        'mn_pr',
+        sub { $self->repman; }
+    );
+
+    #-- Generate PDF from TT model
+    $self->view->event_handler_for_menu(
+        'mn_tt',
+        sub { $self->ttgen; }
+    );
+
+    #-- Edit RepMan report metadata
+    $self->view->event_handler_for_menu(
+        'mn_er',
+        sub {
+            $self->screen_module_load('Reports','tools');
+        }
+    );
+
+    #-- Edit Templates metadata
+    $self->view->event_handler_for_menu(
+        'mn_et',
+        sub {
+            $self->screen_module_load('Templates','tools');
+        }
+    );
+
+    #-- Admin - set default mnemonic
+    $self->view->event_handler_for_menu(
+        'mn_mn',
+        sub {
+            $self->set_mnemonic();
+        }
+    );
+
+    #-- Admin - configure
+    $self->view->event_handler_for_menu(
+        'mn_cf',
+        sub {
+            $self->set_app_configs();
+        }
+    );
+
+    $self->view->event_handler_for_menu(
+        'mn_cfg',
+        sub {
+            $self->screen_module_load('Configs','tools');
+        }
+    );
+
+    #- Custom application menu from menu.yml
+
+    foreach my $item ( @{ $self->view->menu_bar->get_app_menu_popup_list } ) {
+        $self->view->event_handler_for_menu(
+            $item,
+            sub {
+                $self->screen_module_load($item);
+            }
+        );
+    }
+
     #-  Notebook
 
     $self->view->event_handler_for_notebook(
@@ -318,7 +397,6 @@ sub delay_start {
 
 sub BUILD {
     my ( $self, $args ) = @_;
-    $self->_setup_events;
     if ($self->list) {
         $self->show_mnemonics;
         exit;
@@ -332,6 +410,7 @@ sub BUILD {
     say "# dbname    = ", $cc->dbname;
     $self->set_state('gui_state', 'idle');
     $self->set_state('db_name', $cc->dbname);
+    $self->_setup_events;
     $self->_init;
     return;
 }
@@ -356,6 +435,99 @@ sub application_class {
     my ( $self, $module ) = @_;
     $module //= $self->config->get_application('module');
     return qq{App::Fenix::Tk::App::${module}};
+}
+
+sub screen_module_load {
+    my ( $self, $module, $from_tools ) = @_;
+    print "Loading >$module<\n" if $self->verbose;
+    my $rscrstr = lc $module;
+
+    my ( $class, $module_file )
+        = $self->screen_module_class( $module, $from_tools );
+    eval { require $module_file };
+    if ($@) {
+        print "EE: Can't load '$module_file'\n";
+        return;
+    }
+
+    unless ( $class->can('run_screen') ) {
+        my $msg = "EE: Screen '$class' can not 'run_screen'";
+        print "$msg\n";
+        $self->_log->error($msg);
+        return;
+    }
+
+    # New screen instance
+    $self->{_rscrobj} = $class->new(
+        {   scrcfg  => $rscrstr,
+            toolscr => $from_tools
+        },
+    );
+    $self->_log->trace("New screen instance: $module");
+}
+
+sub about {
+    my $self = shift;
+
+    my $gui = $self->view->frame;
+
+    # Create a dialog.
+    require Tk::DialogBox;
+    my $dbox = $gui->DialogBox(
+        -title   => 'Despre ... ',
+        -buttons => ['Close'],
+    );
+
+    # Windows has the annoying habit of setting the background color
+    # for the Text widget differently from the rest of the window.  So
+    # get the dialog box background color for later use.
+    my $bg = $dbox->cget('-background');
+
+    # Insert a text widget to display the information.
+    my $text = $dbox->add(
+        'Text',
+        -height     => 15,
+        -width      => 35,
+        -background => $bg
+    );
+
+    # Define some fonts.
+    my $textfont = $text->cget('-font')->Clone( -family => 'Helvetica' );
+    my $italicfont = $textfont->Clone( -slant => 'italic' );
+    $text->tag(
+        'configure', 'italic',
+        -font    => $italicfont,
+        -justify => 'center',
+    );
+    $text->tag(
+        'configure', 'normal',
+        -font    => $textfont,
+        -justify => 'center',
+    );
+
+    # Framework version
+    my $PROGRAM_NAME = '== Fenix ==';
+    my $PROGRAM_VER  = $App::Bonus::VERSION || 'development';
+
+    # Add the about text.
+    $text->insert( 'end', "\n" );
+    $text->insert( 'end', $PROGRAM_NAME . "\n", 'normal' );
+    $text->insert( 'end', "Version: " . $PROGRAM_VER . "\n", 'normal' );
+    $text->insert( 'end', "Author: Ștefan Suciu\n", 'normal' );
+    $text->insert( 'end', "Copyright 2020\n", 'normal' );
+    $text->insert( 'end', "GNU General Public License (GPL)\n", 'normal' );
+    $text->insert( 'end', 'stefan@s2i2.ro',
+        'italic' );
+    $text->insert( 'end', "\n\n\n\n\n\n" );
+    $text->insert( 'end', "Perl " . $PERL_VERSION . "\n", 'normal' );
+    $text->insert( 'end', "Tk v" . $Tk::VERSION . "\n", 'normal' );
+
+    $text->configure( -state => 'disabled' );
+    $text->pack(
+        -expand => 1,
+        -fill   => 'both'
+    );
+    $dbox->Show();
 }
 
 # sub validate_config {
