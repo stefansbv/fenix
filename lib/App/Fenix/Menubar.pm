@@ -2,6 +2,7 @@ package App::Fenix::Menubar;
 
 # ABSTRACT: Tk Menubar Control
 
+use feature 'say';
 use Moo;
 use MooX::HandlesVia;
 use App::Fenix::Types qw(
@@ -75,9 +76,7 @@ has 'app_menu_config' => (
 sub make_app_menu {
     my $self = shift;
     my $conf = $self->app_menu_config;
-    #my $menus   = $self->sort_hash_by_id($conf);
     my $pos = 2;                             # start with pos=2
-    #foreach my $name ( @{$menus} ) {
     foreach my $name ( $conf->all_menubar_names ) {
         my $attribs_app = $conf->get_menu($name);
         $pos = $self->make_menus( $name, $attribs_app, $pos );
@@ -130,6 +129,18 @@ sub make_popup_item {
     ) );
     $menu->add('separator') if $item->{sep} eq 'after';
     return;
+}
+
+sub get_app_menu_popup_list {
+    my $self = shift;
+    my @popups;
+    foreach my $name ( $self->app_menu_config->all_menubar_names ) {
+        my $popup = $self->app_menu_config->get_menu($name);
+        foreach my $item ( keys %{$popup->{popup} } ) {
+            push @popups, $popup->{popup}{$item}{name};
+        }
+    }
+    return \@popups;
 }
 
 sub get_menu_popup_item {
