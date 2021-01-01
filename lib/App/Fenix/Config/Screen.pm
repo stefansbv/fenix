@@ -34,11 +34,11 @@ has 'scrcfg_file' => (
     required => 1,
 );
 
-has 'config' => (
-    is       => 'ro',
-    isa      => FenixConfig,
-    required => 1,
-);
+# has 'config' => (
+#     is       => 'ro',
+#     isa      => FenixConfig,
+#     required => 1,
+# );
 
 # scrcfg
 has 'scr' => (
@@ -55,13 +55,6 @@ sub _build_scrcfg {
     my $conf = $self->load_conf($scrcfg_file);
     return $conf;
 }
-
-# sub load_conf {
-#     my ($self, $name) = @_;
-#     my $conf_file = $self->config->config_scr_file_name($name);
-#     my $conf_href = $self->config->config_data_from($conf_file);
-#     return $conf_href;
-# }
 
 #-- Screen sections
 
@@ -370,15 +363,15 @@ sub repo_table_header_info {
     return $href;
 }
 
-sub app_dateformat {
-    my $self = shift;
-    return $self->config->application->{dateformat} || 'iso';
-}
+# sub app_dateformat {
+#     my $self = shift;
+#     return $self->config->application->{dateformat} || 'iso';
+# }
 
-sub app_toolbar_attribs {
-    my $self = shift;
-    return $self->config->toolbar2;
-}
+# sub app_toolbar_attribs {
+#     my $self = shift;
+#     return $self->config->toolbar2;
+# }
 
 # sub dep_table_has_selectorcol {
 #     my ( $self, $tm_ds ) = @_;

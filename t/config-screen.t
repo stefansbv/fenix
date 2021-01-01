@@ -5,24 +5,12 @@ use utf8;
 use Path::Tiny;
 use Test2::V0;
 
-use App::Fenix::Config;
 use App::Fenix::Config::Screen;
-
-# Use the screen configs from share/
-my $args = {
-    cfname => 'test-tk',
-    user   => 'user',
-    pass   => 'pass',
-    cfpath => 'share/',
-};
-
-ok my $conf = App::Fenix::Config->new($args), 'constructor';
 
 subtest 'Customers screen config' => sub {
     my $scrcfg_file = path 'share/apps/test-tk/scr/customers.conf';
 
     ok my $conf = App::Fenix::Config::Screen->new(
-        config      => $conf,
         scrcfg_file => $scrcfg_file,
     ), 'new config screen object';
 
@@ -95,7 +83,6 @@ subtest 'Products screen config' => sub {
     my $scrcfg_file = path 'share/apps/test-tk/scr/products.conf';
 
     ok my $conf = App::Fenix::Config::Screen->new(
-        config      => $conf,
         scrcfg_file => $scrcfg_file,
     ), 'new config screen object';
 
@@ -169,7 +156,6 @@ subtest 'Orders screen config' => sub {
     my $scrcfg_file = path 'share/apps/test-tk/scr/orders.conf';
 
     ok my $conf = App::Fenix::Config::Screen->new(
-        config      => $conf,
         scrcfg_file => $scrcfg_file,
     ), 'new config screen object';
 
