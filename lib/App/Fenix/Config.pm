@@ -13,6 +13,7 @@ use App::Fenix::Types qw(
     Str
     FenixConfigMain
     FenixConfigConn
+    FenixConfigApp
 );
 use Path::Tiny;
 use Try::Tiny;
@@ -21,6 +22,7 @@ use Locale::TextDomain 1.20 qw(App-Fenix);
 use App::Fenix::X qw(hurl);
 use App::Fenix::Config::Connection;
 use App::Fenix::Config::Main;
+use App::Fenix::Config::Application;
 use namespace::autoclean;
 
 with 'App::Fenix::Role::Paths';
@@ -181,7 +183,7 @@ has 'application_file' => (
 
 has 'application' => (
     is      => 'ro',
-    isa     => FenixConfigConn,
+    isa     => FenixConfigApp,
     lazy    => 1,
     default => sub {
         my $self = shift;
@@ -211,6 +213,26 @@ has 'log_file_name' => (
         return path( File::HomeDir->home, 'fenix.log' )->stringify;
     },
 );
+
+sub application_class {
+    my ( $self, $module ) = @_;
+    $module ||= $self->application->get_application('module');
+    return qq{App::Fenix::Tk::App::${module}};
+}
+
+sub screen_config_file_path {
+    my ( $self, $name ) = @_;
+    die "screen_config_file_path: screen config name is required!" unless $name;
+    my $file_name = "$name.conf"; # unless $type; # defaults to .conf
+    my $file_path = $self->app_path_for('scr');
+    my $scr_file  = path $file_path, $file_name;
+    if ( $scr_file->is_file ) {
+        return $scr_file;
+    }
+    else {
+        die "screen config file '$file_name' not found in '$file_path'";
+    }
+}
 
 __PACKAGE__->meta->make_immutable;
 
