@@ -31,7 +31,7 @@ has '_transformations' => (
 );
 
 sub dateentry_parse_date {
-    my ( $self, $date, $format ) = @_;
+    my ( $self, $format, $date ) = @_;
     return unless $date;
 
     # Default date style format
@@ -63,7 +63,7 @@ sub dateentry_parse_date {
 }
 
 sub dateentry_format_date {
-    my ( $self, $y, $m, $d, $format ) = @_;
+    my ( $self, $format, $y, $m, $d ) = @_;
     die "dateentry_format_date: the \$y, \$m and \$d parameters are required\n"
         unless defined $y and defined $m and defined $d;
 

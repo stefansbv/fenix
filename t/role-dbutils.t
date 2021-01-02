@@ -20,38 +20,39 @@ subtest 'test transformations' => sub {
 subtest 'test dateentry_parse_date' => sub {
 
     # no date
-    is $u->dateentry_parse_date, undef, 'no date parameter';
+    is $u->dateentry_parse_date, undef, 'no parameter';
+    is $u->dateentry_parse_date('usa'), undef, 'no date parameter';
 
     # german
-    ok my ( $y1, $m1, $d1 ) = $u->dateentry_parse_date( '31.12.2019', 'german' ),
+    ok my ( $y1, $m1, $d1 ) = $u->dateentry_parse_date('german', '31.12.2019'),
         'parse a date in "german" format';
     is $y1, 2019, 'year';
     is $m1, 12,   'month';
     is $d1, 31,   'day';
 
     # iso
-    ok my ( $y2, $m2, $d2 ) = $u->dateentry_parse_date( '2019-12-31', 'iso' ),
+    ok my ( $y2, $m2, $d2 ) = $u->dateentry_parse_date( 'iso', '2019-12-31' ),
         'parse a date in "iso" format';
     is $y2, 2019, 'year';
     is $m2, 12,   'month';
     is $d2, 31,   'day';
 
     # default iso
-    ok my ( $y3, $m3, $d3 ) = $u->dateentry_parse_date( '2019-12-31' ),
+    ok my ( $y3, $m3, $d3 ) = $u->dateentry_parse_date( undef, '2019-12-31' ),
         'parse a date in default "iso" format';
     is $y3, 2019, 'year';
     is $m3, 12,   'month';
     is $d3, 31,   'day';
 
     # usa
-    ok my ( $y4, $m4, $d4 ) = $u->dateentry_parse_date( '12/31/2019', 'usa' ),
+    ok my ( $y4, $m4, $d4 ) = $u->dateentry_parse_date( 'usa', '12/31/2019' ),
         'parse a date in "usa" format';
     is $y4, 2019, 'year';
     is $m4, 12,   'month';
     is $d4, 31,   'day';
 
     like(
-        dies { $u->dateentry_parse_date( '12/31/2019', 'unknown' ) },
+        dies { $u->dateentry_parse_date( 'unknown', '12/31/2019' ) },
         qr/\Qdateentry_parse_date: unknown date format:/,
         'Should get an exception for unknown date format'
     );
@@ -60,46 +61,46 @@ subtest 'test dateentry_parse_date' => sub {
 subtest 'test dateentry_format_date' => sub {
 
     # german
-    ok my $date = $u->dateentry_format_date( 2019, 12, 31, 'german' ),
+    ok my $date = $u->dateentry_format_date( 'german', 2019, 12, 31 ),
         'return a date in "german" format';
     is $date, '31.12.2019', 'date in "german" format';
 
     # iso
-    ok $date = $u->dateentry_format_date( 2019, 12, 31, 'iso' ),
+    ok $date = $u->dateentry_format_date( 'iso', 2019, 12, 31 ),
         'return a date in "iso" format';
     is $date, '2019-12-31', 'date in "iso" format';
 
     # iso default
-    ok $date = $u->dateentry_format_date( 2019, 12, 31 ),
+    ok $date = $u->dateentry_format_date( undef, 2019, 12, 31 ),
         'return a date in "iso" format';
     is $date, '2019-12-31', 'date in "iso" format';
 
     # usa
-    ok $date = $u->dateentry_format_date( 2019, 12, 31, 'usa' ),
+    ok $date = $u->dateentry_format_date( 'usa', 2019, 12, 31 ),
         'return a date in "usa" format';
     is $date, '12/31/2019', 'date in "usa" format';
 
     like(
-        dies { $u->dateentry_format_date( 2019, 12, 31, 'unknown' ) },
+        dies { $u->dateentry_format_date( 'unknown', 2019, 12, 31 ) },
         qr/\Qdateentry_format_date: unknown date format:/,
         'Should get an exception for unknown date format'
     );
 
-    ok $date = $u->dateentry_format_date( 2019, 12, 31, 'usa' ),
+    ok $date = $u->dateentry_format_date( 'usa', 2019, 12, 31 ),
         'return a date in "usa" format';
 
     like(
-        dies { $u->dateentry_format_date( undef, 12, 31 ) },
+        dies { $u->dateentry_format_date( undef, undef, 12, 31 ) },
         qr/\Qdateentry_format_date: the/,
         'Should get an exception for missing parameters'
     );
     like(
-        dies { $u->dateentry_format_date( 2019, undef, 31 ) },
+        dies { $u->dateentry_format_date( undef, 2019, undef, 31 ) },
         qr/\Qdateentry_format_date: the/,
         'Should get an exception for missing parameters'
     );
     like(
-        dies { $u->dateentry_format_date( 2019, 12, undef ) },
+        dies { $u->dateentry_format_date( undef, 2019, 12, undef ) },
         qr/\Qdateentry_format_date: the/,
         'Should get an exception for missing parameters'
     );
