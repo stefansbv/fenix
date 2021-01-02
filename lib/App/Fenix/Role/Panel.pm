@@ -33,6 +33,7 @@ has 'panel' => (
     is      => 'ro',
     isa     => TkFrame,
     lazy    => 1,
+    clearer => 'reset_panel',
     builder => '_build_panel',
 );
 
