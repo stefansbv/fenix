@@ -1,0 +1,33 @@
+package App::Fenix::Tk::Entry;
+
+# ABSTRACT: Subclass of Tk::Entry
+
+use strict;
+use warnings;
+
+use Tk;
+use base qw(Tk::Derived Tk::Entry);
+
+Construct Tk::Widget 'MEntry';
+
+sub ClassInit {
+    my ( $class, $mw ) = @_;
+
+    $class->SUPER::ClassInit($mw);
+
+    $mw->bind( $class, '<KeyRelease>', sub { $mw->set_modified_record(); } );
+
+    return;
+}
+
+1;
+
+=head1 SYNOPSIS
+
+Create new binding for the L<< <KeyRelease> >> event type.
+
+    use App::Fenix::Tk::Entry;
+
+    my $entry = MEntry->new();
+
+=cut
