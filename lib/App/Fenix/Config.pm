@@ -214,6 +214,12 @@ has 'log_file_name' => (
     },
 );
 
+sub application_dateformat {
+    my $self = shift;
+    say  $self->application->get_application('dateformat');
+    return $self->application->get_application('dateformat') || 'iso';
+}
+
 sub application_class {
     my ( $self, $module ) = @_;
     $module ||= $self->application->get_application('module');
