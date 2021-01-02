@@ -23,6 +23,7 @@ use App::Fenix::Types qw(
 use App::Fenix::X qw(hurl);
 use App::Fenix::Options;
 use App::Fenix::Config;
+use App::Fenix::Config::Screen;
 use App::Fenix::Model;
 use App::Fenix::State;
 use App::Fenix::Refresh;
@@ -437,33 +438,137 @@ sub application_class {
     return qq{App::Fenix::Tk::App::${module}};
 }
 
+sub screen_module_class {
+    my ( $self, $module, $from_tools ) = @_;
+    my $module_class;
+    if ($from_tools) {
+        $module_class = "App::Fenix::Tk::Tools::${module}";
+    }
+    else {
+        $module_class = $self->config->application_class . "::${module}";
+    }
+    ( my $module_file = "$module_class.pm" ) =~ s{::}{/}g;
+    return ( $module_class, $module_file );
+}
+
 sub screen_module_load {
     my ( $self, $module, $from_tools ) = @_;
     print "Loading >$module<\n" if $self->verbose;
     my $rscrstr = lc $module;
 
-    my ( $class, $module_file )
-        = $self->screen_module_class( $module, $from_tools );
+    # Destroy existing panel widget
+    $self->view->destroy_panel;
+    $self->view->record->reset_panel;
+
+    # Create new panel wieget
+    $self->view->record->make;
+    
+    my ( $class, $module_file ) = $self->screen_module_class( $module, $from_tools );
     eval { require $module_file };
     if ($@) {
         print "EE: Can't load '$module_file'\n";
+        print " reason: $@\n" if $self->debug;
         return;
     }
-
     unless ( $class->can('run_screen') ) {
         my $msg = "EE: Screen '$class' can not 'run_screen'";
         print "$msg\n";
-        $self->_log->error($msg);
+        $self->log->error($msg);
         return;
     }
 
+    my $screen_config = App::Fenix::Config::Screen->new(
+        scrcfg_file => $self->config->screen_config_file_path($rscrstr),
+    );
+
     # New screen instance
     $self->{_rscrobj} = $class->new(
-        {   scrcfg  => $rscrstr,
-            toolscr => $from_tools
-        },
+        config  => $self->config,
+        scrcfg  => $screen_config,
+        toolscr => $from_tools,
     );
-    $self->_log->trace("New screen instance: $module");
+    $self->log->trace("New screen instance: $module");
+
+    # return unless $self->check_cfg_version;  # current version is 5
+
+    # # Details page
+    # my $has_det = $self->scrcfg('rec')->has_screen_details();
+    # if ($has_det) {
+    #     my $lbl_details = __ 'Details';
+    #     $self->view->create_notebook_panel( 'det', $lbl_details );
+    #     $self->_set_event_handler_nb('det');
+    # }
+
+    # Show screen
+    #my $nb = $self->view->notebook->nb;
+    my $nb = $self->view->record;
+    $self->{_rscrobj}->run_screen($nb);
+
+    # # Store currently loaded screen class
+    # $self->{_rscrcls} = $class;
+
+    # # Load instance config
+    # $self->cfg->config_load_instance();
+
+    # #-- Lookup bindings for Entry widgets
+    # $self->setup_lookup_bindings_entry('rec');
+    # $self->setup_select_bindings_entry('rec');
+
+    # #-- Lookup bindings for tables (TableMatrix)
+    # $self->setup_bindings_table();
+
+    # # Set Key column names
+    # $self->{_tblkeys}{rec} = undef; # reset
+    # $self->screen_init_keys( 'rec', $self->scrcfg('rec') );
+
+    # $self->screen_init_details( $self->scrcfg('rec') );
+
+    # $self->set_app_mode('idle');
+
+    # # List header
+    # my $header_look = $self->scrcfg('rec')->list_header('lookup');
+    # my $header_cols = $self->scrcfg('rec')->list_header('column');
+    # my $fields      = $self->scrcfg('rec')->maintable('columns');
+
+    # if ($header_look and $header_cols) {
+    #     $self->view->make_list_header( $header_look, $header_cols, $fields );
+    # }
+    # else {
+    #     $self->view->nb_set_page_state( 'lst', 'disabled' );
+    # }
+
+    # #- Event handlers
+    # my $group_labels = $self->scrcfg()->scr_toolbar_groups();
+    # foreach my $label ( @{$group_labels} ) {
+    #     $self->set_event_handler_screen($label);
+    # }
+
+    # # Toggle find mode menus
+    # my $menus_state
+    #     = $self->scrcfg()->screen('style') eq 'report'
+    #     ? 'disabled'
+    #     : 'normal';
+    # $self->_set_menus_state($menus_state);
+
+    # $self->view->set_status( '', 'ms' );
+
+    # $self->model->unset_scrdata_rec();
+
+    # # Change application title
+    # my $descr = $self->scrcfg('rec')->screen('description');
+    # $self->view->title(' Tpda3 - ' . $descr) if $descr;
+
+    # # Update window geometry
+    # $self->set_geometry();
+
+    # # Load lists into ComboBox type widgets
+    # $self->screen_load_lists();
+
+    # # Trigger on_load_screen method from screen if defined
+    # $self->scrobj('rec')->on_load_screen()
+    #     if $self->scrobj('rec')->can('on_load_screen');
+
+    return 1;                       # to make ok from Test::More happy
 }
 
 sub about {

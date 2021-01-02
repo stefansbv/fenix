@@ -18,6 +18,9 @@ use App::Fenix::Types qw(
     TkFrame
 );
 use Tk;
+use Tk::Font;
+use Tk::widgets qw(MsgBox);
+
 use App::Fenix::X qw(hurl);
 use App::Fenix::Menubar;
 use App::Fenix::Toolbar;
@@ -25,6 +28,7 @@ use App::Fenix::Notebook;
 use App::Fenix::Tk::Statusbar;
 use App::Fenix::Panel::Initial;
 use App::Fenix::Panel::Logger;
+use App::Fenix::Panel::Record;
 
 # Main window
 
@@ -139,6 +143,21 @@ has 'logger_panel' => (
         my $pane = App::Fenix::Panel::Logger->new(
             view => $self,
         );
+        return $pane;
+    },
+);
+
+has 'record' => (
+    is      => 'ro',
+    # isa     => FenixPanel,
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        my $pane = App::Fenix::Panel::Record->new(
+            view     => $self,
+            nb_frame => $self->notebook->get_comp('rec'),
+        );
+        #$self->notebook->rename_panel('p1', $pane->name );
         return $pane;
     },
 );
@@ -367,10 +386,21 @@ sub BUILD {
     $self->notebook->make;
     $self->logger_panel->make;
 
+    #$self->record->make;
+    
     $self->set_status( 'connectno16', 'cn' );
     $self->get_geometry;
     $self->set_geometry_main;
 
+    return;
+}
+
+sub destroy_panel {
+    my $self = shift;
+    if ( Tk::Exists( $self->record->panel ) ) {
+        say "destroy panel";
+        $self->record->panel->destroy;
+    }
     return;
 }
 
