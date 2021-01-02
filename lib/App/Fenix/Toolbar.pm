@@ -9,6 +9,7 @@ use App::Fenix::Types qw(
     FenixConfigTool
     TkFrame
     TkTB
+    Path
 );
 use Path::Tiny;
 use Tk;
@@ -29,6 +30,15 @@ has config => (
     required => 1,
 );
 
+has 'toolbar_file' => (
+    is       => 'ro',
+    isa      => Path,
+    default => sub {
+        my $self = shift;
+        my $file = $self->config->toolbar_file;
+    },
+);
+
 has 'tool_bar' => (
     is      => 'ro',
     isa     => TkTB,
@@ -45,8 +55,7 @@ has 'tool_config' => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        my $file = $self->config->toolbar_file;
-        return App::Fenix::Config::Toolbar->new( toolbar_file => $file, );
+        return App::Fenix::Config::Toolbar->new( toolbar_file => $self->toolbar_file );
     },
 );
 
