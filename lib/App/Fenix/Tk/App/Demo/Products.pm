@@ -1,0 +1,298 @@
+package App::Fenix::Tk::App::Demo::Products;
+
+# ABSTRACT: The App::Fenix::App::Demo::Products screen
+
+use Moo;
+
+extends 'App::Fenix::Tk::Screen';
+
+sub run_screen {
+    my ( $self, $rec ) = @_;
+
+    $self->_init($rec);                      # initilalization
+
+    my $top = $self->top;                    # or use $self->top directly
+
+    #- Frame1 - Products
+
+    my $frame1 = $top->LabFrame(
+        -foreground => 'blue',
+        -label      => 'Product',
+        -labelside  => 'acrosstop',
+    );
+    $frame1->grid(
+        $frame1,
+        -row    => 0,
+        -column => 0,
+        -ipadx  => 3,
+        -ipady  => 3,
+        -sticky => 'nsew',
+    );
+
+    #- Code (productcode)
+
+    my $lproductcode = $frame1->Label( -text => 'Code', );
+    $lproductcode->form(
+        -left => [ %0, 0 ],
+        -top  => [ %0, 0 ],
+        -padx => 5,
+        -pady => 5,
+    );
+
+    my $eproductcode = $frame1->MEntry(
+        -width              => 15,
+        -disabledbackground => $self->{bg},
+        -disabledforeground => 'black',
+    );
+    $eproductcode->form(
+        -top  => [ '&', $lproductcode, 0 ],
+        -left => [ %0,  80 ],
+    );
+
+    #- Name (productname)
+
+    my $lproductname = $frame1->Label( -text => 'Name', );
+    $lproductname->form(
+        -left => [ %0,            0 ],
+        -top  => [ $lproductcode, 0 ],
+        -padx => 5,
+        -pady => 5,
+    );
+
+    my $eproductname = $frame1->MEntry(
+        -width              => 35,
+        -disabledbackground => $self->{bg},
+        -disabledforeground => 'black',
+    );
+    $eproductname->form(
+        -top  => [ '&', $lproductname, 0 ],
+        -left => [ %0,  80 ],
+    );
+
+    #- Line (productline)
+
+    my $lproductline = $frame1->Label( -text => 'Line', );
+    $lproductline->form(
+        -left => [ %0,            0 ],
+        -top  => [ $lproductname, 0 ],
+        -padx => 5,
+        -pady => 5,
+    );
+
+    my $eproductline = $frame1->MEntry(
+        -width              => 28,
+        -disabledbackground => $self->{bg},
+        -disabledforeground => 'black',
+    );
+    $eproductline->form(
+        -top  => [ '&', $lproductline, 0 ],
+        -left => [ %0,  80 ],
+    );
+
+    #-+ Productlinecode
+
+    my $eproductlinecode = $frame1->MEntry(
+        -width              => 5,
+        -disabledbackground => $self->{bg},
+        -disabledforeground => 'black',
+    );
+    $eproductlinecode->form(
+        -top   => [ '&', $lproductline, 0 ],
+        -right => [ '&', $eproductname, 0 ],
+    );
+
+    #- Scale (productscale)
+
+    my $lproductscale = $frame1->Label( -text => 'Scale', );
+    $lproductscale->form(
+        -left => [ %0,            0 ],
+        -top  => [ $lproductline, 0 ],
+        -padx => 5,
+        -pady => 5,
+    );
+
+    my $eproductscale = $frame1->MEntry(
+        -width              => 10,
+        -disabledbackground => $self->{bg},
+        -disabledforeground => 'black',
+    );
+    $eproductscale->form(
+        -top  => [ '&', $lproductscale, 0 ],
+        -left => [ %0,  80 ],
+    );
+
+    #- Vendor (productvendor)
+
+    my $lproductvendor = $frame1->Label( -text => 'Vendor', );
+    $lproductvendor->form(
+        -left => [ %0,             0 ],
+        -top  => [ $lproductscale, 0 ],
+        -padx => 5,
+        -pady => 5,
+    );
+
+    my $eproductvendor = $frame1->MEntry(
+        -width              => 35,
+        -disabledbackground => $self->{bg},
+        -disabledforeground => 'black',
+    );
+    $eproductvendor->form(
+        -top  => [ '&', $lproductvendor, 0 ],
+        -left => [ %0,  80 ],
+    );
+
+    #- Stock (quantityinstock)
+
+    my $lquantityinstock = $frame1->Label( -text => 'Stock', );
+    $lquantityinstock->form(
+        -left => [ %0,              0 ],
+        -top  => [ $lproductvendor, 0 ],
+        -padx => 5,
+        -pady => 5,
+    );
+
+    my $equantityinstock = $frame1->MEntry(
+        -width              => 8,
+        -justify            => 'right',
+        -disabledbackground => $self->{bg},
+        -disabledforeground => 'black',
+        # -validate => 'key',
+        # -vcmd     => sub {
+        #     $validation->validate_entry( 'quantityinstock', @_ );
+        # },
+    );
+    $equantityinstock->form(
+        -top  => [ '&', $lquantityinstock, 0 ],
+        -left => [ %0,  80 ],
+    );
+
+    #- Buy price (buyprice)
+
+    my $lbuyprice = $frame1->Label( -text => 'Buy price', );
+    $lbuyprice->form(
+        -left => [ %0,                0 ],
+        -top  => [ $lquantityinstock, 0 ],
+        -padx => 5,
+        -pady => 5,
+    );
+
+    my $ebuyprice = $frame1->MEntry(
+        -width              => 8,
+        -justify            => 'right',
+        -disabledbackground => $self->{bg},
+        -disabledforeground => 'black',
+        # -validate => 'key',
+        # -vcmd     => sub {
+        #     $validation->validate_entry( 'buyprice', @_ );
+        # },
+    );
+    $ebuyprice->form(
+        -top  => [ '&', $lbuyprice, 0 ],
+        -left => [ %0,  80 ],
+    );
+
+    #- MSRP (msrp)
+    my $lmsrp = $frame1->Label( -text => 'MSRP', );
+    $lmsrp->form(
+        -left => [ %0,         0 ],
+        -top  => [ $lbuyprice, 0 ],
+        -padx => 5,
+        -pady => 5,
+    );
+
+    my $emsrp = $frame1->MEntry(
+        -width              => 8,
+        -justify            => 'right',
+        -disabledbackground => $self->{bg},
+        -disabledforeground => 'black',
+        # -validate => 'key',
+        # -vcmd     => sub {
+        #     $validation->validate_entry( 'msrp', @_ );
+        # },
+    );
+    $emsrp->form(
+        -top  => [ '&', $lmsrp, 0 ],
+        -left => [ %0,  80 ],
+    );
+
+    # Frame 2
+
+    my $frame2 = $top->LabFrame(
+        -foreground => 'blue',
+        -label      => 'Description',
+        -labelside  => 'acrosstop',
+    );
+    $frame2->grid(
+        $frame2,
+        -row    => 1,
+        -column => 0,
+        -sticky => 'nsew',
+    );
+
+    # Font
+    my $my_font = $eproductcode->cget('-font');
+
+    # Products
+    my $tproductdescription = $frame2->Scrolled(
+        'Text',
+        -width      => 45,
+        -height     => 4,
+        -wrap       => 'word',
+        -scrollbars => 'e',
+        -font       => $my_font,
+    );
+
+    $tproductdescription->form(
+        -left => [ %0, 0 ],
+        -top  => [ %0, 0 ],
+        -padx => 5,
+        -pady => 5,
+    );
+
+    # Entry objects: var_asoc, var_obiect
+    # Other configurations in 'products.conf'
+    $self->{controls} = {
+        productcode        => [ undef, $eproductcode ],
+        productname        => [ undef, $eproductname ],
+        productline        => [ undef, $eproductline ],
+        productlinecode    => [ undef, $eproductlinecode ],
+        productscale       => [ undef, $eproductscale ],
+        productvendor      => [ undef, $eproductvendor ],
+        quantityinstock    => [ undef, $equantityinstock ],
+        buyprice           => [ undef, $ebuyprice ],
+        msrp               => [ undef, $emsrp ],
+        productdescription => [ undef, $tproductdescription ],
+    };
+
+    # Required fields: fld_name => [#, Label]
+    # If there is no value in the screen for this fields show a dialog message
+    $self->{rq_controls} = {
+        productcode        => [ 0, '  Product code' ],
+        productname        => [ 1, '  Product name' ],
+        productlinecode    => [ 2, '  Product Line' ],
+        productscale       => [ 3, '  Product scale' ],
+        productvendor      => [ 4, '  Product vendor' ],
+        quantityinstock    => [ 5, '  Quantity in stock' ],
+        buyprice           => [ 6, '  Buy price' ],
+        msrp               => [ 7, '  MSRP' ],
+        productdescription => [ 8, '  Product description' ],
+    };
+
+    return;
+}
+
+1;
+
+=head1 SYNOPSIS
+
+    require App::Fenix::App::Demo::Products;
+
+    my $scr = App::Fenix::App::Demo::Products->new;
+
+    $scr->run_screen($args);
+
+=head2 run_screen
+
+The screen layout
+
+=cut
