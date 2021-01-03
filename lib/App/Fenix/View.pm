@@ -7,6 +7,7 @@ use utf8;
 use Moo;
 use Scalar::Util qw(blessed);
 use App::Fenix::Types qw(
+    Bool
     FenixConfig
     FenixMenubar
     FenixModel
@@ -36,6 +37,24 @@ has config => (
     is       => 'ro',
     isa      => FenixConfig,
     required => 1,
+);
+
+has 'verbose' => (
+    is      => 'ro',
+    isa     => Bool,
+    default => sub {
+        my $self = shift;
+        return $self->config->verbose;
+    },
+);
+
+has 'debug' => (
+    is      => 'ro',
+    isa     => Bool,
+    default => sub {
+        my $self = shift;
+        return $self->config->debug;
+    },
 );
 
 has 'frame' => (
@@ -370,8 +389,9 @@ sub BUILD {
 
     # Load resource file, if found
     my $xres = $self->config->xresource;
+    say "Resource file: $xres" if $self->debug;
     if ( $xres->is_file ) {
-        say "Loading resource file: $xres" if $self->config->debug;
+        say "Loading resource file: $xres" if $self->debug;
         $self->frame->optionReadfile( $xres->stringify, 'widgetDefault' );
     }
     else {
@@ -398,8 +418,8 @@ sub BUILD {
 sub destroy_panel {
     my $self = shift;
     if ( Tk::Exists( $self->record->panel ) ) {
-        say "destroy panel";
         $self->record->panel->destroy;
+        say "  old panel destroyed" if $self->debug;
     }
     return;
 }
