@@ -77,7 +77,7 @@ has '_tset' => (
     default => sub {0},
 );
 
-has 'menu_bar' => (
+has 'menubar' => (
     is      => 'ro',
     isa     => FenixMenubar,
     lazy    => 1,
@@ -90,7 +90,7 @@ has 'menu_bar' => (
     },
 );
 
-has 'tool_bar' => (
+has 'toolbar' => (
     is      => 'ro',
     isa     => FenixToolbar,
     lazy    => 1,
@@ -103,7 +103,7 @@ has 'tool_bar' => (
     },
 );
 
-has 'status_bar' => (
+has 'statusbar' => (
     is      => 'ro',
     isa     => FenixStatusbar,
     lazy    => 1,
@@ -185,13 +185,13 @@ has 'record' => (
 
 sub event_handler_for_menu {
     my ( $self, $name, $calllback ) = @_;
-    $self->menu_bar->get_menu_popup_item($name)->configure( -command => $calllback );
+    $self->menubar->get_menu_popup_item($name)->configure( -command => $calllback );
     return;
 }
 
 sub event_handler_for_tb_button {
     my ( $self, $name, $calllback ) = @_;
-    $self->tool_bar->get_toolbar_btn($name)->configure( -command => $calllback );
+    $self->toolbar->get_btn($name)->configure( -command => $calllback );
     return;
 }
 
@@ -213,7 +213,7 @@ sub set_status {
     my ( $self, $text, $sb_id, $color ) = @_;
 
     $sb_id //= 'ms';
-    my $sb_label = $self->status_bar->get_comp($sb_id);
+    my $sb_label = $self->statusbar->get_comp($sb_id);
 
     return unless ( $sb_label and $sb_label->isa('Tk::Label') );
 
@@ -379,7 +379,7 @@ sub dialog_path {
 
 sub set_tb_buton_state {
     my ($self, $btn, $state) = @_;
-    $self->tool_bar->set_tool_state($btn, $state);
+    $self->toolbar->set_state($btn, $state);
     return;
 }
 
@@ -398,9 +398,9 @@ sub BUILD {
         warn "WW: Resource not found: '$xres'\n";
     }
 
-    $self->menu_bar->make;
-    $self->tool_bar->make;
-    $self->status_bar->make;
+    $self->menubar->make;
+    $self->toolbar->make;
+    $self->statusbar->make;
 
     #$self->input_panel->make;
     $self->notebook->make;
