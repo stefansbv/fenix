@@ -17,17 +17,6 @@ use Hash::Merge;
 with qw/App::Fenix::Role::FileUtils
         App::Fenix::Role::Utils/;
 
-# sub new {
-#     my ( $class, $args ) = @_;
-#     my $self = {
-#         _cfg => App::FenixConfig->instance(),
-#     };
-#     bless $self, $class;
-#     $self->{_scr} = $self->load_conf( $args->{scrcfg} );
-#     $self->alter_toolbar_state;
-#     return $self;
-# }
-
 has 'scrcfg_file' => (
     is       => 'ro',
     isa      => Path,
@@ -363,11 +352,6 @@ sub repo_table_header_info {
     return $href;
 }
 
-# sub app_dateformat {
-#     my $self = shift;
-#     return $self->config->application->{dateformat} || 'iso';
-# }
-
 # sub app_toolbar_attribs {
 #     my $self = shift;
 #     return $self->config->toolbar2;
@@ -402,16 +386,6 @@ sub repo_table_columns_by_level {
 
     return $dss;
 }
-
-# sub alter_toolbar_state {
-#     my $self = shift;
-#     my $tb_orig_ref = $self->config->toolbar->tool;
-#     my $tb_scrn_ref = $self->toolbar // {};
-#     my $merged = Hash::Merge->new('RIGHT_PRECEDENT')
-#         ->merge( $tb_orig_ref, $tb_scrn_ref );
-#     $self->config->toolbar->tool($merged);
-#     return;
-# }
 
 1;
 
