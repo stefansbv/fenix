@@ -14,9 +14,11 @@ use App::Fenix::Types qw(
     Maybe
     FenixOptions
     FenixConfig
+    FenixConfigScr
     FenixModel
     FenixState
     FenixView
+    Str
     TkFrame
 );
 
@@ -104,6 +106,12 @@ has 'view' => (
     lazy     => 1,
     required => 1,
     builder  => '_build_view',
+    handles => [
+        qw(
+          toolbar
+          menubar
+          )
+      ],
 );
 
 sub _build_view {
@@ -139,6 +147,65 @@ has '_state' => (
         get_state
         is_state
     )],
+);
+
+has 'screen_rec_name' => (
+    is  => 'rw',
+    isa => Maybe[Str],
+);
+
+has 'screen_rec_module' => (
+    is  => 'rw',
+    isa => Maybe[Str],
+);
+
+sub require_screen {
+    my ( $self, $module, $from_tools ) = @_;
+    my ( $class, $module_file ) =
+      $self->screen_module_class( $module, $from_tools );
+    eval { require $module_file };
+    if ($@) {
+        print "EE: Can't load '$module_file'\n";
+        print " reason: $@\n" if $self->debug;
+        return;
+    }
+    unless ( $class->can('run_screen') ) {
+        my $msg = "EE: Screen '$class' can not 'run_screen'";
+        print "$msg\n";
+        $self->log->error($msg);
+        return;
+    }
+    return $class;
+}
+
+has 'screen_rec_config' => (
+    is      => 'ro',
+    isa     => FenixConfigScr,
+    lazy    => 1,
+    clearer => 'reset_screen_rec_config',
+    default => sub {
+        my $self = shift;
+        return App::Fenix::Config::Screen->new( scrcfg_file =>
+              $self->config->screen_config_file_path( $self->screen_rec_name ),
+        );
+    },
+);
+
+has 'screen_rec' => (
+    is      => 'ro',
+    # isa     => FenixConfigScr,
+    lazy    => 1,
+    clearer => 'reset_screen_rec',
+    default => sub {
+        my $self = shift;
+        my $class  = $self->screen_rec_module;
+        my $screen = $class->new(
+            config  => $self->config,
+            scrcfg  => $self->screen_rec_config,
+            toolscr => undef, #$from_tools,
+        );
+        return $screen;
+    },
 );
 
 sub log_message {
@@ -331,7 +398,7 @@ sub _setup_events {
 
     #- Custom application menu from menu.yml
 
-    foreach my $item ( @{ $self->view->menu_bar->get_app_menu_popup_list } ) {
+    foreach my $item ( @{ $self->menubar->get_app_menu_popup_list } ) {
         $self->view->event_handler_for_menu(
             $item,
             sub {
@@ -455,7 +522,9 @@ sub screen_module_load {
     my ( $self, $module, $from_tools ) = @_;
     print "Loading >$module<\n" if $self->verbose;
     my $rscrstr = lc $module;
-
+    $self->screen_rec_name($rscrstr);        # set
+    say '#screen: ', $self->screen_rec_name;
+    
     # Destroy existing panel widget
     $self->view->destroy_panel;
     $self->view->record->reset_panel;
@@ -463,30 +532,12 @@ sub screen_module_load {
     # Create new panel wieget
     $self->view->record->make;
     
-    my ( $class, $module_file ) = $self->screen_module_class( $module, $from_tools );
-    eval { require $module_file };
-    if ($@) {
-        print "EE: Can't load '$module_file'\n";
-        print " reason: $@\n" if $self->debug;
-        return;
-    }
-    unless ( $class->can('run_screen') ) {
-        my $msg = "EE: Screen '$class' can not 'run_screen'";
-        print "$msg\n";
-        $self->log->error($msg);
-        return;
-    }
-
-    my $screen_config = App::Fenix::Config::Screen->new(
-        scrcfg_file => $self->config->screen_config_file_path($rscrstr),
-    );
-
-    # New screen instance
-    $self->{_rscrobj} = $class->new(
-        config  => $self->config,
-        scrcfg  => $screen_config,
-        toolscr => $from_tools,
-    );
+    my $screen_class = $self->require_screen($module, $from_tools);
+    $self->screen_rec_module($screen_class); # set
+    say "#class: ", $self->screen_rec_module;
+    $self->reset_screen_rec_config;
+    $self->reset_screen_rec;
+    
     $self->log->trace("New screen instance: $module");
 
     # return unless $self->check_cfg_version;  # current version is 5
@@ -500,12 +551,9 @@ sub screen_module_load {
     # }
 
     # Show screen
-    #my $nb = $self->view->notebook->nb;
-    my $nb = $self->view->record;
-    $self->{_rscrobj}->run_screen($nb);
+    $self->screen_rec->run_screen( $self->view->record );
 
-    # # Store currently loaded screen class
-    # $self->{_rscrcls} = $class;
+    $self->alter_toolbar_state;
 
     # # Load instance config
     # $self->cfg->config_load_instance();
@@ -568,6 +616,8 @@ sub screen_module_load {
     # $self->scrobj('rec')->on_load_screen()
     #     if $self->scrobj('rec')->can('on_load_screen');
 
+
+    
     return 1;                       # to make ok from Test::More happy
 }
 
