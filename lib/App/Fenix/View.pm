@@ -97,8 +97,8 @@ has 'tool_bar' => (
     default => sub {
         my $self = shift;
         return App::Fenix::Toolbar->new(
-            frame  => $self->frame,
-            config => $self->config,
+            frame        => $self->frame,
+            toolbar_file => $self->config->toolbar_file,
         );
     },
 );
@@ -410,7 +410,7 @@ sub BUILD {
     
     $self->set_status( 'connectno16', 'cn' );
     $self->get_geometry;
-    $self->set_geometry_main;
+    # $self->set_geometry_main;
 
     return;
 }

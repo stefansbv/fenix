@@ -121,6 +121,7 @@ sub get_toolbar_btn {
 sub enable_tool {
     my ( $self, $btn_name, $state ) = @_;
     my $tb_btn = $self->get_toolbar_btn($btn_name);
+    die "enable_tool: toolbar button $btn_name is not configured!\n" unless $tb_btn;
     my $other;
     if ($state) {
         if ( $state =~ m{norma|disabled}x ) {

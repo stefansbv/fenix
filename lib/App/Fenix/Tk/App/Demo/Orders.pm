@@ -289,7 +289,7 @@ sub run_screen {
     #
 
     #-- Toolbar
-    # $self->make_toolbar_for_table( 'tm1', $frm_t );
+    $self->make_toolbar_for_table( 'tm1', $frm_t );
 
     my $header = $self->{scrcfg}->dep_table_header_info('tm1');
 

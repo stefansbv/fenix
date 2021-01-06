@@ -5,11 +5,13 @@ package App::Fenix::Toolbar;
 use Moo;
 use MooX::HandlesVia;
 use App::Fenix::Types qw(
-    FenixConfig
+    ArrayRef
     FenixConfigTool
     TkFrame
     TkTB
+    Maybe
     Path
+    Str
 );
 use Path::Tiny;
 use Tk;
@@ -24,20 +26,24 @@ has 'frame' => (
     required => 1,
 );
 
-has config => (
-    is       => 'ro',
-    isa      => FenixConfig,
-    required => 1,
-);
-
 has 'toolbar_file' => (
     is       => 'ro',
     isa      => Path,
-    default => sub {
-        my $self = shift;
-        my $file = $self->config->toolbar_file;
-    },
+    required => 1,
 );
+
+has 'side' => (
+    is      => 'ro',
+    isa     => Str,
+    default => sub { 'top' },
+);
+
+has 'filter' => (
+    is  => 'ro',
+    isa => Maybe[ArrayRef],
+);
+
+#---
 
 has 'tool_bar' => (
     is      => 'ro',
@@ -45,45 +51,52 @@ has 'tool_bar' => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        my $tb = $self->frame->TB(qw/-movable 0 -side top -cursorcontrol 0/);
+        my $tb   = $self->frame->TB(
+            -movable       => 0,
+            -side          => $self->side,
+            -cursorcontrol => 0,
+        );
     },
 );
 
-has 'tool_config' => (
+has 'config' => (
     is      => 'ro',
     isa     => FenixConfigTool,
     lazy    => 1,
     default => sub {
         my $self = shift;
-        return App::Fenix::Config::Toolbar->new( toolbar_file => $self->toolbar_file );
+        return App::Fenix::Config::Toolbar->new(
+            toolbar_file => $self->toolbar_file,
+        );
     },
 );
 
 sub make {
     my $self = shift;
-    my $conf = $self->tool_config;
-    my @toolbars = $conf->all_toolbar_names;
+    my $conf = $self->config;
+    my @toolbars = $self->filter
+        ? @{ $self->filter }
+        : $conf->all_toolbar_names;
     foreach my $name (@toolbars) {
         my $attribs = $conf->get_tool($name);
         $self->tool_bar->make_toolbar_button( $name, $attribs );
     }
-    $self->tool_bar->set_initial_mode(\@toolbars);
-
-    return;
+    $self->tool_bar->set_initial_mode( \@toolbars );
+    return $self->tool_bar;
 }
 
 sub get_toolbar_btn {
     my ( $self, $name ) = @_;
     die "Tool name is required" unless $name;
     warn "Tool '$name' does not exists"
-        unless $self->tool_config->get_tool($name);
+        unless $self->config->get_tool($name);
     return $self->tool_bar->get_toolbar_btn($name);
 }
 
 sub set_tool_state {
     my ( $self, $btn_name, $state ) = @_;
     $self->tool_bar->enable_tool( $btn_name, $state );
-    return;
+    return $state;
 }
 
 1;
