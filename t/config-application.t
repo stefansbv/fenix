@@ -36,7 +36,7 @@ like(
 );
 
 is $cm->get_application('widgetset'), 'Tk', 'widgetset';
-is $cm->get_application('module'), 'Test', 'module';
+is $cm->get_application('module'), 'Demo', 'module';
 is $cm->get_application('dateformat'), 'usa', 'dateformat';
 
 is $cm->get_application('unknown'), undef, 'unknown config returns undef';
