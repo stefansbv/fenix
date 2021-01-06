@@ -13,6 +13,7 @@ use App::Fenix::Types qw(
     Path
     Str
 );
+use Hash::Merge;
 use Path::Tiny;
 use Tk;
 # use Locale::TextDomain 1.20 qw(App-Fenix);
@@ -45,7 +46,7 @@ has 'filter' => (
 
 #---
 
-has 'tool_bar' => (
+has 'tb' => (
     is      => 'ro',
     isa     => TkTB,
     lazy    => 1,
@@ -79,24 +80,34 @@ sub make {
         : $conf->all_toolbar_names;
     foreach my $name (@toolbars) {
         my $attribs = $conf->get_tool($name);
-        $self->tool_bar->make_toolbar_button( $name, $attribs );
+        $self->tb->make_toolbar_button( $name, $attribs );
     }
-    $self->tool_bar->set_initial_mode( \@toolbars );
-    return $self->tool_bar;
+    $self->tb->set_initial_mode( \@toolbars );
+    return $self->tb;
 }
 
-sub get_toolbar_btn {
+sub get_btn {
     my ( $self, $name ) = @_;
     die "Tool name is required" unless $name;
     warn "Tool '$name' does not exists"
         unless $self->config->get_tool($name);
-    return $self->tool_bar->get_toolbar_btn($name);
+    return $self->tb->get_toolbar_btn($name);
 }
 
-sub set_tool_state {
+sub set_state {
     my ( $self, $btn_name, $state ) = @_;
-    $self->tool_bar->enable_tool( $btn_name, $state );
+    $self->tb->enable_tool( $btn_name, $state );
     return $state;
+}
+
+sub alter_btn_states {
+    my ($self, $tb_scrn_ref) = @_;
+    my $tb_orig_ref = $self->config->_toolbar;
+    # my $tb_scrn_ref = $self->screen_rec_config->toolbar // {};
+    my $merged = Hash::Merge->new('RIGHT_PRECEDENT')
+        ->merge( $tb_orig_ref, $tb_scrn_ref );
+    $self->config->_toolbar($merged);
+    return;
 }
 
 1;
