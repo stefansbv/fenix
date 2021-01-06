@@ -6,6 +6,7 @@ use Carp;
 use Moo;
 use App::Fenix::Types qw(
     FenixConfig
+    FenixConfigScr
     FenixView
     Path
     Str
@@ -28,14 +29,14 @@ has config => (
 );
 
 has 'scrcfg' => (
-    is => 'ro',
-    #isa      => FenixConfigScreen,
+    is       => 'ro',
+    isa      => FenixConfigScr,
     required => 1,
 );
 
 has 'view' => (
     is       => 'rw',
-    isa      => FenixView,
+    #isa      => FenixView,
     required => 0,
 );
 
@@ -47,7 +48,7 @@ has 'top' => (
 
 has 'bg' => (
     is       => 'rw',
-    #isa      => FenixView,
+    isa      => Str,
     required => 0,
 );
 
@@ -138,21 +139,29 @@ sub make_toolbar_for_table {
 
 sub make_toolbar_in_frame {
     my ( $self, $toolbar, $tb_frame, $tb_opts ) = @_;
+    my $yaml_file = path( qw(share apps test-tk etc toolbar.yml) );
     my $side = 'top';
     if (ref $tb_opts eq 'HASH') {
         $side = $tb_opts->{side} if $tb_opts->{side};
     }
-    $self->{tb}{$toolbar} = $tb_frame->TB(
-        -movable       => 0,
-        -side          => $side,
-        -cursorcontrol => 0,
-    );
-    my ($toolbars) = $self->scrcfg->scr_toolbar_names($toolbar);
-    my $attribs    = $self->app_toolbar_attribs($toolbar);
-    foreach my $name ( @{$toolbars} ) {
-        $self->{tb}{$toolbar}->make_toolbar_button( $name, $attribs->{$name} );
-    }
-    return;
+    # my ($toolbars) = $self->scrcfg->scr_toolbar_names($toolbar);
+    my $tb = App::Fenix::Toolbar->new(
+        frame        => $tb_frame,
+        toolbar_file => $yaml_file,
+        side         => $side,
+        filter       => [], #$toolbars
+    )->make;
+    # $self->{tb}{$toolbar} = $tb_frame->TB(
+    #     -movable       => 0,
+    #     -side          => $side,
+    #     -cursorcontrol => 0,
+    # );
+
+    # my $attribs    = $self->app_toolbar_attribs($toolbar);
+    # foreach my $name ( @{$toolbars} ) {
+    #     $self->{tb}{$toolbar}->make_toolbar_button( $name, $attribs->{$name} );
+    # }
+    return $tb;
 }
 
 sub tmatrix_add_row {
@@ -208,6 +217,7 @@ sub screen_update {
 
 sub toolscr {
     my $self = shift;
+    # load class is App::Fenix::Tk::Tools::${module}
     return $self->{toolscr};
 }
 

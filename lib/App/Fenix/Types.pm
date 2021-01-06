@@ -42,6 +42,7 @@ use Type::Library 0.040 -base, -declare => qw(
     FenixCompare
     FenixConfigConn
     FenixConfigApp
+    FenixConfigScr
     FenixModelDB
 );
 use Type::Utils -all;
@@ -73,6 +74,7 @@ class_type FenixRecord,     { class => 'App::Fenix::Model::Table::Record' };
 class_type FenixCompare,    { class => 'App::Fenix::Model::Update::Compare' };
 class_type FenixConfigConn, { class => 'App::Fenix::Config::Connection' };
 class_type FenixConfigApp,  { class => 'App::Fenix::Config::Application' };
+class_type FenixConfigScr,  { class => 'App::Fenix::Config::Screen' };
 class_type FenixModelDB,    { class => 'App::Fenix::Model::DB' };
 class_type FenixController, { class => 'App::Fenix::Controller' };
 
