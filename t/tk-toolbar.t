@@ -39,8 +39,8 @@ subtest 'Toolbar from framework toolbar.yml' => sub {
     $mw->after(
         $delay * $milisec,
         sub {
-            ok $tb->set_tool_state( 'tb_fm', 'normal' ), 'tb_fm enabled';
-            ok $tb->set_tool_state( 'tb_sv', 'normal' ), 'tb_sv enabled';
+            ok $tb->set_state( 'tb_fm', 'normal' ), 'tb_fm enabled';
+            ok $tb->set_state( 'tb_sv', 'normal' ), 'tb_sv enabled';
         }
     );
 
@@ -49,9 +49,9 @@ subtest 'Toolbar from framework toolbar.yml' => sub {
     $mw->after(
         $delay * $milisec,
         sub {
-            ok $tb->set_tool_state( 'tb_fm', 'disabled' ), 'tb_fm disabled';
-            ok $tb->set_tool_state( 'tb_sv', 'disabled' ), 'tb_sv disabled';
-            ok $tb->set_tool_state( 'tb_at', 'disabled' ), 'tb_at disabled';
+            ok $tb->set_state( 'tb_fm', 'disabled' ), 'tb_fm disabled';
+            ok $tb->set_state( 'tb_sv', 'disabled' ), 'tb_sv disabled';
+            ok $tb->set_state( 'tb_at', 'disabled' ), 'tb_at disabled';
         }
     );
 
@@ -88,8 +88,8 @@ subtest 'Toolbar from application toolbar.yml' => sub {
     $mw->after(
         $delay * $milisec,
         sub {
-            ok $tb->set_tool_state( 'tb2ad', 'normal' ), 'tb2ad enabled';
-            ok $tb->set_tool_state( 'tb2sv', 'normal' ), 'tb2sv enabled';
+            ok $tb->set_state( 'tb2ad', 'normal' ), 'tb2ad enabled';
+            ok $tb->set_state( 'tb2sv', 'normal' ), 'tb2sv enabled';
         }
     );
 
@@ -98,8 +98,8 @@ subtest 'Toolbar from application toolbar.yml' => sub {
     $mw->after(
         $delay * $milisec,
         sub {
-            ok $tb->set_tool_state( 'tb2ad', 'disabled' ), 'tb2ad disabled';
-            ok $tb->set_tool_state( 'tb2sv', 'disabled' ), 'tb2sv disabled';
+            ok $tb->set_state( 'tb2ad', 'disabled' ), 'tb2ad disabled';
+            ok $tb->set_state( 'tb2sv', 'disabled' ), 'tb2sv disabled';
         }
     );
 
