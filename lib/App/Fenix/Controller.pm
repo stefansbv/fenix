@@ -178,11 +178,11 @@ sub require_screen {
     return $class;
 }
 
-has 'screen_rec_config' => (
+has 'scrcfg' => (
     is      => 'ro',
     isa     => FenixConfigScr,
     lazy    => 1,
-    clearer => 'reset_screen_rec_config',
+    clearer => 'reset_scrcfg',
     default => sub {
         my $self = shift;
         return App::Fenix::Config::Screen->new( scrcfg_file =>
@@ -201,7 +201,7 @@ has 'screen_rec' => (
         my $class  = $self->screen_rec_module;
         my $screen = $class->new(
             config  => $self->config,
-            scrcfg  => $self->screen_rec_config,
+            scrcfg  => $self->scrcfg,
             toolscr => undef, #$from_tools,
         );
         return $screen;
@@ -533,14 +533,14 @@ sub screen_module_load {
     my $screen_class = $self->require_screen($module, $from_tools);
     $self->screen_rec_module($screen_class); # set
     say "#class: ", $self->screen_rec_module;
-    $self->reset_screen_rec_config;
+    $self->reset_scrcfg;
     $self->reset_screen_rec;
 
-    my $maintable_h = $self->screen_rec_config->maintable;
-    use Data::Dump; dd $maintable_h;
+    # my $maintable_h = $self->scrcfg->maintable;
+    # use Data::Dump; dd $maintable_h;
     $self->log->trace("New screen instance: $module");
 
-    # return unless $self->check_cfg_version;  # current version is 5
+    return unless $self->check_cfg_version;  # current version is 5
 
     # # Details page
     # my $has_det = $self->scrcfg('rec')->has_screen_details();
@@ -573,17 +573,17 @@ sub screen_module_load {
 
     # $self->set_app_mode('idle');
 
-    # # List header
-    # my $header_look = $self->scrcfg('rec')->list_header('lookup');
-    # my $header_cols = $self->scrcfg('rec')->list_header('column');
-    # my $fields      = $self->scrcfg('rec')->maintable('columns');
+    # List header
+    my $header_look = $self->scrcfg->list_header('lookup');
+    my $header_cols = $self->scrcfg->list_header('column');
+    my $fields      = $self->scrcfg->maintable('columns');
 
-    # if ($header_look and $header_cols) {
-    #     $self->view->make_list_header( $header_look, $header_cols, $fields );
-    # }
-    # else {
-    #     $self->view->nb_set_page_state( 'lst', 'disabled' );
-    # }
+    if ($header_look and $header_cols) {
+        $self->view->make_list_header( $header_look, $header_cols, $fields );
+    }
+    else {
+        $self->view->nb_set_page_state( 'lst', 'disabled' );
+    }
 
     # #- Event handlers
     # my $group_labels = $self->scrcfg()->scr_toolbar_groups();
@@ -697,6 +697,36 @@ sub about {
 #     eval { require $module_file };
 #     return $@ ? 0 : 1;
 # }
+
+sub check_cfg_version {
+    my $self = shift;
+    my $cfg = $self->scrcfg->screen;
+    my $req_ver = 5;            # current screen config version
+    my $cfg_ver = ( exists $cfg->{version} ) ? $cfg->{version} : 1;
+
+    unless ( $cfg_ver == $req_ver ) {
+        my $screen_name = $self->scrcfg->screen('name');
+        my $msg = "Screen configuration ($screen_name.conf) error!\n\n";
+          $msg .= "The screen configuration file version is '$cfg_ver' ";
+          $msg .= "but the required version is '$req_ver'\n\n";
+          $msg .= "Hint: Upgrade Tpda3 to a newer version.\n" if
+              $cfg_ver > $req_ver;
+        Exception::Config::Version->throw(
+            usermsg => $msg,
+            logmsg  => "Config version error for '$screen_name.conf'\n",
+        );
+        if ( $self->{_rscrcls} ) {
+            Class::Unload->unload( $self->{_rscrcls} );
+            if ( Class::Inspector->loaded( $self->{_rscrcls} ) ) {
+                $self->_log->info("Error unloading '$self->{_rscrcls}' screen");
+            }
+        }
+        return;
+    }
+    else {
+        return 1;
+    }
+}
 
 sub DEMOLISH {
     my $log_file = App::Fenix::Config::log_file_name;
