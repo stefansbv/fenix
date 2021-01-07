@@ -144,23 +144,13 @@ sub make_toolbar_in_frame {
     if (ref $tb_opts eq 'HASH') {
         $side = $tb_opts->{side} if $tb_opts->{side};
     }
-    # my ($toolbars) = $self->scrcfg->scr_toolbar_names($toolbar);
+    my ($toolbars) = $self->scrcfg->scr_toolbar_names($toolbar);
     my $tb = App::Fenix::Toolbar->new(
         frame        => $tb_frame,
         toolbar_file => $yaml_file,
         side         => $side,
-        filter       => [], #$toolbars
+        filter       => $toolbars,
     )->make;
-    # $self->{tb}{$toolbar} = $tb_frame->TB(
-    #     -movable       => 0,
-    #     -side          => $side,
-    #     -cursorcontrol => 0,
-    # );
-
-    # my $attribs    = $self->app_toolbar_attribs($toolbar);
-    # foreach my $name ( @{$toolbars} ) {
-    #     $self->{tb}{$toolbar}->make_toolbar_button( $name, $attribs->{$name} );
-    # }
     return $tb;
 }
 
@@ -203,10 +193,8 @@ sub app_toolbar_attribs {
 
 sub app_toolbar_names {
     my ($self, $name) = @_;
-
     my ($toolbars) = $self->scrcfg->scr_toolbar_names($name);
     my $attribs    = $self->app_toolbar_attribs;
-
     return ( $toolbars, $attribs );
 }
 
