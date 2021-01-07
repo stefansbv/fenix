@@ -22,6 +22,8 @@ use Tk;
 use Tk::Font;
 use Tk::widgets qw(MsgBox);
 
+with 'App::Fenix::Role::Utils';
+
 use App::Fenix::X qw(hurl);
 use App::Fenix::Menubar;
 use App::Fenix::Toolbar;
@@ -465,6 +467,280 @@ sub temporized_clear {
     $self->_tset(1);
     return;
 }
+
+#--- List page
+
+sub get_recordlist {
+    my $self = shift;
+    return $self->notebook->get_comp('rc');
+}
+
+sub make_list_header {
+    my ( $self, $header_look, $header_cols, $fields ) = @_;
+
+    #- Delete existing columns
+    $self->get_recordlist->selectionClear( 0, 'end' );
+    $self->get_recordlist->columnDelete( 0, 'end' );
+
+    #- Make header
+    $self->{lookup} = [];
+    my $colcnt = 0;
+
+    #-- For lookup columns
+
+    foreach my $col ( @{$header_look} ) {
+        $self->list_header( $fields->{$col}, $colcnt );
+
+        # Save index of columns to return (and the column name)
+        push @{ $self->{lookup} }, { $colcnt => $col };
+
+        $colcnt++;
+    }
+
+    #-- For the rest of the columns
+
+    foreach my $col ( @{$header_cols} ) {
+        $self->list_header( $fields->{$col}, $colcnt );
+        $colcnt++;
+    }
+
+    return;
+}
+
+sub list_header {
+    my ( $self, $colattr, $colcnt ) = @_;
+
+    my $label = $self->decode_unless_utf($colattr->{label});
+
+    # Label
+    $self->get_recordlist->columnInsert( 'end', -text => $label );
+
+    # Background
+    $self->get_recordlist->columnGet($colcnt)->Subwidget('heading')
+        ->configure( -background => 'tan' );
+
+    # Width
+    $self->get_recordlist->columnGet($colcnt)->Subwidget('heading')
+        ->configure( -width => $colattr->{displ_width} );
+
+    # Sort order, (A)lpha is default
+    if ( defined $colattr->{datatype} ) {
+        if (   $colattr->{datatype} eq 'integer'
+            or $colattr->{datatype} eq 'numeric' )
+        {
+            $self->get_recordlist->columnGet($colcnt)
+                ->configure( -comparecommand => sub { $_[0] <=> $_[1] } );
+        }
+    }
+    else {
+        print "WW: No 'datatype' attribute for '$label'\n";
+    }
+
+    return;
+}
+
+sub list_init {
+    my $self = shift;
+    $self->get_recordlist->selectionClear( 0, 'end' );
+    $self->get_recordlist->delete( 0, 'end' );
+    return;
+}
+
+sub list_populate {
+    my ( $self, $ary_ref ) = @_;
+
+    return unless ref $ary_ref eq 'ARRAY';
+
+    my $row_count;
+
+    if ( Exists( $self->get_recordlist ) ) {
+        eval { $row_count = $self->get_recordlist->size(); };
+        if ($@) {
+            warn "Error: $@";
+            $row_count = 0;
+        }
+    }
+    else {
+        warn "No MList!\n";
+        return;
+    }
+
+    my $record_count = scalar @{$ary_ref};
+
+    my $list = $self->get_recordlist();
+
+    # Data
+    foreach my $record ( @{$ary_ref} ) {
+        my @record = map { $self->decode_unless_utf($_) } @$record;
+        $list->insert( 'end', \@record );
+        $list->see('end');
+        $row_count++;
+        $list->update;
+
+        # Progress bar
+        my $p = floor( $row_count * 10 / $record_count ) * 10;
+        if ( $p % 10 == 0 ) { $self->{progres} = $p; }
+    }
+
+    # Activate and select last
+    $list->selectionClear( 0, 'end' );
+    $list->activate('end');
+    $list->selectionSet('end');
+    $list->see('active');
+    $self->{progres} = 0;
+
+    return $record_count;
+}
+
+sub list_raise {
+    my $self = shift;
+    $self->{_nb}->raise('lst');
+    $self->get_recordlist->focus;
+    return;
+}
+
+sub has_list_records {
+    my $self = shift;
+
+    my $row_count;
+
+    if ( Exists( $self->get_recordlist ) ) {
+        eval { $row_count = $self->get_recordlist->size(); };
+        if ($@) {
+            warn "Error: $@";
+            $row_count = 0;
+        }
+    }
+    else {
+        warn "Error, List doesn't exists?\n";
+        $row_count = 0;
+    }
+
+    return $row_count;
+}
+
+sub list_read_selected {
+    my $self = shift;
+
+    return unless $self->has_list_records;   # no records
+
+    my @selected;
+    my $indecs;
+
+    eval { @selected = $self->get_recordlist->curselection(); };
+    if ($@) {
+        warn "Error: $@";
+
+        # $self->refresh_sb( 'll', 'No record selected' );
+        return;
+    }
+    else {
+        $indecs = pop @selected;    # first row in case of multiselect
+        if ( !defined $indecs ) {
+
+            # Activate the last row
+            $indecs = 'end';
+            $self->get_recordlist->selectionClear( 0, 'end' );
+            $self->get_recordlist->activate($indecs);
+            $self->get_recordlist->selectionSet($indecs);
+            $self->get_recordlist->see('active');
+        }
+    }
+
+    # 'lookup' is an arrayref and holds the return column: index => name
+    my @idxs;
+    push @idxs, keys %{$_} foreach @{ $self->{lookup} };
+
+    my @returned;
+    # In scalar context, getRow returns the value of column 0
+    eval { @returned = ( $self->get_recordlist->getRow($indecs) )[@idxs]; };
+    if ($@) {
+        warn "Error: $@";
+        return;
+    }
+    else {
+        @returned = $self->trim(@returned) if @returned;
+    }
+
+    my %selected;
+    foreach my $lookup ( @{ $self->{lookup} } ) {
+        foreach my $idx ( keys %{$lookup} ) {
+            my $field = $lookup->{$idx};
+            $selected{$field} = $returned[$idx];
+        }
+    }
+
+    return \%selected;
+}
+
+sub list_remove_selected {
+    my ( $self, $keys ) = @_;
+
+    my $sel = $self->list_read_selected();
+    if ( !ref $sel ) {
+        print "EE: Nothing selected!, use brute force? :)\n";
+        return;
+    }
+
+    my $dc   = Data::Compare->new($sel, $keys);
+    my $same = $dc->Cmp ? 1 : 0;
+    unless ($same) {
+        print "EE: No matching list row!\n";
+        return;
+    }
+
+    #- OK, found, delete from list
+
+    my @selected;
+    eval { @selected = $self->get_recordlist->curselection(); };
+    if ($@) {
+        warn "Error: $@";
+        return;
+    }
+    else {
+        my $indecs = pop @selected;    # first row in case of multiselect
+        if ( defined $indecs ) {
+            $self->get_recordlist->delete($indecs);
+        }
+        else {
+            print "EE: Nothing selected!\n";
+        }
+    }
+
+    return;
+}
+
+sub list_locate {
+    my ( $self, $pk_val, $fk_val ) = @_;
+
+    my $pk_idx = $self->{lookup}[0];    # indices for Pk and Fk cols
+    my $fk_idx = $self->{lookup}[1];
+    my $idx;
+
+    my @returned = $self->get_recordlist->get( 0, 'end' );
+    my $i = 0;
+    foreach my $rec (@returned) {
+        if ( $rec->[$pk_idx] eq $pk_val ) {
+
+            # Check fk, if defined
+            if ( defined $fk_idx ) {
+                if ( $rec->[$fk_idx] eq $fk_val ) {
+                    $idx = $i;
+                    last;    # found!
+                }
+            }
+            else {
+                $idx = $i;
+                last;        # found!
+            }
+        }
+
+        $i++;
+    }
+    return $idx;
+}
+
+#--- End page list
 
 #-- Quit
 

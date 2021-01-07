@@ -5,6 +5,7 @@ package App::Fenix::Role::Utils;
 use 5.0100;
 use utf8;
 use Try::Tiny;
+use Encode qw(is_utf8 decode);
 use App::Fenix::X qw(hurl);
 use Moo::Role;
 
@@ -61,6 +62,12 @@ sub categorize_message {
     return ($text, $color);
 }
 
+sub decode_unless_utf {
+    my ($self, $value) = @_;
+    $value = decode( 'utf8', $value ) unless is_utf8($value);
+    return $value;
+}
+
 no Moo::Role;
 
 1;
@@ -85,5 +92,9 @@ __END__
 
 Use ST to sort hash by value (Id), returns an array or an array
 reference of the sorted items.
+
+=head2 decode_unless_utf
+
+Decode a string if is not utf8.
 
 =cut
