@@ -407,20 +407,11 @@ sub BUILD {
     $self->logger_panel->make;
 
     #$self->record->make;
-    
+
     $self->set_status( 'connectno16', 'cn' );
     $self->get_geometry;
     # $self->set_geometry_main;
 
-    return;
-}
-
-sub destroy_panel {
-    my $self = shift;
-    if ( Tk::Exists( $self->record->panel ) ) {
-        $self->record->panel->destroy;
-        say "  old panel destroyed" if $self->debug;
-    }
     return;
 }
 

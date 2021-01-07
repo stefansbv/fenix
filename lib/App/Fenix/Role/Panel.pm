@@ -10,12 +10,6 @@ use App::Fenix::Types qw(
 );
 use namespace::autoclean;
 
-# has config => (
-#     is       => 'ro',
-#     isa      => FenixConfig,
-#     required => 1,
-# );
-
 has '_controls' => (
     is          => 'ro',
     handles_via => 'Hash',
@@ -46,6 +40,14 @@ sub _build_panel {
 sub make {
     my $self = shift;
     return $self->panel;
+}
+
+sub destroy {
+    my $self = shift;
+    if ( Tk::Exists( $self->panel ) ) {
+        $self->panel->destroy;
+    }
+    return;
 }
 
 1;

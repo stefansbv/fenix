@@ -524,20 +524,20 @@ sub screen_module_load {
     my $rscrstr = lc $module;
     $self->screen_rec_name($rscrstr);        # set
     say '#screen: ', $self->screen_rec_name;
-    
-    # Destroy existing panel widget
-    $self->view->destroy_panel;
-    $self->view->record->reset_panel;
 
-    # Create new panel wieget
+    # Destroy and recreate record panel widget
+    $self->view->record->destroy;
+    $self->view->record->reset_panel;
     $self->view->record->make;
-    
+
     my $screen_class = $self->require_screen($module, $from_tools);
     $self->screen_rec_module($screen_class); # set
     say "#class: ", $self->screen_rec_module;
     $self->reset_screen_rec_config;
     $self->reset_screen_rec;
-    
+
+    my $maintable_h = $self->screen_rec_config->maintable;
+    use Data::Dump; dd $maintable_h;
     $self->log->trace("New screen instance: $module");
 
     # return unless $self->check_cfg_version;  # current version is 5
@@ -553,7 +553,7 @@ sub screen_module_load {
     # Show screen
     $self->screen_rec->run_screen( $self->view->record );
 
-    $self->alter_toolbar_state;
+    #$self->alter_toolbar_state;
 
     # # Load instance config
     # $self->cfg->config_load_instance();
@@ -617,7 +617,7 @@ sub screen_module_load {
     #     if $self->scrobj('rec')->can('on_load_screen');
 
 
-    
+
     return 1;                       # to make ok from Test::More happy
 }
 
