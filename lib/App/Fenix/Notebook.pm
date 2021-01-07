@@ -12,8 +12,8 @@ use App::Fenix::Types qw(
 );
 use Path::Tiny;
 use Tk;
-use Tk::widgets qw(NoteBook);
-# use Locale::TextDomain 1.20 qw(App-Fenix);
+use Tk::widgets qw(LabFrame NoteBook MListbox);
+use Locale::TextDomain 1.20 qw(App-Fenix);
 
 has 'frame' => (
     is       => 'ro',
@@ -21,17 +21,17 @@ has 'frame' => (
     required => 1,
 );
 
-has config => (
-    is       => 'ro',
-    isa      => FenixConfig,
-    required => 1,
-);
+# has config => (
+#     is       => 'ro',
+#     isa      => FenixConfig,
+#     required => 1,
+# );
 
 has 'nb' => (
     is      => 'ro',
     isa     => TkNB,
     lazy    => 1,
-    builder => '_build_notebook',
+    builder => '_build_nb',
 );
 
 has 'page_curr' => (
@@ -46,7 +46,7 @@ has 'page_prev' => (
     default => sub { '' },
 );
 
-sub _build_notebook {
+sub _build_nb {
     my $self = shift;
 
     my $nb = $self->frame->NoteBook->pack(
@@ -85,6 +85,44 @@ sub _build_notebook {
     return $nb;
 }
 
+#---
+
+has 'list' => (
+    is      => 'ro',
+    #isa     => TkMListbox,
+    lazy    => 1,
+    builder => '_build_list',
+);
+
+sub _build_list {
+    my $self = shift;
+    my $panel = $self->get_comp('lst');
+    my $frm_box = $panel->LabFrame(
+        -foreground => 'blue',
+        -label      => __ 'Search results',
+        -labelside  => 'acrosstop'
+    )->pack( -expand => 1, -fill => 'both' );
+
+    my $rc = $frm_box->Scrolled(
+        'MListbox',
+        -scrollbars         => 'se',
+        -background         => 'white',
+        -textwidth          => 10,
+        -highlightthickness => 2,
+        -width              => 0,
+        -selectmode         => 'browse',
+        -relief             => 'sunken',
+        -columns            => [ [qw/-text Nul -textwidth 10/] ]
+    );
+    $rc->pack( -expand => 1, -fill => 'both' );
+
+    $self->set_comp('rc', $rc);
+
+    return $rc;
+}
+
+#---
+
 has '_components' => (
     is          => 'ro',
     handles_via => 'Hash',
@@ -100,7 +138,9 @@ has '_components' => (
 
 sub make {
     my $self = shift;
-    return $self->nb;
+    my $nb = $self->nb;
+    $self->list;
+    return $nb;
 }
 
 sub rename_panel {
@@ -125,7 +165,8 @@ sub set_nb_current {
     my ( $self, $p ) = @_;
     $self->page_prev( $self->page_curr );
     $self->page_curr($p);
-    return;
+    $self->nb->raise($p);
+    return $p;
 }
 
 sub get_nb_previous_page {
