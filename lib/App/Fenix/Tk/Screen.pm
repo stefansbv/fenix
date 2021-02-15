@@ -144,20 +144,12 @@ sub make_toolbar_in_frame {
     if (ref $tb_opts eq 'HASH') {
         $side = $tb_opts->{side} if $tb_opts->{side};
     }
-<<<<<<< HEAD
     my ($toolbars) = $self->scrcfg->scr_toolbar_names($toolbar);
-=======
-    # my ($toolbars) = $self->scrcfg->scr_toolbar_names($toolbar);
->>>>>>> 6a746b0 (Initialize the screen config module and add a test)
     my $tb = App::Fenix::Toolbar->new(
         frame        => $tb_frame,
         toolbar_file => $yaml_file,
         side         => $side,
-<<<<<<< HEAD
         filter       => $toolbars,
-    )->make;
-=======
-        filter       => [], #$toolbars
     )->make;
     # $self->{tb}{$toolbar} = $tb_frame->TB(
     #     -movable       => 0,
@@ -169,7 +161,6 @@ sub make_toolbar_in_frame {
     # foreach my $name ( @{$toolbars} ) {
     #     $self->{tb}{$toolbar}->make_toolbar_button( $name, $attribs->{$name} );
     # }
->>>>>>> 6a746b0 (Initialize the screen config module and add a test)
     return $tb;
 }
 
