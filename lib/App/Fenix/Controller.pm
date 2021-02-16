@@ -745,6 +745,37 @@ __END__
 
 =head1 SYNOPSIS
 
+    use App::Fenix::Controller;
+
+    my $controller = App::Fenix::Controller->new();
+
+    $controller->view->MainLoop;
+
+=head2 new
+
+Constructor method.
+
+=over
+
+=item _rscrcls  - class name of the current I<record> screen
+
+=item _rscrobj  - current I<record> screen object
+
+=item _dscrcls  - class name of the current I<detail> screen
+
+=item _dscrobj  - current I<detail> screen object
+
+=item _tblkeys  - record of database table keys and values
+
+=item _scrdata  - current screen data
+
+=back
+
+=head2 _init
+
+Show the login dialog, until connected or until a fatal error message
+is received from the RDBMS.
+
 =head1 ATTRIBUTES
 
 =head1 METHODS
