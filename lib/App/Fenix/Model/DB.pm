@@ -5,7 +5,7 @@ package App::Fenix::Model::DB;
 use feature 'say';
 use Moo;
 use Try::Tiny;
-use SQL::Abstract;
+use SQL::Abstract::More;
 use App::Fenix::Types qw(
     Bool
     DBIdb
