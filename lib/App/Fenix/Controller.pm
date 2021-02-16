@@ -8,6 +8,7 @@ use Moo;
 use Try::Tiny;
 use Path::Tiny;
 use File::Basename;
+use Class::Unload;
 use IPC::System::Simple 1.17 qw(run);
 use English;                                 # for $PERL_VERSION
 use App::Fenix::Types qw(
@@ -154,7 +155,7 @@ has 'screen_rec_name' => (
     isa => Maybe[Str],
 );
 
-has 'screen_rec_module' => (
+has 'screen_rec_class' => (
     is  => 'rw',
     isa => Maybe[Str],
 );
@@ -198,7 +199,7 @@ has 'screen_rec' => (
     clearer => 'reset_screen_rec',
     default => sub {
         my $self = shift;
-        my $class  = $self->screen_rec_module;
+        my $class  = $self->screen_rec_class;
         my $screen = $class->new(
             config  => $self->config,
             scrcfg  => $self->scrcfg,
@@ -530,9 +531,13 @@ sub screen_module_load {
     $self->view->record->reset_panel;
     $self->view->record->make;
 
+    # Unload current screen
+    $self->screen_module_unload;
+
     my $screen_class = $self->require_screen($module, $from_tools);
-    $self->screen_rec_module($screen_class); # set
-    say "#class: ", $self->screen_rec_module;
+    $self->screen_rec_class($screen_class); # set
+    say "#class: ", $self->screen_rec_class;
+
     $self->reset_scrcfg;
     $self->reset_screen_rec;
 
@@ -698,6 +703,20 @@ sub about {
 #     return $@ ? 0 : 1;
 # }
 
+sub screen_module_unload {
+    my $self = shift;
+    if ( $self->screen_rec_class ) {
+        Class::Unload->unload( $self->screen_rec_class );
+        if ( Class::Inspector->loaded( $self->screen_rec_class ) ) {
+            $self->log->info("Error unloading '" . $self->screen_rec_class . "' screen");
+        }
+        else {
+            $self->log->info("Unloading '" . $self->screen_rec_class . "' screen");
+        }
+    }
+    return;
+}
+
 sub check_cfg_version {
     my $self = shift;
     my $cfg = $self->scrcfg->screen;
@@ -715,12 +734,7 @@ sub check_cfg_version {
             usermsg => $msg,
             logmsg  => "Config version error for '$screen_name.conf'\n",
         );
-        if ( $self->{_rscrcls} ) {
-            Class::Unload->unload( $self->{_rscrcls} );
-            if ( Class::Inspector->loaded( $self->{_rscrcls} ) ) {
-                $self->_log->info("Error unloading '$self->{_rscrcls}' screen");
-            }
-        }
+        $self->screen_module_unload;
         return;
     }
     else {
@@ -741,8 +755,6 @@ __END__
 
 =encoding utf8
 
-=head1 DESCRIPTION
-
 =head1 SYNOPSIS
 
     use App::Fenix::Controller;
@@ -751,9 +763,7 @@ __END__
 
     $controller->view->MainLoop;
 
-=head2 new
-
-Constructor method.
+Old variable names:
 
 =over
 
@@ -771,14 +781,51 @@ Constructor method.
 
 =back
 
-=head2 _init
+=head1 DESCRIPTION
+
+
+=head1 INTERFACE
+
+=head2 ATTRIBUTES
+
+=head3 options
+
+=head3 config
+
+=head3 model
+
+=head3 view
+
+=head3 frame
+
+=head3 _state
+
+=head3 screen_rec_name
+
+The short name of the current screen and configuration.  For example
+C<products>, C<orders>, etc.
+
+=head3 screen_rec_class
+
+The class name of the current screen.  For example
+C<App::Fenix::Tk::App::Demo::Products>.
+
+=head3 scrcfg
+
+=head3 screen_rec
+
+=head2 screen_module_class
+
+Builds and returns the screen module class name in the
+L<App::Fenix::Tk::App> name space.  If the $from_tools parameter is
+true, uses the tools name space: L<App::Fenix::Tk::Tools>.
+
+=head2 METHODS
+
+=head3 _init
 
 Show the login dialog, until connected or until a fatal error message
 is received from the RDBMS.
-
-=head1 ATTRIBUTES
-
-=head1 METHODS
 
 =head3 BUILD
 
