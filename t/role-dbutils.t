@@ -134,7 +134,7 @@ subtest 'test special_ops' => sub {
     $sql = SQL::Abstract->new( special_ops => $u->special_ops );
     ( $stmt, @bind ) = $sql->select( 'table', undef, $where );
     like $stmt, qr/SELECT \* FROM table/, 'select * part';
-    like $stmt, qr/WHERE \( description SIMILAR TO\s+\?\s+\)/, 'similar to';
+    like $stmt, qr/WHERE description SIMILAR TO\s+\?\s*/, 'similar to';
     is \@bind, ['%(b|d)%'], 'bind 1 params';
 
     # match
@@ -144,7 +144,7 @@ subtest 'test special_ops' => sub {
     $sql = SQL::Abstract->new( special_ops => $u->special_ops );
     ( $stmt, @bind ) = $sql->select( 'table', undef, $where );
     like $stmt, qr/SELECT \* FROM table/, 'select * part';
-    like $stmt, qr/WHERE \( description ~\s+\?\s+\)/, 'match';
+    like $stmt, qr/WHERE description ~\s+\?\s*/, 'match';
     is \@bind, ['%(b|d)%'], 'bind 1 params';
 };
 
