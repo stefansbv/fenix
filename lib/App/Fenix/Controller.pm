@@ -487,7 +487,7 @@ sub show_mnemonics {
     my $self = shift;
     my $apps_path = path $self->config->sharedir, 'apps';
     my $iter = $apps_path->iterator;
-    say "Mnemonics (configurations):";
+    say "Mnemonics (application configurations):";
     while ( my $path = $iter->() ) {
         my $name = $path->basename;
         my $v = ' '; # $self->validate_config($name) ? ' ' : '!';
