@@ -5,7 +5,7 @@ use Test2::V0;
 
 use App::Fenix::Config::Connection;
 
-my $conn_file = path( qw(t connection.yml) );
+my $conn_file = path( qw(t configs apps test-cfg etc connection.yml) );
 my $conn_uri  = q(db:pg://localhost:5432/classicmodels);
 
 subtest 'Connection config from yaml file' => sub {
