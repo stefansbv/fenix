@@ -212,7 +212,7 @@ sub query_record {
     my $cols  = $opts->{columns};
     my $where = $opts->{where};
 
-    my $sql = SQL::Abstract->new( special_ops => $self->special_ops );
+    my $sql = SQL::Abstract::More->new( special_ops => $self->special_ops );
 
     my ( $stmt, @bind ) = $sql->select( $table, $cols, $where );
     $self->debug_print_sql('query_record', $stmt, \@bind) if $self->debug;
