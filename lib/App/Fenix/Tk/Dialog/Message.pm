@@ -309,9 +309,11 @@ Where icon can be one of: 'error', 'info', or 'question'.
 
 Where type can be one of: 'ok', 'close', 'yn', or 'ycn'.
 
-=head2 new
+=head2 Populate
 
 Constructor method.
+
+=head2 view
 
 =head2 message_dialog
 
