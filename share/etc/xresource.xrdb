@@ -2,7 +2,7 @@
 ! Common settings
 !----------------------------------------------------
 !*font								: Tahoma -12
-*font								: Helvetica -12
+!*font								: Helvetica -12
 !*font								: {Nimbus Sans L} -12
 !*font								: {dejavu serif} -13
 !*background 						: forestgreen
@@ -20,5 +20,5 @@
 !*Button*padX                   	: 10m
 !*Button*Anchor		        		: ne
 !*Button*Justify		       		: left
-*Button*Font		           		: arial 8 bold
+!*Button*Font		           		: arial 8 bold
 !----------------------------------------------------
