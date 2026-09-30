@@ -14,6 +14,7 @@ use App::Fenix::Types qw(
     FenixConfigMain
     FenixConfigConn
     FenixConfigApp
+    FenixConfigInst
 );
 use Path::Tiny;
 use Try::Tiny;
@@ -23,6 +24,7 @@ use App::Fenix::X qw(hurl);
 use App::Fenix::Config::Connection;
 use App::Fenix::Config::Main;
 use App::Fenix::Config::Application;
+use App::Fenix::Config::Instance;
 use namespace::autoclean;
 
 with 'App::Fenix::Role::Paths';
@@ -193,6 +195,28 @@ has 'application' => (
     },
 );
 
+has 'instance_file' => (
+    is      => 'ro',
+    isa     => Path,
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return path $self->app_path_for('etc'), 'instance.yml';
+    },
+);
+
+has 'instance' => (
+    is      => 'ro',
+    isa     => FenixConfigInst,
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return App::Fenix::Config::Instance->new(
+            instance_file => $self->instance_file,
+        );
+    },
+);
+
 has 'log_file_path' => (
     is       => 'ro',
     isa      => Path,
@@ -261,7 +285,7 @@ __END__
 
 =head3 user
 
-=head3 pass
+=head3 password
 
 =head3 cfpath
 
@@ -287,10 +311,20 @@ __END__
 
 =head3 connection
 
+=head3 application_file
+
+=head3 application
+
 =head3 log_file_path
 
 =head3 log_file_name
 
 =head2 INSTANCE METHODS
+
+=head3 application_dateformat
+
+=head3 application_class
+
+=head3 screen_config_file_path
 
 =cut

@@ -412,7 +412,7 @@ sub BUILD {
 
     $self->set_status( 'connectno16', 'cn' );
     $self->get_geometry;
-    # $self->set_geometry_main;
+    $self->set_geometry_main;
 
     return;
 }
@@ -438,15 +438,7 @@ sub get_geometry {
 
 sub set_geometry_main {
     my $self = shift;
-
-    # $self->cfg->config_load_instance();
-    my $geom;
-    # if ( $self->cfg->can('geometry') ) {
-    #     my $go = $self->cfg->geometry();
-    #     if (exists $go->{main}) {
-    #         $geom = $go->{main};
-    #     }
-    # }
+    my $geom = $self->config->instance->get_screen('main');
     unless ($geom) {
         $geom = '800x600+20+20';              # default geom
     }

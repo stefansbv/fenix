@@ -48,11 +48,18 @@ has '_screen_names' => (
 );
 
 sub _build_instance {
-    my $self = shift;
-    my $instance_file = $self->instance_file->stringify;
-    say "# loading instance file '$instance_file'";
-    my $yaml  = $self->load_yaml($instance_file);
-    return $yaml;
+    my $self          = shift;
+    my $instance_file = $self->instance_file;
+    if ( $instance_file->is_file ) {
+        $instance_file = $instance_file->stringify;
+        say "# loading instance file '$instance_file'";
+        my $yaml = $self->load_yaml($instance_file);
+        return $yaml;
+    }
+    else {
+       say "No instance file found.";
+    }
+    return {};
 }
 
 sub save {
