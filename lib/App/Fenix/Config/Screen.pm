@@ -17,17 +17,6 @@ use Hash::Merge;
 with qw/App::Fenix::Role::FileUtils
         App::Fenix::Role::Utils/;
 
-# sub new {
-#     my ( $class, $args ) = @_;
-#     my $self = {
-#         _cfg => App::FenixConfig->instance(),
-#     };
-#     bless $self, $class;
-#     $self->{_scr} = $self->load_conf( $args->{scrcfg} );
-#     $self->alter_toolbar_state;
-#     return $self;
-# }
-
 sub _init {
     my $self = shift;
     $self->alter_toolbar_state;
@@ -39,12 +28,6 @@ has 'scrcfg_file' => (
     isa      => Path,
     required => 1,
 );
-
-# has 'config' => (
-#     is       => 'ro',
-#     isa      => FenixConfig,
-#     required => 1,
-# );
 
 # scrcfg
 has 'scr' => (
