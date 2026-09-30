@@ -439,9 +439,16 @@ sub get_geometry {
 sub set_geometry_main {
     my $self = shift;
     my $geom = $self->config->instance->get_screen('main');
+    say "# geom = $geom";
     unless ($geom) {
         $geom = '800x600+20+20';              # default geom
     }
+    $self->frame->geometry($geom);
+    return;
+}
+
+sub set_geometry {
+    my ( $self, $geom ) = @_;
     $self->frame->geometry($geom);
     return;
 }

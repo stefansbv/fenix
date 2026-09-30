@@ -59,7 +59,7 @@ sub _build_instance {
     else {
        say "No instance file found.";
     }
-    return {};
+    return { geometry => '' };
 }
 
 sub save {

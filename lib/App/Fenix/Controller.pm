@@ -35,6 +35,8 @@ use App::Fenix::Exceptions;
 use App::Fenix::Tk::Dialog::Message;
 use App::Fenix::Tk::Dialog::Login;
 
+use Data::Dump;
+
 with 'MooX::Log::Any';
 
 has options => (
@@ -186,8 +188,10 @@ has 'scrcfg' => (
     clearer => 'reset_scrcfg',
     default => sub {
         my $self = shift;
-        return App::Fenix::Config::Screen->new( scrcfg_file =>
-              $self->config->screen_config_file_path( $self->screen_rec_name ),
+        return App::Fenix::Config::Screen->new(
+            scrcfg_file => $self->config->screen_config_file_path(
+                $self->screen_rec_name
+            ),
         );
     },
 );
@@ -437,6 +441,12 @@ sub _setup_events {
         sub { $self->on_reload }
     );
 
+    #-- Save geometry
+    $self->view->event_handler_for_tb_button(
+        'tb_at',
+        sub { $self->save_geometry }
+    );
+
     #-- Quit
     $self->view->event_handler_for_tb_button(
         'tb_qt',
@@ -611,8 +621,8 @@ sub screen_module_load {
     # my $descr = $self->scrcfg('rec')->screen('description');
     # $self->view->title(' Tpda3 - ' . $descr) if $descr;
 
-    # # Update window geometry
-    # $self->set_geometry();
+    # Update window geometry
+    $self->set_geometry();
 
     # # Load lists into ComboBox type widgets
     # $self->screen_load_lists();
@@ -621,9 +631,34 @@ sub screen_module_load {
     # $self->scrobj('rec')->on_load_screen()
     #     if $self->scrobj('rec')->can('on_load_screen');
 
-
-
     return 1;                       # to make ok from Test::More happy
+}
+
+sub set_geometry {
+    my $self = shift;
+    my $screen_name
+        = $self->screen_rec_name
+        ? $self->screen_rec_name
+        : return;
+    my $geom = $self->config->instance->get_screen($screen_name);
+    unless ($geom) {
+        $geom = $self->scrcfg->scr->{screen}{geometry};
+    }
+    $self->view->set_geometry($geom);
+    return;
+}
+
+sub save_geometry {
+    my $self = shift;
+    my $screen_name = $self->screen_rec_name
+        ? $self->screen_rec_name
+        : 'main';
+    say "# save geometry: $screen_name";
+    $self->config->instance->save(
+        $screen_name,
+        $self->view->get_geometry,
+    );
+    return;
 }
 
 sub about {
