@@ -209,7 +209,6 @@ has 'log_file_name' => (
     isa     => Str,
     lazy    => 1,
     default => sub {
-        my $self = shift;
         return path( File::HomeDir->home, 'fenix.log' )->stringify;
     },
 );
