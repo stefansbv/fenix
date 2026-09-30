@@ -557,13 +557,17 @@ sub screen_module_load {
 
     return unless $self->check_cfg_version;  # current version is 5
 
-    # # Details page
-    # my $has_det = $self->scrcfg('rec')->has_screen_details();
-    # if ($has_det) {
-    #     my $lbl_details = __ 'Details';
-    #     $self->view->create_notebook_panel( 'det', $lbl_details );
-    #     $self->_set_event_handler_nb('det');
-    # }
+    # Details page
+    my $has_det = $self->scrcfg->has_screen_details;
+    if ($has_det) {
+        say " has details = $has_det";
+        # my $lbl_details = __ 'Details';
+        # $self->view->create_notebook_panel( 'det', $lbl_details );
+        # $self->_set_event_handler_nb('det');
+    }
+    else {
+        say " no details screen";
+    }
 
     # Show screen
     $self->screen_rec->run_screen( $self->view->record );
