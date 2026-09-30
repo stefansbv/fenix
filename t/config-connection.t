@@ -1,4 +1,5 @@
 use 5.010001;
+use 5.010001;
 use utf8;
 use Path::Tiny;
 use Test2::V0;
@@ -13,7 +14,7 @@ subtest 'Connection config from yaml file' => sub {
         connection_file => $conn_file,
     ), 'new instance';
     isa_ok $cc, ['App::Fenix::Config::Connection'],'config connection instance';
-    is $cc->driver, 'pg', 'the engine';
+    is $cc->driver, 'sqlite', 'the engine';
     is $cc->dbname, 'classicmodels', 'the dbname';
     is $cc->user, undef, 'the user name';
     is $cc->role, undef, 'the role name';
@@ -25,11 +26,11 @@ subtest 'Connection config from nonexistent yaml file' => sub {
         connection_file => path('nonexistent.yaml'),
     ), 'new instance';
     isa_ok $cc, ['App::Fenix::Config::Connection'],'config connection instance';
-	like (
-		dies { $cc->driver },
-		qr/The connection configuration 'nonexistent.yaml' was not found/,
-		"throws: connection configuration not found"
-	);
+    like (
+        dies { $cc->driver },
+        qr/The connection configuration 'nonexistent.yaml' was not found/,
+        "throws: connection configuration not found"
+    );
 };
 
 subtest 'Connection config from URI string' => sub {
@@ -48,11 +49,11 @@ subtest 'Connection config from URI string' => sub {
 
 subtest 'Connection config from void' => sub {
     ok my $cc = App::Fenix::Config::Connection->new, 'new instance';
-	like (
-		dies { $cc->uri_db },
-		qr/A connection file or an URI/,
-		'a connection file or an URI is expected'
-	);
+    like (
+        dies { $cc->uri_db },
+        qr/A connection file or an URI/,
+        'a connection file or an URI is expected'
+    );
 };
 
 done_testing;
