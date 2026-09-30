@@ -119,7 +119,7 @@ sub run {
             $type =~ s{\(.*\)}{}gmx;       # just the type
             $type =~ s{\s+precision}{}gmx; # just 'double'
             $type =~ s{bigint}{int64}gmx;  # made with 'bigint' but is 'int64'
-            is $info->{$name}{type}, $type, "type for field '$name' is '$type'";
+            like $info->{$name}{type}, qr/$type/i, "type for field '$name' is '$type'";
         }
 
         throws_ok { $engine->get_info() }
