@@ -3,6 +3,7 @@
 #
 use utf8;
 use Path::Tiny;
+use SQL::Abstract;
 use SQL::Abstract::More;
 use Test2::V0;
 
