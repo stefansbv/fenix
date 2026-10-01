@@ -100,8 +100,10 @@ subtest 'Test Config test-tk, sharedir = dist-dir' => sub {
     is $conf->get_apps_exe_path('chm_viewer'), '/usr/bin/okular',
         'get_apps_exe_path';
 
+    like $conf->screen_config_file_path('products'), qr(.+/scr/products.conf),
+        'screen_config_file_path';
 
-    like $conf->screen_config_file_path('products'), qr(.+/scr/products.conf),'screen_config_file_path';
+    like $conf->toolbar_config_file_path, qr(.+/etc/toolbar.yml), 'toolbar config file path';
 };
 
 subtest 'Test Config test-tk-pg' => sub {
