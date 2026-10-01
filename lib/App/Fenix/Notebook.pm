@@ -158,7 +158,7 @@ sub nb_set_page_state {
 
 sub get_nb_current_page {
     my $self = shift;
-    return $self->raised;
+    return $self->nb->raised;
 }
 
 sub set_nb_current {
