@@ -2,7 +2,7 @@ package App::Fenix::View;
 
 # ABSTRACT: The View
 
-use 5.010;
+use feature 'say';;
 use utf8;
 use Moo;
 use Scalar::Util qw(blessed);
@@ -357,6 +357,32 @@ sub control_read_t {
 sub set_control_state {
     my ( $self, $state, $rules ) = @_;
     $self->set_status( $state, 'md' );
+    return;
+}
+
+=head2 get_toolbar_btn
+
+Return a toolbar button when we know the its name
+
+=cut
+
+sub get_toolbar_btn {
+    my ( $self, $name ) = @_;
+    return $self->toolbar->get_toolbar_btn($name);
+}
+
+=head2 enable_tool
+
+Toggle tool bar button.  If state is defined then set to state do not
+toggle.
+
+State can come as 0 | 1 and normal | disabled.
+
+=cut
+
+sub enable_tool {
+    my ( $self, $btn_name, $state ) = @_;
+    $self->toolbar->set_state( $btn_name, $state );
     return;
 }
 
