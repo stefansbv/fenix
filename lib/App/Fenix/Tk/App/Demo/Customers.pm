@@ -9,17 +9,13 @@ extends 'App::Fenix::Tk::Screen';
 sub run_screen {
     my ( $self, $rec ) = @_;
 
-    my $rec_page = $rec->panel;
+    $self->_init($rec);                      # initilalization
 
-    $self->{view} = $rec->view;
-    $self->{bg}   = $rec->bg_color;
-
-    # my $validation
-    #     = App::Fenix::Tk::Validation->new( $self->{scrcfg}, $self->{view} );
+    my $top = $self->top;                    # or use $self->top directly
 
     #-- Frame1 - Customer
 
-    my $frame1 = $rec_page->LabFrame(
+    my $frame1 = $top->LabFrame(
         -foreground => 'blue',
         -label      => 'Customer',
         -labelside  => 'acrosstop',
@@ -246,10 +242,6 @@ sub run_screen {
     my $ecreditlimit = $frame1->MEntry(
         -width    => 10,
         -justify  => 'right',
-        # -validate => 'key',
-        # -vcmd     => sub {
-        #     $validation->validate_entry( 'creditlimit', @_ );
-        # },
     );
 
     $ecreditlimit->form(
