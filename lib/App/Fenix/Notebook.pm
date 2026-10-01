@@ -3,7 +3,7 @@ package App::Fenix::Notebook;
 # ABSTRACT: Panel
 
 use Moo;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 use App::Fenix::Types qw(
     FenixConfig
     TkFrame
@@ -20,12 +20,6 @@ has 'frame' => (
     isa      => TkFrame,
     required => 1,
 );
-
-# has config => (
-#     is       => 'ro',
-#     isa      => FenixConfig,
-#     required => 1,
-# );
 
 has 'nb' => (
     is      => 'ro',
@@ -49,12 +43,14 @@ has 'page_prev' => (
 sub _build_nb {
     my $self = shift;
 
-    my $nb = $self->frame->NoteBook->pack(
+    my $nb = $self->frame->NoteBook(
+        -tabpadx => 12,
+    )->pack(
         -side   => 'top',
         -expand => 1,
         -fill   => 'both',
-        -padx   => 3,
-        -pady   => 3,
+        -padx   => 6,
+        -pady   => 6,
         -ipadx  => 6,
         -ipady  => 6
     );
@@ -125,7 +121,7 @@ sub _build_list {
 
 has '_components' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     default     => sub { {} },
