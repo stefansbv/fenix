@@ -2,14 +2,11 @@ package App::Fenix::Tk::App::Demo::Orders;
 
 # ABSTRACT: The App::Fenix::App::Demo::Orders screen
 
-use strict;
-use warnings;
-
+use Moo;
 use Tk::widgets qw(DateEntry JComboBox);    #  MatchingBE
-
-use base 'App::Fenix::Tk::Screen';
-
 use App::Fenix::Tk::TM;
+
+extends 'App::Fenix::Tk::Screen';
 
 sub run_screen {
     my ( $self, $args ) = @_;
@@ -289,7 +286,7 @@ sub run_screen {
     #
 
     #-- Toolbar
-    $self->make_toolbar_for_table( 'tm1', $frm_t );
+    $self->make_toolbar_in_frame( 'tm1', $frm_t );
 
     my $header = $self->{scrcfg}->dep_table_header_info('tm1');
 
