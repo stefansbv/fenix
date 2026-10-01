@@ -2,7 +2,7 @@ package App::Fenix::Tk::TM;
 
 # ABSTRACT: Create a table matrix widget
 
-use 5.010;
+use feature 'say';
 use strict;
 use warnings;
 use Carp;
