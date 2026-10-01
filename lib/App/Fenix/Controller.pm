@@ -334,6 +334,31 @@ sub screen_init_keys {
     return;
 }
 
+=head2 table_meta
+
+Return the table metadata on the $page with $name.
+
+=cut
+
+sub table_meta {
+    my ($self, $name) = @_;
+    die "table_meta: Unknown 'name' parameter" unless $name;
+    return $self->get_table($name);
+}
+
+=head2 is_record
+
+Return true if a record is loaded in the main screen.
+
+=cut
+
+sub is_record {
+    my $self  = shift;
+    my $table = $self->table_meta('main');
+    return if !$table or !$table->isa('Fenix::Model::Table');
+    return $table->get_key(0)->value;
+}
+
 sub is_connected {
     my $self = shift;
     return $self->get_state('conn_state') eq 'connected';
@@ -671,26 +696,19 @@ sub screen_module_load {
     # $self->setup_bindings_table();
 
     # Set table metadata
-    # $self->{_tblkeys}{rec} = undef; # reset
-    $self->rm_table( $self->all_tables );
-
+    $self->rm_table( $self->all_tables );     # reset
     $self->screen_init_keys( 'rec', $self->scrcfg );
-
     my @tables = $self->all_tables;
     foreach my $t (@tables) {
-        say "# table: $t";
-        say $self->get_table($t)->table;
+        say "# table: $t  ", $self->get_table($t)->table;
     }
 
-    # $self->screen_init_details( $self->scrcfg('rec') );
-
-    # $self->set_app_mode('idle');
+    $self->set_app_mode('idle');
 
     # List header
     my $header_look = $self->scrcfg->list_header('lookup');
     my $header_cols = $self->scrcfg->list_header('column');
     my $fields      = $self->scrcfg->maintable('columns');
-
     if ($header_look and $header_cols) {
         $self->view->make_list_header( $header_look, $header_cols, $fields );
     }
@@ -732,6 +750,129 @@ sub screen_module_load {
     say "# screen_module_load: done loading.";
 
     return 1;                       # to make ok from Test::More happy
+}
+
+sub set_mode {
+    my ($self, $mode) = @_;
+    $self->set_state('gui_state', $mode);
+    return;
+}
+
+sub get_mode {
+    my ($self) = @_;
+    return $self->get_state('gui_state');
+}
+
+=head2 set_app_mode
+
+Set application mode to $mode.
+
+=cut
+
+sub set_app_mode {
+    my ( $self, $mode ) = @_;
+    $self->set_mode($mode);
+    $self->toggle_interface_controls;
+    unless ( $self->screen_rec_class ) {
+        say "set_app_mode: No screen_rec_class!";
+        return;
+    }
+
+    $self->toggle_screen_interface_controls;
+    if ( my $method_name = $self->{method_for_mode}{$mode} ) {
+        $self->$method_name();
+    }
+    else {
+        print "WW: '$mode' not implemented!\n";
+    }
+    return 1;    # to make ok from Test::More happy
+                 # probably missing something :) TODO!
+}
+
+sub toggle_interface_controls {
+    my $self = shift;
+
+    my $conf = $self->toolbar->config;
+    my $mode = $self->get_mode;
+    say " mode = $mode";
+    my $page = $self->notebook->get_nb_current_page;
+    say " page = $page";
+    # dd $conf;
+
+    my $is_rec = $self->is_record;
+
+    foreach my $name ( $conf->all_toolbar_names ) {
+        my $status = $conf->get_tool($name)->{state}{$page}{$mode};
+        say "tb: $name -> $status";
+
+        #- Corrections
+        unless ( ( $page eq 'lst' ) and $self->{_rscrcls} ) {
+            next unless $status;
+        }
+
+        #     #-- Restore note
+
+        #     if ( ( $name eq 'tb_tr' ) and ( $status eq 'normal' ) ) {
+        #         my $data_file = $self->storable_file_name;
+        #         $status = 'disabled' if !-f $data_file;
+        #     }
+
+        #     #-- Print preview.
+
+        #     # Activate only if default report configured for screen
+        #     if ( ( $name eq 'tb_pr' ) and ( $status eq 'normal' ) ) {
+        #         $status = 'disabled' if
+        #             !$self->scrcfg('rec')->has_defaultreport;
+        #     }
+
+        #     #-- Generate document
+
+        #     # Activate only if default document template configured
+        #     # for screen
+        #     if ( ( $name eq 'tb_gr' ) and ( $status eq 'normal' ) ) {
+        #         $status = 'disabled' if
+        #             !$self->scrcfg('rec')->has_defaultdocument;
+        #     }
+        # }
+        # else {
+        #     #-- List tab
+
+        #     $status = 'disabled';
+        # }
+
+        #- Set status for toolbar buttons
+
+        $self->view->enable_tool( $name, $status );
+    }
+
+    return;
+}
+
+sub toggle_screen_interface_controls {
+    my $self = shift;
+
+    my $page = $self->notebook->get_nb_current_page();
+    my $mode = $self->get_mode;
+
+    return if $page eq 'lst';
+
+    #- Toolbar (table)
+
+    my $group_labels = $self->scrcfg->scr_toolbar_groups;
+    foreach my $label ( @{$group_labels} ) {
+        say " group labels = $label";
+        my ( $toolbars, $tb_attrs ) = $self->screen_rec_class->app_toolbar_names($label);
+        foreach my $button_name ( @{$toolbars} ) {
+            my $status
+                = $self->scrcfg()->screen('style') eq 'report'
+                ? 'normal'
+                : $tb_attrs->{$button_name}{state}{$page}{$mode};
+            say " button_name: $button_name -> $status";
+            # $self->screen_rec_class($page)->enable_tool( $label, $button_name, $status );
+            $self->screen_rec_class->enable_tool( $label, $button_name, $status );
+        }
+    }
+    return;
 }
 
 sub set_geometry {
