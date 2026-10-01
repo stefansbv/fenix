@@ -5,6 +5,8 @@ use utf8;
 use Path::Tiny;
 use Test2::V0;
 
+use Data::Dump;
+
 use App::Fenix::Config::Screen;
 
 subtest 'Customers screen config' => sub {
@@ -246,7 +248,7 @@ subtest 'Orders screen config' => sub {
     my $cols_h = $conf->deptable_columns('tm1');
     my @cols = sort keys %{$cols_h};
     is \@cols, $expected_cols, 'deptable columns';
-    
+
     my $col = $conf->deptable_columns('tm1', 'orderlinenumber');
 
     is ref $col, 'HASH', 'deptable column orderlinenumber';
@@ -277,6 +279,19 @@ subtest 'Orders screen config' => sub {
     my $cols_rw_h = $conf->deptable_columns_rw('tm1');
     my @cols_rw = sort keys %{$cols_rw_h};
     is \@cols_rw, $expected_rw_cols, 'deptable rw columns';
+
+    # scrtoolbars
+
+    is ref $conf->scrtoolbar, 'HASH', 'has the scrtoolbar hash';
+    is ref $conf->scrtoolbar('tm1'), 'ARRAY', 'has the scrtoolbar array';
+
+    is ref $conf->screen_toolbars('tm1'), 'ARRAY', 'screen toolbars';
+
+    my ($names, $attribs) = $conf->scr_toolbar_names('tm1');
+    is ref $names, 'ARRAY', 'has scr_toolbar_names: names';
+    is ref $attribs, 'HASH', 'has scr_toolbar_names: attribs ';
+
+    is ref $conf->scr_toolbar_groups, 'ARRAY', 'has scr_toolbar_groups';
 };
 
 # productcode     - rw
@@ -285,7 +300,7 @@ subtest 'Orders screen config' => sub {
 # ordervalue      - ro
 # orderlinenumber - rw
 # productname     - ro
-    
+
 # {
 #   datatype => "integer",
 #   displ_width => 5,
