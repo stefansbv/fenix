@@ -2,6 +2,7 @@ package App::Fenix::Config::Screen;
 
 # ABSTRACT: Configuration data structure for screens
 
+use feature 'say';
 use Moo;
 use MooX::HandlesVia;
 use App::Fenix::Types qw(
@@ -13,6 +14,8 @@ use App::Fenix::Types qw(
 );
 use Data::Diver qw( Dive ); #  DiveError
 use Hash::Merge;
+
+use Data::Dump;
 
 with qw/App::Fenix::Role::FileUtils
         App::Fenix::Role::Utils/;
@@ -268,9 +271,9 @@ sub toolbar {
 
 sub has_screen_details {
     my $self = shift;
-    my $screen = $self->screen('details');
-    if ( ref $screen eq 'HASH' ) {
-        return scalar keys %{$screen};
+    my $deptable = $self->deptable;
+    if ( ref $deptable eq 'HASH' ) {
+        return scalar keys %{$deptable};
     }
     return;
 }
