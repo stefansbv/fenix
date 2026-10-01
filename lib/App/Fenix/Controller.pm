@@ -2,9 +2,10 @@ package App::Fenix::Controller;
 
 # ABSTRACT: The Controller
 
-use 5.010;
+use feature 'say';
 use utf8;
 use Moo;
+use MooX::HandlesVia;
 use Try::Tiny;
 use Path::Tiny;
 use File::Basename;
@@ -28,6 +29,7 @@ use App::Fenix::Options;
 use App::Fenix::Config;
 use App::Fenix::Config::Screen;
 use App::Fenix::Model;
+use App::Fenix::Model::Table;
 use App::Fenix::State;
 use App::Fenix::Refresh;
 use App::Fenix::View;
@@ -113,8 +115,9 @@ has 'view' => (
         qw(
           toolbar
           menubar
-          )
-      ],
+          notebook
+      )
+    ],
 );
 
 sub _build_view {
@@ -152,14 +155,30 @@ has '_state' => (
     )],
 );
 
+# _rscrcls
 has 'screen_rec_name' => (
     is  => 'rw',
     isa => Maybe[Str],
 );
 
+# _rscrobj
 has 'screen_rec_class' => (
     is  => 'rw',
     isa => Maybe[Str],
+);
+
+# _tblkeys
+has '_table_meta' => (
+    is          => 'ro',
+    handles_via => 'Hash',
+    lazy        => 1,
+    init_arg    => undef,
+    default     => sub { {} },
+    handles     => {
+        get_table  => 'get',
+        add_table  => 'set',
+        all_tables => 'keys',
+    },
 );
 
 sub require_screen {
@@ -251,6 +270,54 @@ sub _init {
             };
         }
     );
+    return;
+}
+
+sub screen_init_keys {
+    my ($self, $page, $scrcfg) = @_;
+
+    #-- Main table on the '$page' page
+
+    my @fields    = keys %{$self->scrcfg->maintable_columns};
+    my @fields_rw = keys %{$self->scrcfg->maintable_columns_rw};
+    my $params = {
+        page      => 'rec',
+        display   => 'record',
+        keys      => $self->scrcfg->maintable( 'keys', 'name' ),
+        table     => $self->scrcfg->maintable( 'name' ),
+        view      => $self->scrcfg->maintable( 'view' ),
+        fields    => \@fields,
+        fields_rw => \@fields_rw,
+    };
+    # dd $params;
+    my $table = App::Fenix::Model::Table->new($params), 'new table object';
+
+    if (ref $table) {
+        # Register main table object on $page page
+        $self->add_table( 'main', $table );
+    }
+
+    #-- Dependent tables (TableMatrix)
+
+    # my @tms = keys %{ $self->scrcfg->deptable };
+
+    # die "The screen configuration for the dependent tables requires a label (for example: 'tm1').\n"
+    #     if any { $_ eq 'columns' } @tms;
+
+    # foreach my $tm (@tms) {
+    #     my $keys_d = $self->scrcfg->deptable_keys( $tm, 'name' );
+    #     my $table = Fenix::Model::Table->new(
+    #         keys   => $keys_d,
+    #         table  => $self->scrcfg->deptable_name($tm),
+    #         view   => $self->scrcfg->deptable_view($tm),
+    #     );
+
+    #     if (ref $table) {
+    #         # Register dep '$tm' table object on $page page
+    #         $self->{_tblkeys}{$page}{$tm} = $table;
+    #     }
+    # }
+
     return;
 }
 
