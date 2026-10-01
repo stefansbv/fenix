@@ -5,9 +5,10 @@ package App::Fenix::Controller;
 use feature 'say';
 use utf8;
 use Moo;
-use MooX::HandlesVia;
+use MooX::HandlesVia; # Data::Perl::Collection::Hash::MooseLike
 use Try::Tiny;
 use Path::Tiny;
+use List::Util qw(any);
 use File::Basename;
 use Class::Unload;
 use IPC::System::Simple 1.17 qw(run);
@@ -178,6 +179,7 @@ has '_table_meta' => (
         get_table  => 'get',
         add_table  => 'set',
         all_tables => 'keys',
+        rm_table   => 'delete',
     },
 );
 
@@ -291,8 +293,7 @@ sub screen_init_keys {
     };
 
     # dd $params;
-    my $table = App::Fenix::Model::Table->new($params), 'new table object';
-
+    my $table = App::Fenix::Model::Table->new($params);
     if ( ref $table ) {
 
         # Register main table object on $page page
@@ -301,26 +302,34 @@ sub screen_init_keys {
 
     #-- Dependent tables (TableMatrix)
 
-    # my @tms = keys %{ $self->scrcfg->deptable('tm1') };
-    say " deptable name : ", $self->scrcfg->deptable_name;
+    return unless $self->scrcfg->has_screen_details;
 
+    my @tms = keys %{ $self->scrcfg->deptable };
 
-    # die "The screen configuration for the dependent tables requires a label (for example: 'tm1').\n"
-    #     if any { $_ eq 'columns' } @tms;
+    die "The screen configuration for the dependent tables requires a label (for example: 'tm1').\n"
+        if any { $_ eq 'columns' } @tms;
 
-    # foreach my $tm (@tms) {
-    #     my $keys_d = $self->scrcfg->deptable_keys( $tm, 'name' );
-    #     my $table = Fenix::Model::Table->new(
-    #         keys   => $keys_d,
-    #         table  => $self->scrcfg->deptable_name($tm),
-    #         view   => $self->scrcfg->deptable_view($tm),
-    #     );
+    foreach my $tm (@tms) {
+        say " - tm: $tm  name : ", $self->scrcfg->deptable_name($tm) if $self->verbose;
+        my @fields    = keys %{ $self->scrcfg->deptable_columns($tm) };
+        my @fields_rw = keys %{ $self->scrcfg->deptable_columns_rw($tm) };
+        my $params    = {
+            page      => 'rec',
+            display   => 'record',
+            keys      => $self->scrcfg->deptable_keys( $tm, 'name' ),
+            table     => $self->scrcfg->deptable_name($tm),
+            view      => $self->scrcfg->deptable_view($tm),
+            fields    => \@fields,
+            fields_rw => \@fields_rw,
+        };
+        # dd $params;
+        my $table = App::Fenix::Model::Table->new($params);
+        if ( ref $table ) {
 
-    #     if (ref $table) {
-    #         # Register dep '$tm' table object on $page page
-    #         $self->{_tblkeys}{$page}{$tm} = $table;
-    #     }
-    # }
+            # Register main table object on $page page
+            $self->add_table( $tm, $table );
+        }
+    }
 
     return;
 }
@@ -661,9 +670,17 @@ sub screen_module_load {
     # #-- Lookup bindings for tables (TableMatrix)
     # $self->setup_bindings_table();
 
-    # # Set Key column names
+    # Set table metadata
     # $self->{_tblkeys}{rec} = undef; # reset
-    # $self->screen_init_keys( 'rec', $self->scrcfg('rec') );
+    $self->rm_table( $self->all_tables );
+
+    $self->screen_init_keys( 'rec', $self->scrcfg );
+
+    my @tables = $self->all_tables;
+    foreach my $t (@tables) {
+        say "# table: $t";
+        say $self->get_table($t)->table;
+    }
 
     # $self->screen_init_details( $self->scrcfg('rec') );
 
@@ -711,6 +728,8 @@ sub screen_module_load {
     # # Trigger on_load_screen method from screen if defined
     # $self->scrobj('rec')->on_load_screen()
     #     if $self->scrobj('rec')->can('on_load_screen');
+
+    say "# screen_module_load: done loading.";
 
     return 1;                       # to make ok from Test::More happy
 }
