@@ -2,6 +2,7 @@ package App::Fenix::Tk::Screen;
 
 # ABSTRACT: App::Fenix Screen base class
 
+use feature 'say';
 use Carp;
 use Moo;
 use App::Fenix::Types qw(
@@ -17,6 +18,8 @@ use App::Fenix::Tk::Entry;
 use App::Fenix::Tk::Text; # TODO: check
 use App::Fenix::Tk::TB;
 use App::Fenix::Config::Screen;
+
+use Data::Dump;
 
 #use App::Fenix::Tk::Validation;
 
@@ -139,7 +142,7 @@ sub make_toolbar_for_table {
 
 sub make_toolbar_in_frame {
     my ( $self, $toolbar, $tb_frame, $tb_opts ) = @_;
-    my $yaml_file = path( qw(share apps test-tk etc toolbar.yml) );
+    my $yaml_file = $self->config->toolbar_config_file_path;
     my $side = 'top';
     if (ref $tb_opts eq 'HASH') {
         $side = $tb_opts->{side} if $tb_opts->{side};
@@ -151,17 +154,7 @@ sub make_toolbar_in_frame {
         side         => $side,
         filter       => $toolbars,
     )->make;
-    # $self->{tb}{$toolbar} = $tb_frame->TB(
-    #     -movable       => 0,
-    #     -side          => $side,
-    #     -cursorcontrol => 0,
-    # );
-
-    # my $attribs    = $self->app_toolbar_attribs($toolbar);
-    # foreach my $name ( @{$toolbars} ) {
-    #     $self->{tb}{$toolbar}->make_toolbar_button( $name, $attribs->{$name} );
-    # }
-    return $tb;
+    return;
 }
 
 sub tmatrix_add_row {
@@ -203,6 +196,8 @@ sub app_toolbar_attribs {
 
 sub app_toolbar_names {
     my ($self, $name) = @_;
+    say $name;
+    dd $self->scrcfg;
     my ($toolbars) = $self->scrcfg->scr_toolbar_names($name);
     my $attribs    = $self->app_toolbar_attribs;
     return ( $toolbars, $attribs );

@@ -263,6 +263,19 @@ sub screen_config_file_path {
     }
 }
 
+sub toolbar_config_file_path {
+    my ( $self ) = @_;
+    my $file_name = 'toolbar.yml';
+    my $file_path = $self->app_path_for('etc');
+    my $tb_file   = path $file_path, $file_name;
+    if ( $tb_file->is_file ) {
+        return $tb_file;
+    }
+    else {
+        die "toolbar config file '$file_name' not found in '$file_path'";
+    }
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
