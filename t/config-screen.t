@@ -166,7 +166,7 @@ subtest 'Orders screen config' => sub {
     is $conf->screen('description'), 'Orders',        'screen description';
     is $conf->screen('style'),       'default',       'screen style';
     is $conf->screen('geometry'),    '715x490+20+20', 'screen geometry';
-    is $conf->has_screen_details, undef, 'has no screen details';
+    is $conf->has_screen_details, 1, 'has screen details';
 
     is $conf->defaultreport,   {}, 'defaultreport';
     is $conf->defaultdocument, {}, 'defaultdocument';
