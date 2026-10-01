@@ -278,28 +278,32 @@ sub screen_init_keys {
 
     #-- Main table on the '$page' page
 
-    my @fields    = keys %{$self->scrcfg->maintable_columns};
-    my @fields_rw = keys %{$self->scrcfg->maintable_columns_rw};
-    my $params = {
+    my @fields    = keys %{ $self->scrcfg->maintable_columns };
+    my @fields_rw = keys %{ $self->scrcfg->maintable_columns_rw };
+    my $params    = {
         page      => 'rec',
         display   => 'record',
         keys      => $self->scrcfg->maintable( 'keys', 'name' ),
-        table     => $self->scrcfg->maintable( 'name' ),
-        view      => $self->scrcfg->maintable( 'view' ),
+        table     => $self->scrcfg->maintable('name'),
+        view      => $self->scrcfg->maintable('view'),
         fields    => \@fields,
         fields_rw => \@fields_rw,
     };
+
     # dd $params;
     my $table = App::Fenix::Model::Table->new($params), 'new table object';
 
-    if (ref $table) {
+    if ( ref $table ) {
+
         # Register main table object on $page page
         $self->add_table( 'main', $table );
     }
 
     #-- Dependent tables (TableMatrix)
 
-    # my @tms = keys %{ $self->scrcfg->deptable };
+    # my @tms = keys %{ $self->scrcfg->deptable('tm1') };
+    say " deptable name : ", $self->scrcfg->deptable_name;
+
 
     # die "The screen configuration for the dependent tables requires a label (for example: 'tm1').\n"
     #     if any { $_ eq 'columns' } @tms;
@@ -611,9 +615,15 @@ sub screen_module_load {
     # Unload current screen
     $self->screen_module_unload;
 
-    my $screen_class = $self->require_screen($module, $from_tools);
-    $self->screen_rec_class($screen_class); # set
-    say "#class: ", $self->screen_rec_class;
+    my $screen_class = $self->require_screen( $module, $from_tools );
+    if ($screen_class) {
+        $self->screen_rec_class($screen_class);    # set
+        say "#class: ", $self->screen_rec_class;
+    }
+    else {
+        say "No screen class";
+        return;
+    }
 
     $self->reset_scrcfg;
     $self->reset_screen_rec;
