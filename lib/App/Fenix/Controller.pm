@@ -198,11 +198,25 @@ has '_state' => (
     )],
 );
 
+=head3 screen_rec_name
+
+The short name of the current screen and configuration.  For example
+C<products>, C<orders>, etc.
+
+=cut
+
 # _rscrcls
 has 'screen_rec_name' => (
     is  => 'rw',
     isa => Maybe[Str],
 );
+
+=head3 screen_rec_class
+
+The class name of the current screen.  For example
+C<App::Fenix::Tk::App::Demo::Products>.
+
+=cut
 
 # _rscrobj
 has 'screen_rec_class' => (
@@ -282,6 +296,13 @@ sub log_message {
     $self->view->log_message($msg, $newline);
     return;
 }
+
+=head3 _init
+
+Show the login dialog, until connected or until a fatal error message
+is received from the RDBMS.
+
+=cut
 
 sub _init {
     my $self = shift;
@@ -848,6 +869,14 @@ sub application_class {
     return qq{App::Fenix::Tk::App::${module}};
 }
 
+=head2 screen_module_class
+
+Builds and returns the screen module class name in the
+L<App::Fenix::Tk::App> name space.  If the $from_tools parameter is
+true, uses the tools name space: L<App::Fenix::Tk::Tools>.
+
+=cut
+
 sub screen_module_class {
     my ( $self, $module, $from_tools ) = @_;
     my $module_class;
@@ -1307,51 +1336,5 @@ Old variable names:
 =back
 
 =head1 DESCRIPTION
-
-
-=head1 INTERFACE
-
-=head2 ATTRIBUTES
-
-=head3 options
-
-=head3 config
-
-=head3 model
-
-=head3 view
-
-=head3 frame
-
-=head3 _state
-
-=head3 screen_rec_name
-
-The short name of the current screen and configuration.  For example
-C<products>, C<orders>, etc.
-
-=head3 screen_rec_class
-
-The class name of the current screen.  For example
-C<App::Fenix::Tk::App::Demo::Products>.
-
-=head3 scrcfg
-
-=head3 screen_rec
-
-=head2 screen_module_class
-
-Builds and returns the screen module class name in the
-L<App::Fenix::Tk::App> name space.  If the $from_tools parameter is
-true, uses the tools name space: L<App::Fenix::Tk::Tools>.
-
-=head2 METHODS
-
-=head3 _init
-
-Show the login dialog, until connected or until a fatal error message
-is received from the RDBMS.
-
-=head3 BUILD
 
 =cut
