@@ -33,6 +33,8 @@ use App::Fenix::Panel::Initial;
 use App::Fenix::Panel::Logger;
 use App::Fenix::Panel::Record;
 
+use Data::Dump;
+
 # Main window
 
 has config => (
@@ -304,6 +306,26 @@ sub control_write_t {
     return;
 }
 
+sub control_write_c {
+    my ( $self, $control, $value, $state ) = @_;
+    # unless ( blessed $control and $control->isa('Tk::Checkbutton') ) {
+    #     warn qq(Widget for writing checkbox '\$field' not found\n);
+    #     return;
+    # }
+    my $off_value = $control->cget('-offvalue');
+    my $on_value  = $control->cget('-onvalue');
+    $state = $state || $control->cget('-state');
+    $value = $off_value unless $value;
+    if ( $value eq $on_value ) {
+        $control->select;
+    }
+    else {
+        $control->deselect;
+    }
+    $control->configure( -state => $state );
+    return;
+}
+
 =head2 control_read
 
 Run the appropriate sub according to control (entry widget) type.
@@ -354,10 +376,13 @@ sub control_read_t {
     return $control->get( '0.0', 'end' );
 }
 
-sub set_control_state {
-    my ( $self, $state, $rules ) = @_;
-    $self->set_status( $state, 'md' );
-    return;
+sub control_read_c {
+    my ( $self, $control, $name ) = @_;
+    unless ( blessed $control and $control->isa('Tk::Checkbutton') ) {
+        warn qq(WW: Widget for reading combobox '$name' not found\n);
+        return;
+    }
+    return $control->{Value};
 }
 
 =head2 get_toolbar_btn
@@ -408,6 +433,39 @@ sub dialog_path {
 sub set_tb_buton_state {
     my ($self, $btn, $state) = @_;
     $self->toolbar->set_state($btn, $state);
+    return;
+}
+
+# sub set_control_state {
+#     my ( $self, $state, $rules ) = @_;
+#     $self->set_status( $state, 'md' );
+#     return;
+# }
+
+sub set_control_state {
+    my ( $self, $name, $state ) = @_;
+    # my $ctrl = $self->get_ctrl($name);
+    # if ($ctrl) {
+    #     $ctrl->ctrl->configure( -state      => $state );
+    #     $ctrl->ctrl->configure( -background => $self->bg_color )
+    #       if $state eq 'disabled';
+    #     $ctrl->ctrl->configure( -background => 'white' )
+    #       if $state eq 'normal' and $name !~ /^b_/;
+    # }
+    # else {
+    #     warn "WW: Control name '$name', not found\n";
+    # }
+}
+
+sub set_control_states {
+    my ( $self, $state, $rules ) = @_;
+    say "refresh: set_control_states";
+    # $self->set_statusbar_status( $state, 'md' );
+    foreach my $name ( keys %{ $rules } ) {
+        say " rule: $name";
+        my $state = $rules->{$name};
+        $self->set_control_state($name, $state);
+    }
     return;
 }
 
