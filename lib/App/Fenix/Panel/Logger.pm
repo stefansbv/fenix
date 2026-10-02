@@ -27,8 +27,7 @@ sub _build_panel {
 
     my $bot = $self->frame->Frame(
         # -background => 'red',
-    );
-    $bot->pack(
+    )->pack(
         -side   => 'bottom',
         -expand => 0,
         -fill   => 'x',
@@ -40,8 +39,7 @@ sub _build_panel {
         -label      => 'Log',
         -labelside  => 'acrosstop',
         -foreground => 'blue',
-    );
-    $f_log->pack(
+    )->pack(
         -side   => 'bottom',
         -expand => 1,
         -fill   => 'both',
@@ -60,8 +58,7 @@ sub _build_panel {
         -scrollbars => 'e',
         -background => 'lightyellow',
         -relief     => 'flat',
-    );
-    $tlogger->pack(
+    )->pack(
         -expand => 1,
         -fill   => 'both',
         -padx   => 5,
