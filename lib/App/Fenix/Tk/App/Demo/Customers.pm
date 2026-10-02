@@ -13,6 +13,8 @@ sub run_screen {
 
     my $top = $self->top;                    # or use $self->top directly
 
+    my $f1d = 120;    # distance from left
+
     #-- Frame1 - Customer
 
     my $frame1 = $top->LabFrame(
@@ -22,8 +24,8 @@ sub run_screen {
     )->grid(
         -row    => 0,
         -column => 0,
-        -ipadx  => 3,
-        -ipady  => 3,
+        -ipadx  => 5,
+        -ipady  => 5,
         -sticky => 'nsew',
     );
 
@@ -42,7 +44,7 @@ sub run_screen {
         -width    => 35,
     )->form(
         -top  => [ '&', $lcustomername, 0 ],
-        -left => [ %0,  110 ],
+        -left => [ %0,  $f1d ],
     );
 
     #-+ Customernumber
@@ -71,7 +73,7 @@ sub run_screen {
         -width => 42,
     )->form(
         -top  => [ '&', $lcontactlastname, 0 ],
-        -left => [ %0,  110 ],
+        -left => [ %0,  $f1d ],
     );
 
     #- Contactfirstname (contactfirstname)
@@ -89,7 +91,7 @@ sub run_screen {
         -width => 42,
     )->form(
         -top  => [ '&', $lcontactfirstname, 0 ],
-        -left => [ %0,  110 ],
+        -left => [ %0,  $f1d ],
     );
 
     #- Phone (phone)
@@ -107,7 +109,7 @@ sub run_screen {
         -width => 42,
     )->form(
         -top  => [ '&', $lphone, 0 ],
-        -left => [ %0,  110 ],
+        -left => [ %0,  $f1d ],
     );
 
     #- Addressline1 (addressline1)
@@ -125,7 +127,7 @@ sub run_screen {
         -width => 42,
     )->form(
         -top  => [ '&', $laddressline1, 0 ],
-        -left => [ %0,  110 ],
+        -left => [ %0,  $f1d ],
     );
 
     #- Addressline2 (addressline2)
@@ -143,7 +145,7 @@ sub run_screen {
         -width => 42,
     )->form(
         -top  => [ '&', $laddressline2, 0 ],
-        -left => [ %0,  110 ],
+        -left => [ %0,  $f1d ],
     );
 
     #- City (city)
@@ -161,7 +163,7 @@ sub run_screen {
         -width => 42,
     )->form(
         -top  => [ '&', $lcity, 0 ],
-        -left => [ %0,  110 ],
+        -left => [ %0,  $f1d ],
     );
 
     #- State (state)
@@ -179,7 +181,7 @@ sub run_screen {
         -width => 42,
     )->form(
         -top  => [ '&', $lstate, 0 ],
-        -left => [ %0,  110 ],
+        -left => [ %0,  $f1d ],
     );
 
     #- Countryname (countryname)
@@ -197,7 +199,7 @@ sub run_screen {
         -width => 35,
     )->form(
         -top  => [ '&', $lcountryname, 0 ],
-        -left => [ %0,  110 ],
+        -left => [ %0,  $f1d ],
     );
 
     #-+ Countrycode
@@ -225,7 +227,7 @@ sub run_screen {
         -width => 35,
     )->form(
         -top  => [ '&', $lsalesrepemployee, 0 ],
-        -left => [ %0,  110 ],
+        -left => [ %0,  $f1d ],
     );
 
     #-+ Eemployeenumber
@@ -254,7 +256,7 @@ sub run_screen {
         -justify  => 'right',
     )->form(
         -top  => [ '&', $lcreditlimit, 0 ],
-        -left => [ %0,  110 ],
+        -left => [ %0,  $f1d ],
     );
 
     #- Postalcode
