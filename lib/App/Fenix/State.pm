@@ -14,9 +14,9 @@ with 'App::Fenix::Role::Observable';
 # GUI state
 has gui_state => (
     is       => 'rw',
-    isa      => enum([ qw(init idle work) ]),
+    isa      => enum([ qw(idle add edit find sele) ]),
     required => 1,
-    default  => 'init',
+    default  => 'idle',
 );
 
 # connection state
