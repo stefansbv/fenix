@@ -19,9 +19,7 @@ sub run_screen {
         -foreground => 'blue',
         -label      => 'Product',
         -labelside  => 'acrosstop',
-    );
-    $frame1->grid(
-        $frame1,
+    )->grid(
         -row    => 0,
         -column => 0,
         -ipadx  => 3,
@@ -31,8 +29,9 @@ sub run_screen {
 
     #- Code (productcode)
 
-    my $lproductcode = $frame1->Label( -text => 'Code', );
-    $lproductcode->form(
+    my $lproductcode = $frame1->Label(
+        -text => 'Code',
+    )->form(
         -left => [ %0, 0 ],
         -top  => [ %0, 0 ],
         -padx => 5,
@@ -43,16 +42,16 @@ sub run_screen {
         -width              => 15,
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
-    );
-    $eproductcode->form(
+    )->form(
         -top  => [ '&', $lproductcode, 0 ],
         -left => [ %0,  80 ],
     );
 
     #- Name (productname)
 
-    my $lproductname = $frame1->Label( -text => 'Name', );
-    $lproductname->form(
+    my $lproductname = $frame1->Label(
+        -text => 'Name',
+    )->form(
         -left => [ %0,            0 ],
         -top  => [ $lproductcode, 0 ],
         -padx => 5,
@@ -63,16 +62,16 @@ sub run_screen {
         -width              => 35,
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
-    );
-    $eproductname->form(
+    )->form(
         -top  => [ '&', $lproductname, 0 ],
         -left => [ %0,  80 ],
     );
 
     #- Line (productline)
 
-    my $lproductline = $frame1->Label( -text => 'Line', );
-    $lproductline->form(
+    my $lproductline = $frame1->Label(
+        -text => 'Line',
+    )->form(
         -left => [ %0,            0 ],
         -top  => [ $lproductname, 0 ],
         -padx => 5,
@@ -83,8 +82,7 @@ sub run_screen {
         -width              => 28,
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
-    );
-    $eproductline->form(
+    )->form(
         -top  => [ '&', $lproductline, 0 ],
         -left => [ %0,  80 ],
     );
@@ -95,16 +93,16 @@ sub run_screen {
         -width              => 5,
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
-    );
-    $eproductlinecode->form(
+    )->form(
         -top   => [ '&', $lproductline, 0 ],
         -right => [ '&', $eproductname, 0 ],
     );
 
     #- Scale (productscale)
 
-    my $lproductscale = $frame1->Label( -text => 'Scale', );
-    $lproductscale->form(
+    my $lproductscale = $frame1->Label(
+        -text => 'Scale',
+    )->form(
         -left => [ %0,            0 ],
         -top  => [ $lproductline, 0 ],
         -padx => 5,
@@ -115,16 +113,16 @@ sub run_screen {
         -width              => 10,
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
-    );
-    $eproductscale->form(
+    )->form(
         -top  => [ '&', $lproductscale, 0 ],
         -left => [ %0,  80 ],
     );
 
     #- Vendor (productvendor)
 
-    my $lproductvendor = $frame1->Label( -text => 'Vendor', );
-    $lproductvendor->form(
+    my $lproductvendor = $frame1->Label(
+        -text => 'Vendor',
+    )->form(
         -left => [ %0,             0 ],
         -top  => [ $lproductscale, 0 ],
         -padx => 5,
@@ -135,16 +133,16 @@ sub run_screen {
         -width              => 35,
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
-    );
-    $eproductvendor->form(
+    )->form(
         -top  => [ '&', $lproductvendor, 0 ],
         -left => [ %0,  80 ],
     );
 
     #- Stock (quantityinstock)
 
-    my $lquantityinstock = $frame1->Label( -text => 'Stock', );
-    $lquantityinstock->form(
+    my $lquantityinstock = $frame1->Label(
+        -text => 'Stock',
+    )->form(
         -left => [ %0,              0 ],
         -top  => [ $lproductvendor, 0 ],
         -padx => 5,
@@ -156,20 +154,16 @@ sub run_screen {
         -justify            => 'right',
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
-        # -validate => 'key',
-        # -vcmd     => sub {
-        #     $validation->validate_entry( 'quantityinstock', @_ );
-        # },
-    );
-    $equantityinstock->form(
+    )->form(
         -top  => [ '&', $lquantityinstock, 0 ],
         -left => [ %0,  80 ],
     );
 
     #- Buy price (buyprice)
 
-    my $lbuyprice = $frame1->Label( -text => 'Buy price', );
-    $lbuyprice->form(
+    my $lbuyprice = $frame1->Label(
+        -text => 'Buy price',
+    )->form(
         -left => [ %0,                0 ],
         -top  => [ $lquantityinstock, 0 ],
         -padx => 5,
@@ -181,19 +175,15 @@ sub run_screen {
         -justify            => 'right',
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
-        # -validate => 'key',
-        # -vcmd     => sub {
-        #     $validation->validate_entry( 'buyprice', @_ );
-        # },
-    );
-    $ebuyprice->form(
+    )->form(
         -top  => [ '&', $lbuyprice, 0 ],
         -left => [ %0,  80 ],
     );
 
     #- MSRP (msrp)
-    my $lmsrp = $frame1->Label( -text => 'MSRP', );
-    $lmsrp->form(
+    my $lmsrp = $frame1->Label(
+        -text => 'MSRP',
+    )->form(
         -left => [ %0,         0 ],
         -top  => [ $lbuyprice, 0 ],
         -padx => 5,
@@ -205,12 +195,7 @@ sub run_screen {
         -justify            => 'right',
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
-        # -validate => 'key',
-        # -vcmd     => sub {
-        #     $validation->validate_entry( 'msrp', @_ );
-        # },
-    );
-    $emsrp->form(
+    )->form(
         -top  => [ '&', $lmsrp, 0 ],
         -left => [ %0,  80 ],
     );
@@ -221,9 +206,7 @@ sub run_screen {
         -foreground => 'blue',
         -label      => 'Description',
         -labelside  => 'acrosstop',
-    );
-    $frame2->grid(
-        $frame2,
+    )->grid(
         -row    => 1,
         -column => 0,
         -sticky => 'nsew',
@@ -240,9 +223,7 @@ sub run_screen {
         -wrap       => 'word',
         -scrollbars => 'e',
         -font       => $my_font,
-    );
-
-    $tproductdescription->form(
+    )->form(
         -left => [ %0, 0 ],
         -top  => [ %0, 0 ],
         -padx => 5,

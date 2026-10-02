@@ -19,9 +19,7 @@ sub run_screen {
         -foreground => 'blue',
         -label      => 'Customer',
         -labelside  => 'acrosstop',
-    );
-    $frame1->grid(
-        $frame1,
+    )->grid(
         -row    => 0,
         -column => 0,
         -ipadx  => 3,
@@ -31,8 +29,9 @@ sub run_screen {
 
     #- Customername (customername)
 
-    my $lcustomername = $frame1->Label( -text => 'Customer' );
-    $lcustomername->form(
+    my $lcustomername = $frame1->Label(
+        -text => 'Customer',
+    )->form(
         -top  => [ %0, 0 ],
         -left => [ %0, 0 ],
         -padx => 5,
@@ -41,12 +40,7 @@ sub run_screen {
 
     my $ecustomername = $frame1->MEntry(
         -width    => 35,
-        # -validate => 'key',
-        # -vcmd     => sub {
-        #     $validation->validate_entry( 'customername', @_ );
-        # },
-    );
-    $ecustomername->form(
+    )->form(
         -top  => [ '&', $lcustomername, 0 ],
         -left => [ %0,  110 ],
     );
@@ -57,136 +51,151 @@ sub run_screen {
         -width              => 5,
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
-    );
-    $ecustomernumber->form(
+    )->form(
         -top  => [ '&',            $lcustomername, 0 ],
         -left => [ $ecustomername, 5 ],
     );
 
     #- Contactlastname (contactlastname)
 
-    my $lcontactlastname = $frame1->Label( -text => 'Last name' );
-    $lcontactlastname->form(
+    my $lcontactlastname = $frame1->Label(
+        -text => 'Last name',
+    )->form(
         -top  => [ $lcustomername, 0 ],
         -left => [ %0,             0 ],
         -padx => 5,
         -pady => 5,
     );
 
-    my $econtactlastname = $frame1->MEntry( -width => 42 );
-    $econtactlastname->form(
+    my $econtactlastname = $frame1->MEntry(
+        -width => 42,
+    )->form(
         -top  => [ '&', $lcontactlastname, 0 ],
         -left => [ %0,  110 ],
     );
 
     #- Contactfirstname (contactfirstname)
 
-    my $lcontactfirstname = $frame1->Label( -text => 'First name' );
-    $lcontactfirstname->form(
+    my $lcontactfirstname = $frame1->Label(
+        -text => 'First name',
+    )->form(
         -top  => [ $lcontactlastname, 0 ],
         -left => [ %0,                0 ],
         -padx => 5,
         -pady => 5,
     );
 
-    my $econtactfirstname = $frame1->MEntry( -width => 42 );
-    $econtactfirstname->form(
+    my $econtactfirstname = $frame1->MEntry(
+        -width => 42,
+    )->form(
         -top  => [ '&', $lcontactfirstname, 0 ],
         -left => [ %0,  110 ],
     );
 
     #- Phone (phone)
 
-    my $lphone = $frame1->Label( -text => 'Phone' );
-    $lphone->form(
+    my $lphone = $frame1->Label(
+        -text => 'Phone',
+    )->form(
         -top  => [ $lcontactfirstname, 0 ],
         -left => [ %0,                 0 ],
         -padx => 5,
         -pady => 5,
     );
 
-    my $ephone = $frame1->MEntry( -width => 42 );
-    $ephone->form(
+    my $ephone = $frame1->MEntry(
+        -width => 42,
+    )->form(
         -top  => [ '&', $lphone, 0 ],
         -left => [ %0,  110 ],
     );
 
     #- Addressline1 (addressline1)
 
-    my $laddressline1 = $frame1->Label( -text => 'Address line1' );
-    $laddressline1->form(
+    my $laddressline1 = $frame1->Label(
+        -text => 'Address line1',
+    )->form(
         -top  => [ $lphone, 0 ],
         -left => [ %0,      0 ],
         -padx => 5,
         -pady => 5,
     );
 
-    my $eaddressline1 = $frame1->MEntry( -width => 42 );
-    $eaddressline1->form(
+    my $eaddressline1 = $frame1->MEntry(
+        -width => 42,
+    )->form(
         -top  => [ '&', $laddressline1, 0 ],
         -left => [ %0,  110 ],
     );
 
     #- Addressline2 (addressline2)
 
-    my $laddressline2 = $frame1->Label( -text => 'Address line2' );
-    $laddressline2->form(
+    my $laddressline2 = $frame1->Label(
+        -text => 'Address line2',
+    )->form(
         -top  => [ $laddressline1, 0 ],
         -left => [ %0,             0 ],
         -padx => 5,
         -pady => 5,
     );
 
-    my $eaddressline2 = $frame1->MEntry( -width => 42 );
-    $eaddressline2->form(
+    my $eaddressline2 = $frame1->MEntry(
+        -width => 42,
+    )->form(
         -top  => [ '&', $laddressline2, 0 ],
         -left => [ %0,  110 ],
     );
 
     #- City (city)
 
-    my $lcity = $frame1->Label( -text => 'City' );
-    $lcity->form(
+    my $lcity = $frame1->Label(
+        -text => 'City',
+    )->form(
         -top  => [ $laddressline2, 0 ],
         -left => [ %0,             0 ],
         -padx => 5,
         -pady => 5,
     );
 
-    my $ecity = $frame1->MEntry( -width => 42 );
-    $ecity->form(
+    my $ecity = $frame1->MEntry(
+        -width => 42,
+    )->form(
         -top  => [ '&', $lcity, 0 ],
         -left => [ %0,  110 ],
     );
 
     #- State (state)
 
-    my $lstate = $frame1->Label( -text => 'State' );
-    $lstate->form(
+    my $lstate = $frame1->Label(
+        -text => 'State',
+    )->form(
         -top  => [ $lcity, 0 ],
         -left => [ %0,     0 ],
         -padx => 5,
         -pady => 5,
     );
 
-    my $estate = $frame1->MEntry( -width => 42 );
-    $estate->form(
+    my $estate = $frame1->MEntry(
+        -width => 42,
+    )->form(
         -top  => [ '&', $lstate, 0 ],
         -left => [ %0,  110 ],
     );
 
     #- Countryname (countryname)
 
-    my $lcountryname = $frame1->Label( -text => 'Country' );
-    $lcountryname->form(
+    my $lcountryname = $frame1->Label(
+        -text => 'Country',
+    )->form(
         -top  => [ $lstate, 0 ],
         -left => [ %0,      0 ],
         -padx => 5,
         -pady => 5,
     );
 
-    my $ecountryname = $frame1->MEntry( -width => 35 );
-    $ecountryname->form(
+    my $ecountryname = $frame1->MEntry(
+        -width => 35,
+    )->form(
         -top  => [ '&', $lcountryname, 0 ],
         -left => [ %0,  110 ],
     );
@@ -196,24 +205,25 @@ sub run_screen {
         -width              => 5,
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
-    );
-    $ecountrycode->form(
+    )->form(
         -top  => [ '&',           $lcountryname, 0 ],
         -left => [ $ecountryname, 5 ],
     );
 
     #- Salesrepemployee (salesrepemployee)
 
-    my $lsalesrepemployee = $frame1->Label( -text => 'Sales repres.' );
-    $lsalesrepemployee->form(
+    my $lsalesrepemployee = $frame1->Label(
+        -text => 'Sales repres.',
+    )->form(
         -top  => [ $lcountryname, 0 ],
         -padx => 5,
         -pady => 5,
         -left => [ %0,            0 ],
     );
 
-    my $esalesrepemployee = $frame1->MEntry( -width => 35 );
-    $esalesrepemployee->form(
+    my $esalesrepemployee = $frame1->MEntry(
+        -width => 35,
+    )->form(
         -top  => [ '&', $lsalesrepemployee, 0 ],
         -left => [ %0,  110 ],
     );
@@ -224,16 +234,16 @@ sub run_screen {
         -width              => 5,
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
-    );
-    $eemployeenumber->form(
+    )->form(
         -top  => [ '&',                $lsalesrepemployee, 0 ],
         -left => [ $esalesrepemployee, 5 ],
     );
 
     #- Creditlimit (creditlimit)
 
-    my $lcreditlimit = $frame1->Label( -text => 'Credit limit' );
-    $lcreditlimit->form(
+    my $lcreditlimit = $frame1->Label(
+        -text => 'Credit limit',
+    )->form(
         -top  => [ $lsalesrepemployee, 0 ],
         -left => [ %0,                 0 ],
         -padx => 5,
@@ -242,17 +252,16 @@ sub run_screen {
     my $ecreditlimit = $frame1->MEntry(
         -width    => 10,
         -justify  => 'right',
-    );
-
-    $ecreditlimit->form(
+    )->form(
         -top  => [ '&', $lcreditlimit, 0 ],
         -left => [ %0,  110 ],
     );
 
     #- Postalcode
 
-    my $epostalcode = $frame1->MEntry( -width => 15 );
-    $epostalcode->form(
+    my $epostalcode = $frame1->MEntry(
+        -width => 15,
+    )->form(
         -top   => [ '&',  $lcreditlimit, 0 ],
         -right => [ %100, -5 ],
     );
@@ -260,8 +269,7 @@ sub run_screen {
     my $lpostalcode = $frame1->Label(
         -text => 'Postal code',
         -padx => 5,
-    );
-    $lpostalcode->form(
+    )->form(
         -top   => [ '&',          $lcreditlimit, 0 ],
         -right => [ $epostalcode, -20 ],
     );
