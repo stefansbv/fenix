@@ -26,7 +26,7 @@ has 'connector' => (
         my $uri = $self->uri;
         my $dsn = $uri->dbi_dsn;
         $self->use_driver;
-        $self->logger->debug("connector: connecting to '$dsn'");
+        $self->logger->debug("Connecting:\n\t'$dsn'");
         $self->logger->debug(
             " user: " . ( defined( $uri->user ) ? $uri->user : 'undef' ) );
         $self->logger->debug( " pass: "

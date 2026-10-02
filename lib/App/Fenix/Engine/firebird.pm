@@ -28,7 +28,7 @@ has 'connector' => (
         my $uri  = $self->uri;
         my $dsn  = $uri->dbi_dsn . ';ib_dialect=3;ib_charset=UTF8';
         $self->use_driver;
-        $self->logger->debug("Connecting: $dsn");
+        $self->logger->debug("Connecting:\n\t'$dsn'");
         return DBIx::Connector->new($dsn, $uri->user, $uri->password, {
             $uri->query_params,
             PrintError       => 0,
