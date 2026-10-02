@@ -5,6 +5,7 @@ package App::Fenix::Tk::Screen;
 use feature 'say';
 use Carp;
 use Moo;
+use Sub::HandlesVia;
 use App::Fenix::Types qw(
     FenixConfig
     FenixConfigScr
@@ -14,16 +15,17 @@ use App::Fenix::Types qw(
     TkFrame
 );
 
+use App::Fenix::Ctrl;
 use App::Fenix::Tk::Entry;
-use App::Fenix::Tk::Text; # TODO: check
-use App::Fenix::Tk::TB;
+use App::Fenix::Tk::Text;                    # TODO: check
+use App::Fenix::Toolbar;
 use App::Fenix::Config::Screen;
 
 use Data::Dump;
 
-#use App::Fenix::Tk::Validation;
-
-with qw/App::Fenix::Role::DBUtils/;
+# with qw/App::Fenix::Role::Panel
+#         App::Fenix::Role::Element
+#         App::Fenix::Role::DBUtils/;
 
 has config => (
     is       => 'ro',
@@ -55,6 +57,19 @@ has 'bg' => (
     required => 0,
 );
 
+has '_controls' => (
+    is          => 'ro',
+    traits      => ['Hash'],
+    lazy        => 1,
+    init_arg    => undef,
+    default     => sub { {} },
+    handles     => {
+        get_ctrl  => 'get',
+        add_ctrl  => 'set',
+        all_ctrls => 'keys',
+    },
+);
+
 sub _init {
     my ($self, $args) = @_;
 
@@ -72,6 +87,25 @@ sub _init {
 sub run_screen {
     my ( $self, $nb ) = @_;
     print 'run_screen not implemented in ', __PACKAGE__, "\n";
+    return;
+}
+
+sub register_controls {
+    my $self = shift;
+    say "#! register_controls called ";
+    my $controls = $self->{controls};
+    foreach my $name (keys %{$controls}) {
+        my $type = $controls->{$name}[0];
+        my $ctrl = $controls->{$name}[2];
+        $self->add_ctrl(
+            $name,
+            App::Fenix::Ctrl->new(
+                name => $name,
+                type => $type,
+                ctrl => $ctrl,
+            )
+        );
+    }
     return;
 }
 
@@ -115,7 +149,7 @@ sub get_rq_controls {
 
 sub get_toolbar_btn {
     my ( $self, $tm_ds, $name ) = @_;
-    return $self->{tb}{$tm_ds}->get_toolbar_btn($name);
+    return $self->{_tb}->{$tm_ds}->get_toolbar_btn($name);
 }
 
 sub enable_tool {
@@ -124,7 +158,7 @@ sub enable_tool {
     die "No ToolBar '$tm_ds' ($btn_name)"
         if not defined $self->{tb}{$tm_ds};
 
-    $self->{tb}{$tm_ds}->enable_tool( $btn_name, $state );
+    $self->{_tb}->{$tm_ds}->enable_tool( $btn_name, $state );
 
     return;
 }
@@ -134,11 +168,11 @@ sub get_bgcolor {
     return $self->{bg} // 'white';
 }
 
-sub make_toolbar_for_table {
-    my $self = shift;
-    $self->make_toolbar_in_frame(@_);
-    return;
-}
+# sub make_toolbar_for_table {
+#     my $self = shift;
+#     $self->make_toolbar_in_frame(@_);
+#     return;
+# }
 
 sub make_toolbar_in_frame {
     my ( $self, $toolbar, $tb_frame, $tb_opts ) = @_;
@@ -154,7 +188,7 @@ sub make_toolbar_in_frame {
         side         => $side,
         filter       => $toolbars,
     )->make;
-    return;
+    return $tb;
 }
 
 sub tmatrix_add_row {
@@ -191,15 +225,13 @@ sub date_format {
 
 sub app_toolbar_attribs {
     my $self = shift;
-    return $self->config->toolbar2;
+    return $self->config->toolbar;
 }
 
 sub app_toolbar_names {
     my ($self, $name) = @_;
-    say $name;
-    dd $self->scrcfg;
     my ($toolbars) = $self->scrcfg->scr_toolbar_names($name);
-    my $attribs    = $self->app_toolbar_attribs;
+    my $attribs; # = $self->app_toolbar_attribs;
     return ( $toolbars, $attribs );
 }
 
@@ -213,6 +245,8 @@ sub toolscr {
     # load class is App::Fenix::Tk::Tools::${module}
     return $self->{toolscr};
 }
+
+__PACKAGE__->meta->make_immutable;
 
 1;
 
