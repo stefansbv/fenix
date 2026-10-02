@@ -23,9 +23,7 @@ use App::Fenix::Config::Screen;
 
 use Data::Dump;
 
-# with qw/App::Fenix::Role::Panel
-#         App::Fenix::Role::Element
-#         App::Fenix::Role::DBUtils/;
+with qw/App::Fenix::Role::DBUtils/;
 
 has config => (
     is       => 'ro',
