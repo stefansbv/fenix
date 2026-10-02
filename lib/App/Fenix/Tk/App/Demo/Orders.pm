@@ -143,7 +143,7 @@ sub run_screen {
     my $lorderdate = $frame1->Label(
         -text => 'Order date',
     )->form(
-        -top     => [ '&',         $lordernumber, 0 ],
+        -top     => [ '&', $lordernumber, 0 ],
         -right   => [ $dorderdate, -20 ],
         -padleft => 5,
     );

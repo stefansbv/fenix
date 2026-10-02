@@ -59,7 +59,7 @@ sub run_screen {
     );
 
     my $eproductname = $frame1->MEntry(
-        -width              => 35,
+        -width              => 37,
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
     )->form(
@@ -78,7 +78,7 @@ sub run_screen {
     );
 
     my $eproductline = $frame1->MEntry(
-        -width              => 28,
+        -width              => 30,
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
     )->form(
@@ -127,7 +127,7 @@ sub run_screen {
     );
 
     my $eproductvendor = $frame1->MEntry(
-        -width              => 35,
+        -width              => 37,
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
     )->form(
@@ -192,6 +192,7 @@ sub run_screen {
     )->form(
         -top  => [ '&', $lmsrp, 0 ],
         -left => [ %0,  $f1d ],
+        -padbottom => 5,
     );
 
     # Frame 2

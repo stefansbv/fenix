@@ -13,7 +13,7 @@ sub run_screen {
 
     my $top = $self->top;                    # or use $self->top directly
 
-    my $f1d = 120;    # distance from left
+    my $f1d = 130;    # distance from left
 
     #-- Frame1 - Customer
 
@@ -35,13 +35,12 @@ sub run_screen {
         -text => 'Customer',
     )->form(
         -top  => [ %0, 0 ],
-        -left => [ %0, 0 ],
-        -padx => 5,
+        -left => [ %0, 5 ],
         -pady => 5,
     );
 
     my $ecustomername = $frame1->MEntry(
-        -width    => 35,
+        -width    => 36,
     )->form(
         -top  => [ '&', $lcustomername, 0 ],
         -left => [ %0,  $f1d ],
@@ -55,7 +54,7 @@ sub run_screen {
         -disabledforeground => 'black',
     )->form(
         -top  => [ '&',            $lcustomername, 0 ],
-        -left => [ $ecustomername, 5 ],
+        -left => [ $ecustomername, 9 ],
     );
 
     #- Contactlastname (contactlastname)
@@ -70,7 +69,7 @@ sub run_screen {
     );
 
     my $econtactlastname = $frame1->MEntry(
-        -width => 42,
+        -width => 43,
     )->form(
         -top  => [ '&', $lcontactlastname, 0 ],
         -left => [ %0,  $f1d ],
@@ -88,7 +87,7 @@ sub run_screen {
     );
 
     my $econtactfirstname = $frame1->MEntry(
-        -width => 42,
+        -width => 43,
     )->form(
         -top  => [ '&', $lcontactfirstname, 0 ],
         -left => [ %0,  $f1d ],
@@ -106,7 +105,7 @@ sub run_screen {
     );
 
     my $ephone = $frame1->MEntry(
-        -width => 42,
+        -width => 43,
     )->form(
         -top  => [ '&', $lphone, 0 ],
         -left => [ %0,  $f1d ],
@@ -115,7 +114,7 @@ sub run_screen {
     #- Addressline1 (addressline1)
 
     my $laddressline1 = $frame1->Label(
-        -text => 'Address line1',
+        -text => 'Address line 1',
     )->form(
         -top  => [ $lphone, 0 ],
         -left => [ %0,      0 ],
@@ -124,7 +123,7 @@ sub run_screen {
     );
 
     my $eaddressline1 = $frame1->MEntry(
-        -width => 42,
+        -width => 43,
     )->form(
         -top  => [ '&', $laddressline1, 0 ],
         -left => [ %0,  $f1d ],
@@ -133,7 +132,7 @@ sub run_screen {
     #- Addressline2 (addressline2)
 
     my $laddressline2 = $frame1->Label(
-        -text => 'Address line2',
+        -text => 'Address line 2',
     )->form(
         -top  => [ $laddressline1, 0 ],
         -left => [ %0,             0 ],
@@ -142,7 +141,7 @@ sub run_screen {
     );
 
     my $eaddressline2 = $frame1->MEntry(
-        -width => 42,
+        -width => 43,
     )->form(
         -top  => [ '&', $laddressline2, 0 ],
         -left => [ %0,  $f1d ],
@@ -160,7 +159,7 @@ sub run_screen {
     );
 
     my $ecity = $frame1->MEntry(
-        -width => 42,
+        -width => 43,
     )->form(
         -top  => [ '&', $lcity, 0 ],
         -left => [ %0,  $f1d ],
@@ -178,7 +177,7 @@ sub run_screen {
     );
 
     my $estate = $frame1->MEntry(
-        -width => 42,
+        -width => 43,
     )->form(
         -top  => [ '&', $lstate, 0 ],
         -left => [ %0,  $f1d ],
@@ -196,7 +195,7 @@ sub run_screen {
     );
 
     my $ecountryname = $frame1->MEntry(
-        -width => 35,
+        -width => 36,
     )->form(
         -top  => [ '&', $lcountryname, 0 ],
         -left => [ %0,  $f1d ],
@@ -209,7 +208,7 @@ sub run_screen {
         -disabledforeground => 'black',
     )->form(
         -top  => [ '&',           $lcountryname, 0 ],
-        -left => [ $ecountryname, 5 ],
+        -left => [ $ecountryname, 9 ],
     );
 
     #- Salesrepemployee (salesrepemployee)
@@ -218,13 +217,12 @@ sub run_screen {
         -text => 'Sales repres.',
     )->form(
         -top  => [ $lcountryname, 0 ],
-        -padx => 5,
+        -left => [ %0,            5 ],
         -pady => 5,
-        -left => [ %0,            0 ],
     );
 
     my $esalesrepemployee = $frame1->MEntry(
-        -width => 35,
+        -width => 36,
     )->form(
         -top  => [ '&', $lsalesrepemployee, 0 ],
         -left => [ %0,  $f1d ],
@@ -237,8 +235,8 @@ sub run_screen {
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
     )->form(
-        -top  => [ '&',                $lsalesrepemployee, 0 ],
-        -left => [ $esalesrepemployee, 5 ],
+        -top  => [ '&', $lsalesrepemployee, 0 ],
+        -left => [ $esalesrepemployee, 9 ],
     );
 
     #- Creditlimit (creditlimit)
@@ -264,8 +262,8 @@ sub run_screen {
     my $epostalcode = $frame1->MEntry(
         -width => 15,
     )->form(
-        -top   => [ '&',  $lcreditlimit, 0 ],
-        -right => [ %100, -5 ],
+        -top   => [ '&', $lcreditlimit, 0 ],
+        -right => [ '&', $eemployeenumber, 0 ],
     );
 
     my $lpostalcode = $frame1->Label(
