@@ -11,8 +11,13 @@ has 'rules' => (
     traits   => ['Hash'],
     required => 1,
     lazy     => 1,
-    default  => sub {
-        {   idle => {
+    default => sub {
+        {
+            init => {
+                state      => 'disabled',
+                background => 'disabled_bgcolor',
+            },
+            idle => {
                 state      => 'disabled',
                 background => 'disabled_bgcolor',
             },
@@ -32,7 +37,7 @@ has 'rules' => (
                 state      => 'from_config',
                 background => 'from_config',
             },
-        }
+        };
     },
     handles => { get_rules => 'get' },
 );
