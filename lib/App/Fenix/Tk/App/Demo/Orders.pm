@@ -184,7 +184,7 @@ sub run_screen {
         -text => 'Shipped date',
     )->form(
         -top     => [ '&', $lrequireddate, 0 ],
-        -left    => [ '&', $lorderdate,    0 ],
+        -left    => [ '&', $lorderdate,    -15 ],
         -padleft => 5,
     );
 
