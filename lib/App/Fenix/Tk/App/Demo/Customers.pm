@@ -1,6 +1,6 @@
 package App::Fenix::Tk::App::Demo::Customers;
 
-# ABSTRACT: The App::Fenix::App::Demo::Customers screen
+# ABSTRACT: The App::Demo::Customers screen
 
 use Moo;
 
@@ -269,21 +269,21 @@ sub run_screen {
     # Entry objects: var_asoc, var_obiect
     # Other configurations in 'customers.conf'
     $self->{controls} = {
-        customername     => [ undef, $ecustomername ],
-        customernumber   => [ undef, $ecustomernumber ],
-        contactlastname  => [ undef, $econtactlastname ],
-        contactfirstname => [ undef, $econtactfirstname ],
-        phone            => [ undef, $ephone ],
-        addressline1     => [ undef, $eaddressline1 ],
-        addressline2     => [ undef, $eaddressline2 ],
-        city             => [ undef, $ecity ],
-        state            => [ undef, $estate ],
-        countryname      => [ undef, $ecountryname ],
-        countrycode      => [ undef, $ecountrycode ],
-        salesrepemployee => [ undef, $esalesrepemployee ],
-        employeenumber   => [ undef, $eemployeenumber ],
-        creditlimit      => [ undef, $ecreditlimit ],
-        postalcode       => [ undef, $epostalcode ],
+        customername     => [ 'e', undef, $ecustomername ],
+        customernumber   => [ 'e', undef, $ecustomernumber ],
+        contactlastname  => [ 'e', undef, $econtactlastname ],
+        contactfirstname => [ 'e', undef, $econtactfirstname ],
+        phone            => [ 'e', undef, $ephone ],
+        addressline1     => [ 'e', undef, $eaddressline1 ],
+        addressline2     => [ 'e', undef, $eaddressline2 ],
+        city             => [ 'e', undef, $ecity ],
+        state            => [ 'e', undef, $estate ],
+        countryname      => [ 'e', undef, $ecountryname ],
+        countrycode      => [ 'e', undef, $ecountrycode ],
+        salesrepemployee => [ 'e', undef, $esalesrepemployee ],
+        employeenumber   => [ 'e', undef, $eemployeenumber ],
+        creditlimit      => [ 'e', undef, $ecreditlimit ],
+        postalcode       => [ 'e', undef, $epostalcode ],
     };
 
     # Required fields: fld_name => [#, Label]

@@ -252,16 +252,16 @@ sub run_screen {
     # Entry objects: var_asoc, var_obiect
     # Other configurations in 'products.conf'
     $self->{controls} = {
-        productcode        => [ undef, $eproductcode ],
-        productname        => [ undef, $eproductname ],
-        productline        => [ undef, $eproductline ],
-        productlinecode    => [ undef, $eproductlinecode ],
-        productscale       => [ undef, $eproductscale ],
-        productvendor      => [ undef, $eproductvendor ],
-        quantityinstock    => [ undef, $equantityinstock ],
-        buyprice           => [ undef, $ebuyprice ],
-        msrp               => [ undef, $emsrp ],
-        productdescription => [ undef, $tproductdescription ],
+        productcode        => [ 'e', undef, $eproductcode ],
+        productname        => [ 'e', undef, $eproductname ],
+        productline        => [ 'e', undef, $eproductline ],
+        productlinecode    => [ 'e', undef, $eproductlinecode ],
+        productscale       => [ 'e', undef, $eproductscale ],
+        productvendor      => [ 'e', undef, $eproductvendor ],
+        quantityinstock    => [ 'e', undef, $equantityinstock ],
+        buyprice           => [ 'e', undef, $ebuyprice ],
+        msrp               => [ 'e', undef, $emsrp ],
+        productdescription => [ 'e', undef, $tproductdescription ],
     };
 
     # Required fields: fld_name => [#, Label]
