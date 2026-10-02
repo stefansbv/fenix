@@ -3,7 +3,7 @@ package App::Fenix::Role::Panel;
 # ABSTRACT: Panel role
 
 use Moo::Role;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 use App::Fenix::Types qw(
     FenixConfig
     TkFrame
@@ -12,7 +12,7 @@ use namespace::autoclean;
 
 has '_controls' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     default     => sub { {} },
