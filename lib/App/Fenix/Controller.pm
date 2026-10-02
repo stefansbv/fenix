@@ -355,7 +355,7 @@ sub on_screen_mode_idle {
     $self->view->nb_set_page_state( 'lst', 'normal');
 
     # Trigger 'on_mode_idle' method in screen if defined
-    my $page = $self->view->get_nb_current_page();
+    my $page = $self->view->get_current_page();
     $self->scrobj($page)->on_mode_idle()
         if ( $page eq 'rec' or $page eq 'det' )
         and $self->scrobj($page)->can('on_mode_idle');
@@ -385,7 +385,7 @@ sub on_screen_mode_add {
     $self->ctrl_write_to( $user_field, $self->cfg->user ) if $control_ref;
 
     # Trigger 'on_mode_add' method in screen if defined
-    my $page = $self->view->get_nb_current_page();
+    my $page = $self->view->get_current_page();
     $self->scrobj($page)->on_mode_add()
         if ( $page eq 'rec' or $page eq 'det' )
         and $self->scrobj($page)->can('on_mode_add');
@@ -407,7 +407,7 @@ sub on_screen_mode_find {
     $self->controls_state_set('find');
 
     # Trigger 'on_mode_find' method in screen if defined
-    my $page = $self->view->get_nb_current_page();
+    my $page = $self->view->get_current_page();
     $self->scrobj($page)->on_mode_find()
         if ( $page eq 'rec' or $page eq 'det' )
         and $self->scrobj($page)->can('on_mode_find');
@@ -423,7 +423,7 @@ sub on_screen_mode_edit {
     $self->view->nb_set_page_state( 'lst', 'normal');
 
     # Trigger 'on_mode_edit' method in screen if defined
-    my $page = $self->view->get_nb_current_page();
+    my $page = $self->view->get_current_page();
     $self->scrobj($page)->on_mode_edit()
         if ( $page eq 'rec' or $page eq 'det' )
         and $self->scrobj($page)->can('on_mode_edit');
@@ -539,7 +539,7 @@ sub controls_state_set {
 
     $self->log->trace("Screen 'rec' controls state is '$set_state'");
 
-    my $page = $self->view->get_nb_current_page();
+    my $page = $self->view->get_current_page();
 
     return unless $page;
 
@@ -941,6 +941,9 @@ sub screen_module_load {
 
     $self->screen_rec->register_controls;
 
+    my @ctrls = $self->screen_rec->all_ctrls;
+    dd @ctrls;
+
     #$self->alter_toolbar_state;
 
     # # Load instance config
@@ -1053,7 +1056,7 @@ sub toggle_interface_controls {
     my $conf = $self->toolbar->config;
     my $mode = $self->get_mode;
     say " mode = $mode";
-    my $page = $self->notebook->get_nb_current_page;
+    my $page = $self->notebook->get_current_page;
     say " page = $page";
     # dd $conf;
 
@@ -1109,7 +1112,7 @@ sub toggle_interface_controls {
 sub toggle_screen_interface_controls {
     my $self = shift;
 
-    my $page = $self->notebook->get_nb_current_page();
+    my $page = $self->notebook->get_current_page;
     my $mode = $self->get_mode;
 
     return if $page eq 'lst';
@@ -1276,6 +1279,36 @@ sub check_cfg_version {
     }
 }
 
+=head3 _ctrl_write
+
+Proxy method for C<control_write> from the View class.
+
+=cut
+
+sub _ctrl_write {
+    my ($self, $name, $value) = @_;
+    my $ctrl = $self->screen_rec->get_ctrl($name);
+    if ($ctrl) {
+        $self->view->control_write( $ctrl, $value );
+    }
+    else {
+        warn "WW: Control name '$name', not found\n";
+    }
+    return;
+}
+
+=head3 _ctrl_read
+
+Proxy method for C<control_read> from the View class.
+
+=cut
+
+sub _ctrl_read {
+    my ($self, $name) = @_;
+    my $ctrl = $self->screen_rec->get_ctrl($name);
+    return $self->view->control_read($ctrl);
+}
+
 sub BUILD {
     my ( $self, $args ) = @_;
     if ($self->list) {
@@ -1289,7 +1322,7 @@ sub BUILD {
     say "# mnemonic  = ", $self->mnemonic;
     say "# driver    = ", $cc->driver;
     say "# dbname    = ", $cc->dbname;
-    $self->set_state('gui_state', 'idle');
+    $self->set_state('gui_state', 'init');
     $self->set_state('db_name', $cc->dbname);
     $self->_setup_events;
     $self->_init;

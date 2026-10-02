@@ -209,7 +209,7 @@ sub event_handler_for_key {
 
 sub event_handler_for_notebook {
     my ( $self, $page, $calllback ) = @_;
-    $self->notebook->_set_event_handler_nb($page, $calllback);
+    $self->notebook->_set_event_handler($page, $calllback);
     return;
 }
 
@@ -436,35 +436,36 @@ sub set_tb_buton_state {
     return;
 }
 
-# sub set_control_state {
-#     my ( $self, $state, $rules ) = @_;
-#     $self->set_status( $state, 'md' );
-#     return;
-# }
-
 sub set_control_state {
-    my ( $self, $name, $state ) = @_;
-    # my $ctrl = $self->get_ctrl($name);
-    # if ($ctrl) {
-    #     $ctrl->ctrl->configure( -state      => $state );
-    #     $ctrl->ctrl->configure( -background => $self->bg_color )
-    #       if $state eq 'disabled';
-    #     $ctrl->ctrl->configure( -background => 'white' )
-    #       if $state eq 'normal' and $name !~ /^b_/;
-    # }
-    # else {
-    #     warn "WW: Control name '$name', not found\n";
-    # }
+    my ( $self, $state, $rules ) = @_;
+    $self->set_status( $state, 'md' );
+    return;
 }
+
+# sub set_control_state {
+#     my ( $self, $name, $state ) = @_;
+#     # my $ctrl = $self->get_ctrl($name);
+#     # if ($ctrl) {
+#     #     $ctrl->ctrl->configure( -state      => $state );
+#     #     $ctrl->ctrl->configure( -background => $self->bg_color )
+#     #       if $state eq 'disabled';
+#     #     $ctrl->ctrl->configure( -background => 'white' )
+#     #       if $state eq 'normal' and $name !~ /^b_/;
+#     # }
+#     # else {
+#     #     warn "WW: Control name '$name', not found\n";
+#     # }
+# }
 
 sub set_control_states {
     my ( $self, $state, $rules ) = @_;
     say "refresh: set_control_states";
-    # $self->set_statusbar_status( $state, 'md' );
+    $self->set_status( $state, 'md' );
+    $self->set_control_state($state);
+
     foreach my $name ( keys %{ $rules } ) {
         say " rule: $name";
         my $state = $rules->{$name};
-        $self->set_control_state($name, $state);
     }
     return;
 }
@@ -676,7 +677,7 @@ sub list_populate {
 
 sub list_raise {
     my $self = shift;
-    $self->{_nb}->raise('lst');
+    $self->notebook->raise('lst');
     $self->get_recordlist->focus;
     return;
 }

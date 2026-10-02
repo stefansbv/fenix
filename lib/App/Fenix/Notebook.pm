@@ -146,18 +146,18 @@ sub rename_panel {
 
 #--  Notebook methods
 
-sub nb_set_page_state {
+sub set_page_state {
     my ($self, $p, $state) = @_;
     $self->nb->pageconfigure( $p, -state => $state );
     return;
 }
 
-sub get_nb_current_page {
+sub get_current_page {
     my $self = shift;
     return $self->nb->raised;
 }
 
-sub set_nb_current {
+sub set_current_page {
     my ( $self, $p ) = @_;
     $self->page_prev( $self->page_curr );
     $self->page_curr($p);
@@ -165,17 +165,17 @@ sub set_nb_current {
     return $p;
 }
 
-sub get_nb_previous_page {
+sub get_previous_page {
     my $self = shift;
     return $self->page_prev;
 }
 
-sub _set_event_handler_nb {
+sub _set_event_handler {
     my ( $self, $p, $callback ) = @_;
     $self->nb->pageconfigure(
         $p,
         -raisecmd => sub {
-            $self->set_nb_current($p);
+            $self->set_current_page($p);
 
         #-- On page activate
 

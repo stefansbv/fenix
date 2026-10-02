@@ -36,7 +36,7 @@ $delay++;
 $mw->after(
     $delay * $milisec,
     sub {
-        ok $nb->set_nb_current('lst'), 'raise page lst';
+        ok $nb->set_current_page('lst'), 'raise page lst';
     }
 );
 
@@ -45,7 +45,7 @@ $delay++;
 $mw->after(
     $delay * $milisec,
     sub {
-        ok $nb->set_nb_current('det'), 'raise page det';
+        ok $nb->set_current_page('det'), 'raise page det';
     }
 );
 
@@ -54,7 +54,7 @@ $delay++;
 $mw->after(
     $delay * $milisec,
     sub {
-        ok $nb->set_nb_current('rec'), 'raise page rec';
+        ok $nb->set_current_page('rec'), 'raise page rec';
     }
 );
 
