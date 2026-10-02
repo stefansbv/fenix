@@ -82,8 +82,9 @@ sub run_screen {
         -padleft => 5,
     );
 
-    my $ecustomername = $frame1->MEntry( -width => 35 );
-    $ecustomername->form(
+    my $ecustomername = $frame1->MEntry(
+        -width => 35,
+    )->form(
         -top  => [ '&', $lcustomername, 0 ],
         -left => [ %0,  $f1d ],
     );
@@ -94,8 +95,7 @@ sub run_screen {
         -width              => 6,
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
-    );
-    $ecustomernumber->form(
+    )->form(
         -top      => [ '&',            $lcustomername, 0 ],
         -left     => [ $ecustomername, 5 ],
         -padright => 5,
@@ -103,8 +103,9 @@ sub run_screen {
 
     #- Ordernumber (ordernumber)
 
-    my $lordernumber = $frame1->Label( -text => 'Order ID' );
-    $lordernumber->form(
+    my $lordernumber = $frame1->Label(
+        -text => 'Order ID',
+    )->form(
         -top     => [ $lcustomername, 8 ],
         -left    => [ %0,             0 ],
         -padleft => 5,
@@ -114,8 +115,7 @@ sub run_screen {
         -width              => 10,
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
-    );
-    $eordernumber->form(
+    )->form(
         -top  => [ '&', $lordernumber, 0 ],
         -left => [ %0,  $f1d ],
     );
@@ -135,20 +135,14 @@ sub run_screen {
             $self->dateentry_format_date( $date_format, @_ );
         },
         -todaybackground => 'lightgreen',
-        # -validate        => 'key',
-        # -validatecommand => sub {
-        #     $self->{view}->set_modified_record();
-        #     1;
-        # },
-    );
-
-    $dorderdate->form(
+    )->form(
         -top   => [ '&',  $eordernumber, 0 ],
         -right => [ %100, -5 ],
     );
 
-    my $lorderdate = $frame1->Label( -text => 'Order date' );
-    $lorderdate->form(
+    my $lorderdate = $frame1->Label(
+        -text => 'Order date',
+    )->form(
         -top     => [ '&',         $lordernumber, 0 ],
         -right   => [ $dorderdate, -20 ],
         -padleft => 5,
@@ -156,8 +150,9 @@ sub run_screen {
 
     #- Requireddate (requireddate)
 
-    my $lrequireddate = $frame1->Label( -text => 'Required date' );
-    $lrequireddate->form(
+    my $lrequireddate = $frame1->Label(
+        -text => 'Required date',
+    )->form(
         -top     => [ $lordernumber, 8 ],
         -left    => [ %0,            0 ],
         -padleft => 5,
@@ -176,11 +171,6 @@ sub run_screen {
             $self->dateentry_format_date( $date_format, @_ );
         },
         -todaybackground => 'lightgreen',
-        # -validate        => 'key',
-        # -validatecommand => sub {
-        #     $self->{view}->set_modified_record();
-        #     1;
-        # },
     );
 
     $drequireddate->form(
@@ -190,8 +180,9 @@ sub run_screen {
 
     #-+ Shippeddate (shippeddate)
 
-    my $lshippeddate = $frame1->Label( -text => 'Shipped date' );
-    $lshippeddate->form(
+    my $lshippeddate = $frame1->Label(
+        -text => 'Shipped date',
+    )->form(
         -top     => [ '&', $lrequireddate, 0 ],
         -left    => [ '&', $lorderdate,    0 ],
         -padleft => 5,
@@ -210,22 +201,16 @@ sub run_screen {
             $self->dateentry_format_date( $date_format, @_ );
         },
         -todaybackground => 'lightgreen',
-        # -validate        => 'key',
-        # -validatecommand => sub {
-        #     $self->{view}->set_modified_record();
-        #     1;
-        # },
-    );
-
-    $dshippeddate->form(
+    )->form(
         -top   => [ '&',  $lshippeddate, 0 ],
         -right => [ %100, -5 ],
     );
 
     #- Status code (statuscode)
 
-    my $lstatuscode = $frame1->Label( -text => 'Status' );
-    $lstatuscode->form(
+    my $lstatuscode = $frame1->Label(
+        -text => 'Status',
+    )->form(
         -top     => [ $lrequireddate, 8 ],
         -left    => [ %0,             0 ],
         -padleft => 5,
@@ -239,28 +224,11 @@ sub run_screen {
         -disabledforeground => 'black',
         -textvariable       => \$vstatuscode,
         -selectcommand      => sub { $self->view->set_modified_record() },
-    );
-
-    $bstatuscode->form(
+    )->form(
         -top       => [ '&', $lstatuscode, 0 ],
         -left      => [ %0,  $f1d ],
         -padbottom => 6,
     );
-
-    # my $vstatuscode;
-    # my $lvstatuscode = [ { value => 'no value', label => 'not set' } ];
-    # my $bstatuscode = $frame1->MatchingBE(
-    #     # -entrywidth         => 15,         # can't set :(
-    #     -relief             => 'sunken',
-    #     -disabledbackground => $self->{bg},
-    #     -disabledforeground => 'black',
-    #     -labels_and_values  => $lvstatuscode,
-    #     -value_variable     => \$vstatuscode,
-    # );
-    # $bstatuscode->form(
-    #     -top  => [ '&', $lstatuscode, 0 ],
-    #     -left => [ %0,  $f1d ],
-    # );
 
     #-- Font
     my $my_font = $eordernumber->cget('-font');
@@ -326,15 +294,15 @@ sub run_screen {
     my $eordertotal = $frm_bl->MEntry(
         -width   => 12,
         -justify => 'right',
-    );
-    $eordertotal->form(
+    )->form(
         -top       => [ %0,   0 ],
         -right     => [ %100, -5 ],
         -padbottom => 5,
     );
 
-    my $lordertotal = $frm_bl->Label( -text => 'Order total' );
-    $lordertotal->form(
+    my $lordertotal = $frm_bl->Label(
+        -text => 'Order total',
+    )->form(
         -top   => [ '&',          $eordertotal, 0 ],
         -right => [ $eordertotal, -15 ],
     );
