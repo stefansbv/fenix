@@ -42,6 +42,12 @@ use Data::Dump;
 
 with 'MooX::Log::Any';
 
+=head2 options
+
+An attribute that holds the options instance object.
+
+=cut
+
 has options => (
     is      => 'ro',
     isa     => FenixOptions,
@@ -59,12 +65,24 @@ has options => (
     ],
 );
 
+=head2 config
+
+An attribute that holds the configuration instance object.
+
+=cut
+
 has 'config' => (
     is      => 'ro',
     isa     => FenixConfig,
     lazy    => 1,
     builder => '_build_config',
 );
+
+=head2 _build_config
+
+Builder for the configuration instance object.
+
+=cut
 
 sub _build_config {
     my $self   = shift;
@@ -81,6 +99,12 @@ sub _build_config {
     return $config;
 }
 
+=head2 model
+
+An attribute tha holds the model instance object.
+
+=cut
+
 has 'model' => (
     is      => 'ro',
     isa     => FenixModel,
@@ -92,6 +116,12 @@ has 'model' => (
         get_path_for
     )],
 );
+
+=head _build_model
+
+Builder for the model instance object.
+
+=cut
 
 sub _build_model {
     my $self  = shift;
@@ -105,6 +135,12 @@ sub _build_model {
     };
     return $model;
 }
+
+=head2 view
+
+An attribute tha holds the view instance object.
+
+=cut
 
 has 'view' => (
     is       => 'ro',
@@ -120,6 +156,12 @@ has 'view' => (
       )
     ],
 );
+
+=head _build_view
+
+Builder for the view instance object.
+
+=cut
 
 sub _build_view {
     my $self = shift;
@@ -275,6 +317,142 @@ sub _init {
     return;
 }
 
+sub on_screen_mode_idle {
+    my $self = shift;
+
+    # Empty the main controls and TM, if any
+
+    $self->record_clear;
+
+    foreach my $tm_ds ( keys %{ $self->scrobj()->get_tm_controls() } ) {
+        $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
+    }
+
+    $self->controls_state_set('off');
+
+    $self->view->nb_set_page_state( 'det', 'disabled');
+    $self->view->nb_set_page_state( 'lst', 'normal');
+
+    # Trigger 'on_mode_idle' method in screen if defined
+    my $page = $self->view->get_nb_current_page();
+    $self->scrobj($page)->on_mode_idle()
+        if ( $page eq 'rec' or $page eq 'det' )
+        and $self->scrobj($page)->can('on_mode_idle');
+
+    return;
+}
+
+sub on_screen_mode_add {
+    my $self = shift;
+
+    $self->record_clear;              # empty the main controls and TM
+    $self->tmatrix_set_selected();    # initialize selector
+
+    foreach my $tm_ds ( keys %{ $self->scrobj()->get_tm_controls() } ) {
+        $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
+    }
+
+    $self->controls_state_set('edit');
+
+    $self->view->nb_set_page_state( 'det', 'disabled' );
+    $self->view->nb_set_page_state( 'lst', 'disabled' );
+
+    # Default value for user in screen.  Add 'id_user' value if
+    # 'id_user' control exists in screen
+    my $user_field = 'id_user';              # hardwired user field name
+    my $control_ref = $self->scrobj()->get_controls($user_field);
+    $self->ctrl_write_to( $user_field, $self->cfg->user ) if $control_ref;
+
+    # Trigger 'on_mode_add' method in screen if defined
+    my $page = $self->view->get_nb_current_page();
+    $self->scrobj($page)->on_mode_add()
+        if ( $page eq 'rec' or $page eq 'det' )
+        and $self->scrobj($page)->can('on_mode_add');
+
+    return;
+}
+
+sub on_screen_mode_find {
+    my $self = shift;
+
+    # Empty the main controls and TM, if any
+
+    $self->record_clear;
+
+    foreach my $tm_ds ( keys %{ $self->scrobj()->get_tm_controls() } ) {
+        $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
+    }
+
+    $self->controls_state_set('find');
+
+    # Trigger 'on_mode_find' method in screen if defined
+    my $page = $self->view->get_nb_current_page();
+    $self->scrobj($page)->on_mode_find()
+        if ( $page eq 'rec' or $page eq 'det' )
+        and $self->scrobj($page)->can('on_mode_find');
+
+    return;
+}
+
+sub on_screen_mode_edit {
+    my $self = shift;
+
+    $self->controls_state_set('edit');
+    $self->view->nb_set_page_state( 'det', 'normal');
+    $self->view->nb_set_page_state( 'lst', 'normal');
+
+    # Trigger 'on_mode_edit' method in screen if defined
+    my $page = $self->view->get_nb_current_page();
+    $self->scrobj($page)->on_mode_edit()
+        if ( $page eq 'rec' or $page eq 'det' )
+        and $self->scrobj($page)->can('on_mode_edit');
+
+    return;
+}
+
+sub on_screen_mode_sele {
+    my $self = shift;
+
+    my $nb = $self->view->get_notebook();
+    $self->view->nb_set_page_state( 'det', 'disabled');
+
+    return;
+}
+
+# sub _control_states_init {
+#     my $self = shift;
+
+#     $self->{control_states} = {
+#         off => {
+#             state      => 'disabled',
+#             background => 'disabled_bgcolor',
+#         },
+#         on => {
+#             state      => 'normal',
+#             background => 'from_config',
+#         },
+#         find => {
+#             state      => 'normal',
+#             background => 'lightgreen',
+#         },
+#         edit => {
+#             state      => 'from_config',
+#             background => 'from_config',
+#         },
+#     };
+
+#     $self->{method_for_mode} = {
+#         add  => 'on_screen_mode_add',
+#         find => 'on_screen_mode_find',
+#         idle => 'on_screen_mode_idle',
+#         edit => 'on_screen_mode_edit',
+#         sele => 'on_screen_mode_sele',
+#     };
+
+#     return;
+# }
+
+
 sub screen_init_keys {
     my ($self, $page, $scrcfg) = @_;
 
@@ -334,6 +512,68 @@ sub screen_init_keys {
     return;
 }
 
+# See set_control_states in the View
+sub controls_state_set {
+    my ( $self, $set_state ) = @_;
+
+    $self->log->trace("Screen 'rec' controls state is '$set_state'");
+
+    my $page = $self->view->get_nb_current_page();
+
+    return unless $page;
+
+    my $bg = $self->scrobj($page)->get_bgcolor();
+
+    my $ctrl_ref = $self->scrobj($page)->get_controls();
+    return unless scalar keys %{$ctrl_ref};
+
+    my $control_states = $self->control_states($set_state);
+
+    # Enable controls for report style screen
+    $control_states = $self->control_states('edit')
+      if $self->scrcfg()->screen('style') eq 'report';
+
+    return unless defined $self->scrcfg($page);
+
+    foreach my $field ( keys %{ $self->scrcfg($page)->maintable('columns') } ) {
+        my $fld_cfg = $self->scrcfg($page)->maintable('columns', $field);
+
+        my $state = $control_states->{state};
+        $state = $fld_cfg->{state}
+            if $state eq 'from_config';
+
+        my $bkground = $control_states->{background};
+        my $bg_color = $bkground;
+        $bg_color = $fld_cfg->{bgcolor}
+            if $bkground eq 'from_config';
+        $bg_color = $bg
+            if $bkground eq 'disabled_bgcolor';
+
+        # Special case for find mode and fields with 'findtype' set to none
+        if ( $set_state eq 'find' ) {
+            if ( $fld_cfg->{findtype} eq 'none' ) {
+                $state    = 'disabled';
+                $bg_color = $self->scrobj($page)->get_bgcolor();
+            }
+        }
+
+        # Allow 'bg' as bgcolor config attribute value for controls
+        $bg_color = $bg if $bg_color =~ m{bg|background};
+
+        # Configure controls
+        my $control = $self->scrobj()->get_controls($field);
+        if ($control) {
+            $self->view->configure_controls( $control->[1], $state,
+                $bg_color, $fld_cfg );
+        }
+        else {
+            warn "Can't configure control for '$field'";
+        }
+    }
+
+    return;
+}
+
 =head2 table_meta
 
 Return the table metadata on the $page with $name.
@@ -363,6 +603,13 @@ sub is_connected {
     my $self = shift;
     return $self->get_state('conn_state') eq 'connected';
 }
+
+=head2 connect_dialog
+
+Show login dialog until connected or canceled.  Called with delay from
+XX::Controller.
+
+=cut
 
 sub connect_dialog {
     my ( $self, $error ) = @_;
@@ -579,26 +826,6 @@ sub delay_start {
     return;
 }
 
-sub BUILD {
-    my ( $self, $args ) = @_;
-    if ($self->list) {
-        $self->show_mnemonics;
-        exit;
-    }
-    $self->add_observer(
-        App::Fenix::Refresh->new( view => $self->view ) );
-    $self->log_message('[II] Welcome to Fenix!');
-    my $cc = $self->config->connection;
-    say "# mnemonic  = ", $self->mnemonic;
-    say "# driver    = ", $cc->driver;
-    say "# dbname    = ", $cc->dbname;
-    $self->set_state('gui_state', 'idle');
-    $self->set_state('db_name', $cc->dbname);
-    $self->_setup_events;
-    $self->_init;
-    return;
-}
-
 sub show_mnemonics {
     my $self = shift;
     my $apps_path = path $self->config->sharedir, 'apps';
@@ -684,7 +911,7 @@ sub screen_module_load {
     $self->screen_rec->run_screen( $self->view->record );
 
     $self->screen_rec->register_controls;
-    
+
     #$self->alter_toolbar_state;
 
     # # Load instance config
@@ -1018,6 +1245,26 @@ sub check_cfg_version {
     else {
         return 1;
     }
+}
+
+sub BUILD {
+    my ( $self, $args ) = @_;
+    if ($self->list) {
+        $self->show_mnemonics;
+        exit;
+    }
+    $self->add_observer(
+        App::Fenix::Refresh->new( view => $self->view ) );
+    $self->log_message('[II] Welcome to Fenix!');
+    my $cc = $self->config->connection;
+    say "# mnemonic  = ", $self->mnemonic;
+    say "# driver    = ", $cc->driver;
+    say "# dbname    = ", $cc->dbname;
+    $self->set_state('gui_state', 'idle');
+    $self->set_state('db_name', $cc->dbname);
+    $self->_setup_events;
+    $self->_init;
+    return;
 }
 
 sub DEMOLISH {
