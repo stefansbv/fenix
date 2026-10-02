@@ -636,10 +636,10 @@ sub screen_module_class {
 
 sub screen_module_load {
     my ( $self, $module, $from_tools ) = @_;
-    print "Loading >$module<\n" if $self->verbose;
+    print "# loading >$module<\n" if $self->verbose;
     my $rscrstr = lc $module;
     $self->screen_rec_name($rscrstr);        # set
-    say '#screen: ', $self->screen_rec_name;
+    say '# screen: ', $self->screen_rec_name;
 
     # Destroy and recreate record panel widget
     $self->view->record->destroy;
@@ -652,10 +652,10 @@ sub screen_module_load {
     my $screen_class = $self->require_screen( $module, $from_tools );
     if ($screen_class) {
         $self->screen_rec_class($screen_class);    # set
-        say "#class: ", $self->screen_rec_class;
+        say "# class: ", $self->screen_rec_class;
     }
     else {
-        say "No screen class";
+        say "# NO screen class";
         return;
     }
 
@@ -683,6 +683,8 @@ sub screen_module_load {
     # Show screen
     $self->screen_rec->run_screen( $self->view->record );
 
+    $self->screen_rec->register_controls;
+    
     #$self->alter_toolbar_state;
 
     # # Load instance config
@@ -803,7 +805,7 @@ sub toggle_interface_controls {
 
     foreach my $name ( $conf->all_toolbar_names ) {
         my $status = $conf->get_tool($name)->{state}{$page}{$mode};
-        say "tb: $name -> $status";
+        # say "tb: $name -> $status";
 
         #- Corrections
         unless ( ( $page eq 'lst' ) and $self->{_rscrcls} ) {
@@ -861,16 +863,16 @@ sub toggle_screen_interface_controls {
     my $group_labels = $self->scrcfg->scr_toolbar_groups;
     foreach my $label ( @{$group_labels} ) {
         say " group labels = $label";
-        my ( $toolbars, $tb_attrs ) = $self->screen_rec_class->app_toolbar_names($label);
-        foreach my $button_name ( @{$toolbars} ) {
-            my $status
-                = $self->scrcfg()->screen('style') eq 'report'
-                ? 'normal'
-                : $tb_attrs->{$button_name}{state}{$page}{$mode};
-            say " button_name: $button_name -> $status";
-            # $self->screen_rec_class($page)->enable_tool( $label, $button_name, $status );
-            $self->screen_rec_class->enable_tool( $label, $button_name, $status );
-        }
+        my ( $toolbars, $tb_attrs ) = $self->screen_rec->app_toolbar_names($label);
+        # foreach my $button_name ( @{$toolbars} ) {
+        #     my $status
+        #         = $self->scrcfg()->screen('style') eq 'report'
+        #         ? 'normal'
+        #         : $tb_attrs->{$button_name}{state}{$page}{$mode};
+        #     say " button_name: $button_name -> $status";
+        #     # $self->screen_rec_class($page)->enable_tool( $label, $button_name, $status );
+        #     $self->screen_rec_class->enable_tool( $label, $button_name, $status );
+        # }
     }
     return;
 }
