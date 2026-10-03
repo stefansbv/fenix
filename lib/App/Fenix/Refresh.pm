@@ -36,7 +36,7 @@ sub update {
     # GUI
     my $gui_state = $subject->get_state('gui_state');
     say "# gui_state = $gui_state";
-    $self->view->set_control_states( $gui_state, $self->get_rules($gui_state) );
+    $self->view->set_app_states( $gui_state, $self->get_rules($gui_state) );
 
     # Connection
     my $con_state = $subject->get_state('conn_state');

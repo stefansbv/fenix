@@ -11,31 +11,35 @@ has 'rules' => (
     traits   => ['Hash'],
     required => 1,
     lazy     => 1,
-    default => sub {
-        {
-            init => {
+    default  => sub {
+        {   init => {
                 state      => 'disabled',
                 background => 'disabled_bgcolor',
             },
             idle => {
                 state      => 'disabled',
                 background => 'disabled_bgcolor',
+                method     => 'on_screen_mode_idle',
             },
             add => {
                 state      => 'normal',
                 background => 'from_config',
+                method     => 'on_screen_mode_add',
             },
             find => {
                 state      => 'normal',
                 background => 'lightgreen',
+                method     => 'on_screen_mode_find',
             },
             edit => {
                 state      => 'from_config',
                 background => 'from_config',
+                method     => 'on_screen_mode_edit',
             },
             sele => {
                 state      => 'from_config',
                 background => 'from_config',
+                method     => 'on_screen_mode_sele',
             },
         };
     },

@@ -166,8 +166,9 @@ Builder for the view instance object.
 sub _build_view {
     my $self = shift;
     return App::Fenix::View->new(
-        config => $self->config,
-        model  => $self->model,
+        config     => $self->config,
+        model      => $self->model,
+        controller => $self,
     );
 }
 
@@ -343,22 +344,23 @@ sub on_screen_mode_idle {
 
     # Empty the main controls and TM, if any
 
-    $self->record_clear;
+    # $self->record_clear;
 
-    foreach my $tm_ds ( keys %{ $self->scrobj()->get_tm_controls() } ) {
-        $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
-    }
+    # foreach my $tm_ds ( keys %{ $self->scrobj()->get_tm_controls() } ) {
+    #     $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
+    # }
 
     $self->controls_state_set('off');
 
-    $self->view->set_page_state( 'det', 'disabled');
-    $self->view->set_page_state( 'lst', 'normal');
+    $self->notebook->set_page_state( 'det', 'disabled');
+    $self->notebook->set_page_state( 'lst', 'normal');
 
     # Trigger 'on_mode_idle' method in screen if defined
-    my $page = $self->view->get_current_page();
-    $self->scrobj($page)->on_mode_idle()
-        if ( $page eq 'rec' or $page eq 'det' )
-        and $self->scrobj($page)->can('on_mode_idle');
+    my $page = $self->notebook->get_current_page();
+    say "# page = $page";
+    # $self->scrobj($page)->on_mode_idle()
+    #     if ( $page eq 'rec' or $page eq 'det' )
+    #     and $self->scrobj($page)->can('on_mode_idle');
 
     return;
 }
@@ -398,7 +400,7 @@ sub on_screen_mode_find {
 
     # Empty the main controls and TM, if any
 
-    $self->record_clear;
+    # $self->record_clear;
 
     foreach my $tm_ds ( keys %{ $self->scrobj()->get_tm_controls() } ) {
         $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
@@ -439,40 +441,6 @@ sub on_screen_mode_sele {
 
     return;
 }
-
-# sub _control_states_init {
-#     my $self = shift;
-
-#     $self->{control_states} = {
-#         off => {
-#             state      => 'disabled',
-#             background => 'disabled_bgcolor',
-#         },
-#         on => {
-#             state      => 'normal',
-#             background => 'from_config',
-#         },
-#         find => {
-#             state      => 'normal',
-#             background => 'lightgreen',
-#         },
-#         edit => {
-#             state      => 'from_config',
-#             background => 'from_config',
-#         },
-#     };
-
-#     $self->{method_for_mode} = {
-#         add  => 'on_screen_mode_add',
-#         find => 'on_screen_mode_find',
-#         idle => 'on_screen_mode_idle',
-#         edit => 'on_screen_mode_edit',
-#         sele => 'on_screen_mode_sele',
-#     };
-
-#     return;
-# }
-
 
 sub screen_init_keys {
     my ($self, $page, $scrcfg) = @_;
@@ -539,57 +507,60 @@ sub controls_state_set {
 
     $self->log->trace("Screen 'rec' controls state is '$set_state'");
 
-    my $page = $self->view->get_current_page();
+    my $page = $self->notebook->get_current_page;
 
     return unless $page;
 
-    my $bg = $self->scrobj($page)->get_bgcolor();
+    # my $bg = $self->scrobj->get_bgcolor();
 
-    my $ctrl_ref = $self->scrobj($page)->get_controls();
-    return unless scalar keys %{$ctrl_ref};
+    # my $ctrl_ref = $self->scrobj->get_controls();
+    # return unless scalar keys %{$ctrl_ref};
 
-    my $control_states = $self->control_states($set_state);
+    # my $control_states = $self->control_states($set_state);
 
-    # Enable controls for report style screen
-    $control_states = $self->control_states('edit')
-      if $self->scrcfg()->screen('style') eq 'report';
+    # # Enable controls for report style screen
+    # $control_states = $self->control_states('edit')
+    #   if $self->scrcfg()->screen('style') eq 'report';
 
-    return unless defined $self->scrcfg($page);
+    # return unless defined $self->scrcfg($page);
 
-    foreach my $field ( keys %{ $self->scrcfg($page)->maintable('columns') } ) {
-        my $fld_cfg = $self->scrcfg($page)->maintable('columns', $field);
+    my @ctrls = $self->screen_rec->all_ctrls;
 
-        my $state = $control_states->{state};
-        $state = $fld_cfg->{state}
-            if $state eq 'from_config';
+    foreach my $field ( @ctrls ) {
+        say $field;
+    #     my $fld_cfg = $self->scrcfg($page)->maintable('columns', $field);
 
-        my $bkground = $control_states->{background};
-        my $bg_color = $bkground;
-        $bg_color = $fld_cfg->{bgcolor}
-            if $bkground eq 'from_config';
-        $bg_color = $bg
-            if $bkground eq 'disabled_bgcolor';
+    #     my $state = $control_states->{state};
+    #     $state = $fld_cfg->{state}
+    #         if $state eq 'from_config';
 
-        # Special case for find mode and fields with 'findtype' set to none
-        if ( $set_state eq 'find' ) {
-            if ( $fld_cfg->{findtype} eq 'none' ) {
-                $state    = 'disabled';
-                $bg_color = $self->scrobj($page)->get_bgcolor();
-            }
-        }
+    #     my $bkground = $control_states->{background};
+    #     my $bg_color = $bkground;
+    #     $bg_color = $fld_cfg->{bgcolor}
+    #         if $bkground eq 'from_config';
+    #     $bg_color = $bg
+    #         if $bkground eq 'disabled_bgcolor';
 
-        # Allow 'bg' as bgcolor config attribute value for controls
-        $bg_color = $bg if $bg_color =~ m{bg|background};
+    #     # Special case for find mode and fields with 'findtype' set to none
+    #     if ( $set_state eq 'find' ) {
+    #         if ( $fld_cfg->{findtype} eq 'none' ) {
+    #             $state    = 'disabled';
+    #             $bg_color = $self->scrobj($page)->get_bgcolor();
+    #         }
+    #     }
 
-        # Configure controls
-        my $control = $self->scrobj()->get_controls($field);
-        if ($control) {
-            $self->view->configure_controls( $control->[1], $state,
-                $bg_color, $fld_cfg );
-        }
-        else {
-            warn "Can't configure control for '$field'";
-        }
+    #     # Allow 'bg' as bgcolor config attribute value for controls
+    #     $bg_color = $bg if $bg_color =~ m{bg|background};
+
+    #     # Configure controls
+    #     my $control = $self->scrobj()->get_controls($field);
+    #     if ($control) {
+    #         $self->view->configure_controls( $control->[1], $state,
+    #             $bg_color, $fld_cfg );
+    #     }
+    #     else {
+    #         warn "Can't configure control for '$field'";
+    #     }
     }
 
     return;
@@ -942,7 +913,7 @@ sub screen_module_load {
     $self->screen_rec->register_controls;
 
     my @ctrls = $self->screen_rec->all_ctrls;
-    dd @ctrls;
+    # dd @ctrls;
 
     #$self->alter_toolbar_state;
 
@@ -1034,14 +1005,28 @@ sub set_app_mode {
     }
 
     $self->toggle_screen_interface_controls;
-    if ( my $method_name = $self->{method_for_mode}{$mode} ) {
-        $self->$method_name();
-    }
-    else {
-        print "WW: '$mode' not implemented!\n";
-    }
+    # if ( my $method_name = $self->{method_for_mode}{$mode} ) {
+    #     $self->$method_name();
+    # }
+    # else {
+    #     print "WW: '$mode' not implemented!\n";
+    # }
     return 1;    # to make ok from Test::More happy
                  # probably missing something :) TODO!
+}
+
+sub set_control_states {
+    my ( $self, $state, $rules ) = @_;
+    say "refresh: set_control_states";
+    $self->set_status( $state, 'md' );
+    $self->set_control_state($state);
+
+    dd $rules;
+    # foreach my $name ( keys %{ $rules } ) {
+    #     say " rule: $name";
+    #     my $state = $rules->{$name};
+    # }
+    return;
 }
 
 sub toggle_interface_controls {

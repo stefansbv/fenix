@@ -9,6 +9,7 @@ use Scalar::Util qw(blessed);
 use App::Fenix::Types qw(
     Bool
     FenixConfig
+    FenixController
     FenixMenubar
     FenixModel
     FenixNotebook
@@ -67,9 +68,17 @@ has 'frame' => (
     builder => '_build_frame',
 );
 
+# sub _build_frame {
+#     my $self = shift;
+#     my $mw = MainWindow->new;
+#     return $mw;
+# }
 sub _build_frame {
     my $self = shift;
     my $mw = MainWindow->new;
+    # prevent pack() sizing the Toplevel down so
+    # that we can still reach the controls
+    $mw->packPropagate(0);
     return $mw;
 }
 
@@ -141,6 +150,12 @@ has 'model' => (
     default => sub {
         shift->app->model;
     },
+);
+
+has 'controller' => (
+    is      => 'ro',
+    #isa     => FenixController,
+    lazy    => 1,
 );
 
 has 'logger_panel' => (
@@ -443,15 +458,16 @@ sub set_control_state {
 #     # }
 # }
 
-sub set_control_states {
+sub set_app_states {
     my ( $self, $state, $rules ) = @_;
     say "refresh: set_control_states";
     $self->set_status( $state, 'md' );
     $self->set_control_state($state);
 
-    foreach my $name ( keys %{ $rules } ) {
-        say " rule: $name";
-        my $state = $rules->{$name};
+    dd $rules;
+    # Call methods in the controller
+    if ( my $meth = $rules->{'method'} ) {
+        $self->controller->$meth();
     }
     return;
 }
