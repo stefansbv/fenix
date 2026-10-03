@@ -291,6 +291,19 @@ has 'screen_rec' => (
     },
 );
 
+sub scrobj {
+    my ( $self, $page ) = @_;
+    $page ||= $self->notebook->get_current_page;
+    return $self->screen_rec
+        if $page eq 'rec'
+        and $self->screen_rec;
+    return $self->screen_det
+        if $page eq 'det'
+        and $self->screen_det;
+    die "Wrong call to 'scrobj'" unless $page;
+    return;
+}
+
 sub log_message {
     my ($self, $msg) = @_;
     my $newline = ( $msg =~ /\.\./msg ) ? 0 : 1;
@@ -402,15 +415,15 @@ sub on_screen_mode_find {
 
     # $self->record_clear;
 
-    foreach my $tm_ds ( keys %{ $self->scrobj()->get_tm_controls() } ) {
-        $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
-    }
+    # foreach my $tm_ds ( keys %{ $self->scrobj->get_tm_controls() } ) {
+    #     $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
+    # }
 
     $self->controls_state_set('find');
 
     # Trigger 'on_mode_find' method in screen if defined
-    my $page = $self->view->get_current_page();
-    $self->scrobj($page)->on_mode_find()
+    my $page = $self->notebook->get_current_page();
+    $self->scrobj($page)->on_mode_find
         if ( $page eq 'rec' or $page eq 'det' )
         and $self->scrobj($page)->can('on_mode_find');
 
@@ -511,7 +524,7 @@ sub controls_state_set {
 
     return unless $page;
 
-    # my $bg = $self->scrobj->get_bgcolor();
+    my $bg = $self->scrobj->get_bgcolor;
 
     # my $ctrl_ref = $self->scrobj->get_controls();
     # return unless scalar keys %{$ctrl_ref};
@@ -525,9 +538,13 @@ sub controls_state_set {
     # return unless defined $self->scrcfg($page);
 
     my @ctrls = $self->screen_rec->all_ctrls;
-
     foreach my $field ( @ctrls ) {
-        say $field;
+        my $rec = $self->screen_rec->get_ctrl($field);
+        say "# name = ", $rec->name;
+        say "# type = ", $rec->type;
+        say "# ctrl = ", $rec->ctrl;
+        say "---";
+
     #     my $fld_cfg = $self->scrcfg($page)->maintable('columns', $field);
 
     #     my $state = $control_states->{state};
@@ -773,6 +790,66 @@ sub _setup_events {
 
     #-  Tool Bar
 
+    #-- Find mode
+    $self->view->event_handler_for_tb_button(
+        'tb_fm',
+        sub { $self->toggle_mode_find }
+    );
+
+    #-- Find execute
+    $self->view->event_handler_for_tb_button(
+        'tb_fe',
+        sub { $self->record_find_execute }
+    );
+
+    #-- Find count
+    $self->view->event_handler_for_tb_button(
+        'tb_fc',
+        sub { $self->record_find_count }
+    );
+
+    #-- Print (preview) default report button
+    $self->view->event_handler_for_tb_button(
+        'tb_pr',
+        sub { $self->screen_report_print }
+    );
+
+    #-- Generate default document button
+    $self->view->event_handler_for_tb_button(
+        'tb_gr',
+        sub { $self->screen_document_generate }
+    );
+
+    #-- Take note
+    $self->view->event_handler_for_tb_button(
+        'tb_tn',
+        sub { $self->take_note() }
+    );
+
+    #-- Restore note
+    $self->view->event_handler_for_tb_button(
+        'tb_tr',
+        sub { $self->restore_note }
+    );
+
+    #-- Reload
+    $self->view->event_handler_for_tb_button(
+        'tb_rr',
+        sub { $self->record_reload() }
+    );
+
+    #-- Add mode; From sele mode forbid add mode
+    $self->view->event_handler_for_tb_button(
+        'tb_ad',
+        sub { $self->toggle_mode_add() }
+    );
+
+    #-- Delete
+    $self->view->event_handler_for_tb_button(
+        'tb_rm',
+        sub { $self->event_record_delete }
+    );
+
     #-- Save
     $self->view->event_handler_for_tb_button(
         'tb_sv',
@@ -801,6 +878,58 @@ sub _setup_events {
 
     #-- Quit Ctrl-q
     $self->view->event_handler_for_key('<Control-q>', 'on_close_window');
+
+    return;
+}
+
+sub toggle_mode_find {
+    my $self = shift;
+
+    say "toggle find modified=", $self->model->is_modified ? 'yes' : 'no'
+      if $self->debug;
+
+    # if ( $self->model->is_modified ) {
+    #     my $answer = $self->ask_to_save;
+    #     if ( !defined $answer ) {
+    #         $self->view->get_toolbar_btn('tb_fm')->deselect;
+    #         return;
+    #     }
+    # }
+    $self->get_mode eq 'find'
+        ? $self->set_app_mode('idle')
+        : $self->set_app_mode('find');
+
+    #$self->model->set_scrdata_rec(0);    # false = loaded,  true = modified,
+                                         # undef = unloaded
+
+    $self->view->set_status( '', 'ms' );     # clear messages
+
+    return;
+}
+
+sub toggle_mode_add {
+    my $self = shift;
+
+    say "toggle add modified=", $self->model->is_modified ? 'yes' : 'no'
+      if $self->debug;
+
+    if ( $self->model->is_modified ) {
+        if ( $self->model->is_mode('edit') ) {
+            my $answer = $self->ask_to_save;
+            if ( !defined $answer ) {
+                $self->view->get_toolbar_btn('tb_ad')->deselect;
+                return;
+            }
+        }
+    }
+    $self->model->is_mode('add')
+        ? $self->set_app_mode('idle')
+        : $self->set_app_mode('add');
+
+    $self->model->set_scrdata_rec(0);    # false = loaded,  true = modified,
+                                         # undef = unloaded
+
+    $self->view->set_status( '', 'ms' );    # clear messages
 
     return;
 }
