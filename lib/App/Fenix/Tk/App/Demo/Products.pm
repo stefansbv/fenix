@@ -238,7 +238,7 @@ sub run_screen {
         quantityinstock    => [ 'e', undef, $equantityinstock ],
         buyprice           => [ 'e', undef, $ebuyprice ],
         msrp               => [ 'e', undef, $emsrp ],
-        productdescription => [ 'e', undef, $tproductdescription ],
+        productdescription => [ 't', undef, $tproductdescription ],
     };
 
     # Required fields: fld_name => [#, Label]
