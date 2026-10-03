@@ -514,11 +514,10 @@ sub screen_init_keys {
     return;
 }
 
-# See set_control_states in the View
 sub controls_state_set {
     my ( $self, $set_state ) = @_;
 
-    $self->log->trace("Screen 'rec' controls state is '$set_state'");
+    $self->log->info("Screen 'rec' controls state is '$set_state'");
 
     my $page = $self->notebook->get_current_page;
 
@@ -1020,7 +1019,7 @@ sub screen_module_load {
 
     # my $maintable_h = $self->scrcfg->maintable;
     # use Data::Dump; dd $maintable_h;
-    $self->log->trace("New screen instance: $module");
+    $self->log->info("New screen instance: $module");
 
     return unless $self->check_cfg_version;  # current version is 5
 
