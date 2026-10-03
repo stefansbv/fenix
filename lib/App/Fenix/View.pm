@@ -29,7 +29,6 @@ use App::Fenix::Menubar;
 use App::Fenix::Toolbar;
 use App::Fenix::Notebook;
 use App::Fenix::Tk::Statusbar;
-use App::Fenix::Panel::Initial;
 use App::Fenix::Panel::Logger;
 use App::Fenix::Panel::Record;
 
@@ -141,19 +140,6 @@ has 'model' => (
     lazy    => 1,
     default => sub {
         shift->app->model;
-    },
-);
-
-has 'input_panel' => (
-    is      => 'ro',
-    # isa     => FenixPanel,
-    lazy    => 1,
-    default => sub {
-        my $self = shift;
-        my $pane = App::Fenix::Panel::Initial->new(
-            view   => $self,
-        );
-        return $pane;
     },
 );
 
@@ -488,7 +474,6 @@ sub BUILD {
     $self->toolbar->make;
     $self->statusbar->make;
 
-    #$self->input_panel->make;
     $self->notebook->make;
     $self->logger_panel->make;
 
