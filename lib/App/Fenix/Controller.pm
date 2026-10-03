@@ -351,8 +351,8 @@ sub on_screen_mode_idle {
 
     $self->controls_state_set('off');
 
-    $self->view->nb_set_page_state( 'det', 'disabled');
-    $self->view->nb_set_page_state( 'lst', 'normal');
+    $self->view->set_page_state( 'det', 'disabled');
+    $self->view->set_page_state( 'lst', 'normal');
 
     # Trigger 'on_mode_idle' method in screen if defined
     my $page = $self->view->get_current_page();
@@ -375,8 +375,8 @@ sub on_screen_mode_add {
 
     $self->controls_state_set('edit');
 
-    $self->view->nb_set_page_state( 'det', 'disabled' );
-    $self->view->nb_set_page_state( 'lst', 'disabled' );
+    $self->view->set_page_state( 'det', 'disabled' );
+    $self->view->set_page_state( 'lst', 'disabled' );
 
     # Default value for user in screen.  Add 'id_user' value if
     # 'id_user' control exists in screen
@@ -419,8 +419,8 @@ sub on_screen_mode_edit {
     my $self = shift;
 
     $self->controls_state_set('edit');
-    $self->view->nb_set_page_state( 'det', 'normal');
-    $self->view->nb_set_page_state( 'lst', 'normal');
+    $self->view->set_page_state( 'det', 'normal');
+    $self->view->set_page_state( 'lst', 'normal');
 
     # Trigger 'on_mode_edit' method in screen if defined
     my $page = $self->view->get_current_page();
@@ -435,7 +435,7 @@ sub on_screen_mode_sele {
     my $self = shift;
 
     my $nb = $self->view->get_notebook();
-    $self->view->nb_set_page_state( 'det', 'disabled');
+    $self->view->set_page_state( 'det', 'disabled');
 
     return;
 }
@@ -974,14 +974,8 @@ sub screen_module_load {
         $self->view->make_list_header( $header_look, $header_cols, $fields );
     }
     else {
-        $self->view->nb_set_page_state( 'lst', 'disabled' );
+        $self->view->set_page_state( 'lst', 'disabled' );
     }
-
-    # #- Event handlers
-    # my $group_labels = $self->scrcfg()->scr_toolbar_groups();
-    # foreach my $label ( @{$group_labels} ) {
-    #     $self->set_event_handler_screen($label);
-    # }
 
     # # Toggle find mode menus
     # my $menus_state
@@ -995,7 +989,7 @@ sub screen_module_load {
     # $self->model->unset_scrdata_rec();
 
     # # Change application title
-    # my $descr = $self->scrcfg('rec')->screen('description');
+    # my $descr = $self->scrcfg->screen('description');
     # $self->view->title(' Tpda3 - ' . $descr) if $descr;
 
     # Update window geometry
