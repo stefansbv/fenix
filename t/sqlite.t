@@ -48,7 +48,7 @@ END {
 }
 
 my $tmp_dir = path( tempdir CLEANUP => 1 );
-my $db_path = path( $tmp_dir, 'tpda3devtest.db' );
+my $db_path = path( $tmp_dir, 'fenixdevtest.db' );
 # print "SQLite test db: $db_path\n";
 my $uri = "db:sqlite:$db_path";
 DBIEngineTest->run(
