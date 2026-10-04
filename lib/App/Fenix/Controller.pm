@@ -355,9 +355,6 @@ sub _init {
 sub on_screen_mode_idle {
     my ($self, $rules) = @_;
 
-    say "on_screen_mode_idle: rules:";
-    dd $rules;
-
     # Empty the main controls and TM, if any
 
     # $self->record_clear;
@@ -372,7 +369,7 @@ sub on_screen_mode_idle {
     $self->notebook->set_page_state( 'lst', 'normal');
 
     # Trigger 'on_mode_idle' method in screen if defined
-    my $page = $self->notebook->get_current_page();
+    my $page = $self->notebook->get_current_page;
     say "# page = $page";
     # $self->scrobj($page)->on_mode_idle()
     #     if ( $page eq 'rec' or $page eq 'det' )
@@ -382,7 +379,7 @@ sub on_screen_mode_idle {
 }
 
 sub on_screen_mode_add {
-    my $self = shift;
+    my ($self, $rules) = @_;
 
     $self->record_clear;              # empty the main controls and TM
     $self->tmatrix_set_selected();    # initialize selector
@@ -391,28 +388,28 @@ sub on_screen_mode_add {
         $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
     }
 
-    $self->controls_state_set('edit');
+    $self->controls_state_set($rules);
 
-    $self->view->set_page_state( 'det', 'disabled' );
-    $self->view->set_page_state( 'lst', 'disabled' );
+    $self->notebook->set_page_state( 'det', 'disabled' );
+    $self->notebook->set_page_state( 'lst', 'disabled' );
 
-    # Default value for user in screen.  Add 'id_user' value if
-    # 'id_user' control exists in screen
-    my $user_field = 'id_user';              # hardwired user field name
-    my $control_ref = $self->scrobj()->get_controls($user_field);
-    $self->ctrl_write_to( $user_field, $self->cfg->user ) if $control_ref;
+    # # Default value for user in screen.  Add 'id_user' value if
+    # # 'id_user' control exists in screen
+    # my $user_field = 'id_user';              # hardwired user field name
+    # my $control_ref = $self->scrobj()->get_controls($user_field);
+    # $self->ctrl_write_to( $user_field, $self->cfg->user ) if $control_ref;
 
     # Trigger 'on_mode_add' method in screen if defined
-    my $page = $self->view->get_current_page();
-    $self->scrobj($page)->on_mode_add()
-        if ( $page eq 'rec' or $page eq 'det' )
-        and $self->scrobj($page)->can('on_mode_add');
+    my $page = $self->notebook->get_current_page;
+    # $self->scrobj($page)->on_mode_add()
+    #     if ( $page eq 'rec' or $page eq 'det' )
+    #     and $self->scrobj($page)->can('on_mode_add');
 
     return;
 }
 
 sub on_screen_mode_find {
-    my $self = shift;
+    my ($self, $rules) = @_;
 
     # Empty the main controls and TM, if any
 
@@ -422,29 +419,30 @@ sub on_screen_mode_find {
     #     $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
     # }
 
-    $self->controls_state_set('find');
+    $self->controls_state_set($rules);
 
     # Trigger 'on_mode_find' method in screen if defined
     my $page = $self->notebook->get_current_page();
-    $self->scrobj($page)->on_mode_find
-        if ( $page eq 'rec' or $page eq 'det' )
-        and $self->scrobj($page)->can('on_mode_find');
+    # $self->scrobj($page)->on_mode_find
+    #     if ( $page eq 'rec' or $page eq 'det' )
+    #     and $self->scrobj($page)->can('on_mode_find');
 
     return;
 }
 
 sub on_screen_mode_edit {
-    my $self = shift;
+    my ($self, $rules) = @_;
 
-    $self->controls_state_set('edit');
-    $self->view->set_page_state( 'det', 'normal');
-    $self->view->set_page_state( 'lst', 'normal');
+    $self->controls_state_set($rules);
+
+    $self->notebook->set_page_state( 'det', 'normal');
+    $self->notebook->set_page_state( 'lst', 'normal');
 
     # Trigger 'on_mode_edit' method in screen if defined
-    my $page = $self->view->get_current_page();
-    $self->scrobj($page)->on_mode_edit()
-        if ( $page eq 'rec' or $page eq 'det' )
-        and $self->scrobj($page)->can('on_mode_edit');
+    my $page = $self->notebook->get_current_page();
+    # $self->scrobj($page)->on_mode_edit()
+    #     if ( $page eq 'rec' or $page eq 'det' )
+    #     and $self->scrobj($page)->can('on_mode_edit');
 
     return;
 }
@@ -532,6 +530,8 @@ sub controls_state_set {
 
     # return unless defined $self->scrcfg($page);
 
+    dd $rules;
+
     my @ctrls = $self->screen_rec->all_ctrls;
     foreach my $field ( @ctrls ) {
         my $rec = $self->screen_rec->get_ctrl($field);
@@ -543,7 +543,6 @@ sub controls_state_set {
         }
 
         my $fld_cfg = $self->scrcfg->maintable->{columns}{$field};
-
         #dd $fld_cfg;
 
         my $state = $rules->{state};
