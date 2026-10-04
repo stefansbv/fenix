@@ -386,6 +386,13 @@ sub control_read_c {
     return $control->{Value};
 }
 
+sub configure_controls {
+    my ($self, $control, $state, $bg_color) = @_;
+    $control->configure( -state      => $state, );
+    $control->configure( -background => $bg_color, );
+    return;
+}
+
 =head2 get_toolbar_btn
 
 Return a toolbar button when we know the its name
@@ -454,13 +461,12 @@ sub set_tb_buton_state {
 
 sub set_app_states {
     my ( $self, $state, $rules ) = @_;
-    say "refresh: set_app_states";
+    say "(view) refresh: set_app_states";
     $self->set_status( $state, 'md' );
 
-    dd $rules;
     # Call methods in the controller
     if ( my $meth = $rules->{'method'} ) {
-        $self->controller->$meth();
+        $self->controller->$meth($rules);
     }
     return;
 }

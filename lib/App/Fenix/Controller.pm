@@ -353,7 +353,10 @@ sub _init {
 }
 
 sub on_screen_mode_idle {
-    my $self = shift;
+    my ($self, $rules) = @_;
+
+    say "on_screen_mode_idle: rules:";
+    dd $rules;
 
     # Empty the main controls and TM, if any
 
@@ -363,7 +366,7 @@ sub on_screen_mode_idle {
     #     $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
     # }
 
-    $self->controls_state_set('off');
+    $self->controls_state_set($rules);
 
     $self->notebook->set_page_state( 'det', 'disabled');
     $self->notebook->set_page_state( 'lst', 'normal');
@@ -515,20 +518,13 @@ sub screen_init_keys {
 }
 
 sub controls_state_set {
-    my ( $self, $set_state ) = @_;
-
-    $self->log->info("Screen 'rec' controls state is '$set_state'");
+    my ( $self, $rules ) = @_;
 
     my $page = $self->notebook->get_current_page;
 
     return unless $page;
 
     my $bg = $self->scrobj->get_bgcolor;
-
-    # my $ctrl_ref = $self->scrobj->get_controls();
-    # return unless scalar keys %{$ctrl_ref};
-
-    # my $control_states = $self->control_states($set_state);
 
     # # Enable controls for report style screen
     # $control_states = $self->control_states('edit')
@@ -538,24 +534,28 @@ sub controls_state_set {
 
     my @ctrls = $self->screen_rec->all_ctrls;
     foreach my $field ( @ctrls ) {
-        # my $rec = $self->screen_rec->get_ctrl($field);
-        # say "# name = ", $rec->name;
-        # say "# type = ", $rec->type;
-        # say "# ctrl = ", $rec->ctrl;
-        # say "---";
+        my $rec = $self->screen_rec->get_ctrl($field);
+        if ( $self->debug ) {
+            say "# name = ", $rec->name;
+            say "# type = ", $rec->type;
+            say "# ctrl = ", $rec->ctrl;
+            say "---";
+        }
 
-    #     my $fld_cfg = $self->scrcfg($page)->maintable('columns', $field);
+        my $fld_cfg = $self->scrcfg->maintable->{columns}{$field};
 
-    #     my $state = $control_states->{state};
-    #     $state = $fld_cfg->{state}
-    #         if $state eq 'from_config';
+        #dd $fld_cfg;
 
-    #     my $bkground = $control_states->{background};
-    #     my $bg_color = $bkground;
-    #     $bg_color = $fld_cfg->{bgcolor}
-    #         if $bkground eq 'from_config';
-    #     $bg_color = $bg
-    #         if $bkground eq 'disabled_bgcolor';
+        my $state = $rules->{state};
+        $state = $fld_cfg->{state}
+            if $state eq 'from_config';
+
+        my $bkground = $rules->{background};
+        my $bg_color = $bkground;
+        $bg_color = $fld_cfg->{bgcolor}
+            if $bkground eq 'from_config';
+        $bg_color = $bg
+            if $bkground eq 'disabled_bgcolor';
 
     #     # Special case for find mode and fields with 'findtype' set to none
     #     if ( $set_state eq 'find' ) {
@@ -565,18 +565,18 @@ sub controls_state_set {
     #         }
     #     }
 
-    #     # Allow 'bg' as bgcolor config attribute value for controls
-    #     $bg_color = $bg if $bg_color =~ m{bg|background};
+        # Allow 'bg' as bgcolor config attribute value for controls
+        $bg_color = $bg if $bg_color =~ m{bg|background};
 
-    #     # Configure controls
-    #     my $control = $self->scrobj()->get_controls($field);
-    #     if ($control) {
-    #         $self->view->configure_controls( $control->[1], $state,
-    #             $bg_color, $fld_cfg );
-    #     }
-    #     else {
-    #         warn "Can't configure control for '$field'";
-    #     }
+        # Configure controls
+        my $control = $rec->ctrl;
+        if ($control) {
+            $self->view->configure_controls( $control, $state,
+                $bg_color, $fld_cfg );
+        }
+        else {
+            warn "Can't configure control for '$field'";
+        }
     }
 
     return;
