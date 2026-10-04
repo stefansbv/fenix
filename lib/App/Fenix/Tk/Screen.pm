@@ -9,6 +9,7 @@ use Sub::HandlesVia;
 use App::Fenix::Types qw(
     FenixConfig
     FenixConfigScr
+    FenixToolbar
     FenixView
     Path
     Str
@@ -19,9 +20,6 @@ use App::Fenix::Ctrl;
 use App::Fenix::Tk::Entry;
 use App::Fenix::Tk::Text;                    # TODO: check
 use App::Fenix::Toolbar;
-use App::Fenix::Config::Screen;
-
-use Data::Dump;
 
 with qw/App::Fenix::Role::DBUtils/;
 
@@ -53,6 +51,12 @@ has 'bg' => (
     is       => 'rw',
     isa      => Str,
     required => 0,
+);
+
+has 'toolbar' => (
+    is      => 'rw',
+    isa     => FenixToolbar,
+    lazy    => 1,
 );
 
 has '_controls' => (
@@ -166,12 +170,6 @@ sub get_bgcolor {
     return $self->{bg} // 'white';
 }
 
-# sub make_toolbar_for_table {
-#     my $self = shift;
-#     $self->make_toolbar_in_frame(@_);
-#     return;
-# }
-
 sub make_toolbar_in_frame {
     my ( $self, $toolbar, $tb_frame, $tb_opts ) = @_;
     my $yaml_file = $self->config->toolbar_config_file_path;
@@ -185,8 +183,10 @@ sub make_toolbar_in_frame {
         toolbar_file => $yaml_file,
         side         => $side,
         filter       => $toolbars,
-    )->make;
-    return $tb;
+    );
+    $self->toolbar($tb);
+    $tb->make;
+    return;
 }
 
 sub tmatrix_add_row {
@@ -221,15 +221,10 @@ sub date_format {
     return $self->config->application_dateformat;
 }
 
-sub app_toolbar_attribs {
-    my $self = shift;
-    return $self->config->toolbar;
-}
-
 sub app_toolbar_names {
     my ($self, $name) = @_;
     my ($toolbars) = $self->scrcfg->scr_toolbar_names($name);
-    my $attribs; # = $self->app_toolbar_attribs;
+    my $attribs = $self->scrcfg->scrtoolbar;
     return ( $toolbars, $attribs );
 }
 
