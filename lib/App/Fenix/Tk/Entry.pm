@@ -15,7 +15,7 @@ sub ClassInit {
 
     $class->SUPER::ClassInit($mw);
 
-    $mw->bind( $class, '<KeyRelease>', sub { $mw->set_modified_record(); } );
+    # $mw->bind( $class, '<KeyRelease>', sub { $mw->set_modified_record(); } );
 
     return;
 }
