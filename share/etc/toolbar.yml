@@ -1,6 +1,10 @@
+# fenix
+# Main toolbar interface configuration
+# Here ca be added new toolbar buttons
+# The toolbar Id's start at 1000 and the name with tb1
 ---
 tb_ad:
-  id: '1009'
+  id: '1000'
   help: 'Add record'
   icon: actitemadd16
   sep: none
@@ -20,7 +24,7 @@ tb_ad:
   tooltip: 'Add record'
   type: _item_check
 tb_at:
-  id: '1012'
+  id: '1001'
   help: 'Save current window geometry'
   icon: actattach16
   sep: after
@@ -40,7 +44,7 @@ tb_at:
   tooltip: 'Save current window geometry'
   type: _item_normal
 tb_fc:
-  id: '1003'
+  id: '1002'
   help: 'Execute count'
   icon: acthelp16
   sep: after
@@ -60,7 +64,7 @@ tb_fc:
   tooltip: 'Execute count'
   type: _item_normal
 tb_fe:
-  id: '1002'
+  id: '1003'
   help: 'Execute search'
   icon: actcheck16
   sep: none
@@ -80,7 +84,7 @@ tb_fe:
   tooltip: 'Execute search'
   type: _item_normal
 tb_fm:
-  id: '1001'
+  id: '1004'
   help: 'Toggle find mode'
   icon: filefind16
   sep: none
@@ -120,7 +124,7 @@ tb_gr:
   tooltip: 'Generate document'
   type: _item_normal
 tb_pr:
-  id: '1004'
+  id: '1006'
   help: 'Print preview default report'
   icon: fileprint16
   sep: none
@@ -140,7 +144,7 @@ tb_pr:
   tooltip: 'Print preview'
   type: _item_normal
 tb_qt:
-  id: '1013'
+  id: '1007'
   help: 'Quit the application'
   icon: actexit16
   sep: after
@@ -160,7 +164,7 @@ tb_qt:
   tooltip: Quit
   type: _item_normal
 tb_rm:
-  id: '1010'
+  id: '1008'
   help: 'Remove record'
   icon: actitemdelete16
   sep: none
@@ -180,7 +184,7 @@ tb_rm:
   tooltip: 'Remove record'
   type: _item_normal
 tb_rr:
-  id: '1008'
+  id: '1009'
   help: 'Reload record'
   icon: actreload16
   sep: after
@@ -200,7 +204,7 @@ tb_rr:
   tooltip: 'Reload record'
   type: _item_normal
 tb_sv:
-  id: '1011'
+  id: '1010'
   help: 'Save record'
   icon: filesave16
   sep: after
@@ -220,7 +224,7 @@ tb_sv:
   tooltip: 'Save record'
   type: _item_normal
 tb_tn:
-  id: '1006'
+  id: '1011'
   help: 'Copy record'
   icon: editcopy16
   sep: none
@@ -240,7 +244,7 @@ tb_tn:
   tooltip: 'Copy record'
   type: _item_normal
 tb_tr:
-  id: '1007'
+  id: '1012'
   help: 'Paste record'
   icon: editpaste16
   sep: after

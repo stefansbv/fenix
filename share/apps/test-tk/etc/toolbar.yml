@@ -1,10 +1,10 @@
-# tpda3
+# fenix
 # Toolbar interface configuration
 # Here ca be added new toolbar buttons
 # The toolbar Id's start at 2000 and the name with tb2
 ---
 tb2ad:
-  id:      2001
+  id:      2000
   type:    _item_normal
   icon:    actitemadd16
   tooltip: Add new row
@@ -24,7 +24,7 @@ tb2ad:
       find: disabled
       sele: disabled
 tb2rm:
-  id      : 2002
+  id      : 2001
   type    : _item_normal
   icon    : actitemdelete16
   tooltip : Remove row
@@ -44,7 +44,7 @@ tb2rm:
       find: disabled
       sele: disabled
 tb2rr:
-  id      : 2003
+  id      : 2002
   type    : _item_normal
   icon    : actreload16
   tooltip : Remove row
@@ -64,7 +64,7 @@ tb2rr:
       find: disabled
       sele: disabled
 tb2sv:
-  id      : 2004
+  id      : 2003
   type    : _item_normal
   icon    : filesave16
   tooltip : Remove row
