@@ -286,6 +286,7 @@ has 'screen_rec' => (
             config  => $self->config,
             scrcfg  => $self->scrcfg,
             toolscr => undef, #$from_tools,
+            view    => $self->view,
         );
         return $screen;
     },
@@ -530,6 +531,7 @@ sub controls_state_set {
 
     # return unless defined $self->scrcfg($page);
 
+    say "rules:";
     dd $rules;
 
     my @ctrls = $self->screen_rec->all_ctrls;
@@ -543,13 +545,14 @@ sub controls_state_set {
         }
 
         my $fld_cfg = $self->scrcfg->maintable->{columns}{$field};
-        #dd $fld_cfg;
+        # say "field = $field : ";
+        # dd $fld_cfg;
 
         my $state = $rules->{state};
         $state = $fld_cfg->{state}
             if $state eq 'from_config';
 
-        my $bkground = $rules->{background};
+        my $bkground = exists $rules->{background} ? $rules->{background} : '';
         my $bg_color = $bkground;
         $bg_color = $fld_cfg->{bgcolor}
             if $bkground eq 'from_config';
@@ -933,6 +936,157 @@ sub toggle_mode_add {
     return;
 }
 
+sub screen_read {
+    my ($self, $all) = @_;
+
+    # Initialize
+    $self->{_scrdata} = {};
+
+    my $scrobj = $self->scrobj;    # current screen object
+    my $scrcfg = $self->scrcfg;    # current screen config
+
+    my $ctrl_ref = $scrobj->get_controls();
+
+    return unless scalar keys %{$ctrl_ref};
+
+    # Get configured date style, default is ISO
+    my $date_format = $self->cfg->application->{dateformat} || 'iso';
+
+    foreach my $field ( keys %{ $scrcfg->maintable('columns') } ) {
+        my $fld_cfg = $scrcfg->maintable('columns', $field);
+
+        # Control config attributes
+        my $ctrltype = $fld_cfg->{ctrltype};
+        my $ctrlrw   = $fld_cfg->{readwrite};
+
+        if ( !$all ) {
+            unless ( $self->model->is_mode('find') ) {
+                next if ( $ctrlrw eq 'r' ) or ( $ctrlrw eq 'ro' );
+            }
+        }
+
+        $self->ctrl_read_from($field, $date_format);
+    }
+    return;
+}
+
+sub record_find_execute {
+    my $self = shift;
+
+    # $self->screen_read();
+    # my $params = {};
+
+    # # Columns data (from list header)
+    # $params->{columns} = $self->list_column_names();
+
+    # # Table configs
+    # my $columns = $self->scrcfg('rec')->maintable('columns');
+
+    # # Add findtype info to screen data
+    # foreach my $field ( keys %{ $self->{_scrdata} } ) {
+    #     my $value = $self->{_scrdata}{$field};
+    #     chomp $value;
+    #     my $findtype = $columns->{$field}{findtype};
+
+    #     # Create a where clause like this:
+    #     #  field1 IS NOT NULL and field2 IS NULL
+    #     # for entry values equal to '%' or '!'
+    #     $findtype = q{notnull} if $value eq q{%};
+    #     $findtype = q{isnull}  if $value eq q{!};
+
+    #     $params->{where}{$field} = [ $value, $findtype ];
+    # }
+
+    # # Table data
+    # $params->{table} = $self->table_key('rec','main')->view;
+    # $params->{pkcol} = $self->table_key('rec','main')->get_key(0)->name;
+
+    # my ($ary_ref, $limit);
+    # try {
+    #      ($ary_ref, $limit) = $self->model->query_records_find($params);
+    # }
+    # catch {
+    #     $self->catch_db_exceptions($_);
+    # };
+
+    # # return unless defined $ary_ref->[0];     # test if AoA ?
+    # unless (ref $ary_ref eq 'ARRAY') {
+    #     # die "Find failed!";
+    #     return;
+    # }
+
+    # my $record_count = scalar @{$ary_ref};
+    # my $msg1 = __n 'record', 'records', $record_count;
+    # my $msg0 = $record_count == $limit
+    #          ? __ 'first'
+    #          : q{};
+
+    # my $message = __x(
+    #     "{pre} {count} {post}",
+    #     pre   => $msg0,
+    #     count => $record_count,
+    #     post  => $msg1
+    # );
+    # $self->view->set_status($message, 'ms', 'darkgreen');
+
+    # $self->view->list_init();
+    # my $record_inlist = $self->view->list_populate($ary_ref);
+    # $self->view->list_raise() if $record_inlist > 0;
+
+    # # Double check
+    # if ($record_inlist != $record_count) {
+    #     die "Record count error?!";
+    # }
+
+    # # Set mode to sele if found
+    # $self->set_app_mode('sele') if $record_inlist > 0;
+
+    return;
+}
+
+sub record_find_count {
+    my $self = shift;
+
+    # $self->screen_read();
+
+    # # Table configs
+    # my $columns = $self->scrcfg('rec')->maintable('columns');
+
+    # my $params = {};
+
+    # # Add findtype info to screen data
+    # foreach my $field ( keys %{ $self->{_scrdata} } ) {
+    #     my $value = $self->{_scrdata}{$field};
+    #     chomp $value;
+    #     my $findtype = $columns->{$field}{findtype};
+
+    #     # Create a where clause like this:
+    #     #  field1 IS NOT NULL and field2 IS NULL
+    #     # for entry values equal to '%' or '!'
+    #     $findtype = q{notnull} if $value eq q{%};
+    #     $findtype = q{isnull}  if $value eq q{!};
+
+    #     $params->{where}{$field} = [ $value, $findtype ];
+    # }
+
+    # # Table data
+    # $params->{table} = $self->table_key('rec','main')->view;
+    # $params->{pkcol} = $self->table_key('rec','main')->get_key(0)->name;
+
+    # my $record_count;
+    # try {
+    #     $record_count = $self->model->query_records_count($params);
+    # }
+    # catch {
+    #     $self->catch_db_exceptions($_);
+    # };
+
+    # my $msg = __ 'records';
+    # $self->view->set_status( "$record_count $msg", 'ms', 'darkgreen' );
+
+    return;
+}
+
 sub on_quit {
     my $self = shift;
     print "Shutting down...\n";
@@ -1039,6 +1193,7 @@ sub screen_module_load {
     $self->screen_rec->run_screen( $self->view->record );
 
     $self->screen_rec->register_controls;
+    $self->screen_rec->register_tm_controls;
 
     my @ctrls = $self->screen_rec->all_ctrls;
     # dd @ctrls;
