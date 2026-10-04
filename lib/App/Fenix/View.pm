@@ -437,12 +437,6 @@ sub set_tb_buton_state {
     return;
 }
 
-sub set_control_state {
-    my ( $self, $state, $rules ) = @_;
-    $self->set_status( $state, 'md' );
-    return;
-}
-
 # sub set_control_state {
 #     my ( $self, $name, $state ) = @_;
 #     # my $ctrl = $self->get_ctrl($name);
@@ -460,9 +454,8 @@ sub set_control_state {
 
 sub set_app_states {
     my ( $self, $state, $rules ) = @_;
-    say "refresh: set_control_states";
+    say "refresh: set_app_states";
     $self->set_status( $state, 'md' );
-    $self->set_control_state($state);
 
     dd $rules;
     # Call methods in the controller
