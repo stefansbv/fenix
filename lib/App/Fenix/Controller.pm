@@ -360,8 +360,14 @@ sub on_screen_mode_idle {
 
     # $self->record_clear;
 
-    # foreach my $tm_ds ( keys %{ $self->scrobj()->get_tm_controls() } ) {
-    #     $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
+    my @tm_ctrls = $self->screen_rec->all_tm_ctrls;
+    foreach my $tm (@tm_ctrls) {
+        $self->screen_rec->get_tm_ctrl($tm)->ctrl->clear_all;
+    }
+
+    # foreach my $tm_ds ( keys %{ $self->screen_rec->all_tm_ctrls } ) {
+    #     say $tm_ds;
+    #     $self->screen_rec->get_ctrl($tm_ds)->clear_all;
     # }
 
     $self->controls_state_set($rules);
