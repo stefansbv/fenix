@@ -223,7 +223,7 @@ sub run_screen {
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
         -textvariable       => \$vstatuscode,
-        -selectcommand      => sub { $self->view->set_modified_record() },
+        # -selectcommand      => sub { $self->view->set_modified_record() },
     )->form(
         -top       => [ '&', $lstatuscode, 0 ],
         -left      => [ %0,  $f1d ],
@@ -324,7 +324,7 @@ sub run_screen {
     };
 
     # TableMatrix objects; just one for now :)
-    $self->{tm_controls} = { tm1 => \$xtable };
+    $self->{tm_controls} = { tm1 => $xtable };
 
     # Required fields: fld_name => [#, Label]
     # If there is no value in the screen for this fields show a dialog message
