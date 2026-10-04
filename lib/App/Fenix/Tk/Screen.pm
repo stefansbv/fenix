@@ -17,9 +17,12 @@ use App::Fenix::Types qw(
 );
 
 use App::Fenix::Ctrl;
+use App::Fenix::TMCtrl;
 use App::Fenix::Tk::Entry;
 use App::Fenix::Tk::Text;                    # TODO: check
 use App::Fenix::Toolbar;
+
+use Data::Dump;
 
 with qw/App::Fenix::Role::DBUtils/;
 
@@ -38,7 +41,7 @@ has 'scrcfg' => (
 has 'view' => (
     is       => 'rw',
     #isa      => FenixView,
-    required => 0,
+    required => 1,
 );
 
 has 'top' => (
@@ -69,6 +72,19 @@ has '_controls' => (
         get_ctrl  => 'get',
         add_ctrl  => 'set',
         all_ctrls => 'keys',
+    },
+);
+
+has '_tm_controls' => (
+    is          => 'ro',
+    traits      => ['Hash'],
+    lazy        => 1,
+    init_arg    => undef,
+    default     => sub { {} },
+    handles     => {
+        get_tm_ctrl  => 'get',
+        add_tm_ctrl  => 'set',
+        all_tm_ctrls => 'keys',
     },
 );
 
@@ -111,35 +127,52 @@ sub register_controls {
     return;
 }
 
-sub get_controls {
-    my ($self, $field) = @_;
-
-    # croak "'get_controls' not implemented.\n"
-    #     unless exists $self->{controls}
-    #         and scalar %{ $self->{controls} };
-
-    if ($field) {
-        return $self->{controls}{$field};
-    }
-    else {
-        return $self->{controls};
-    }
-}
-
-sub get_tm_controls {
-    my ( $self, $tm_ds ) = @_;
-
-    return {} if !exists $self->{tm_controls};
-
-    if ($tm_ds) {
-        ( exists $self->{tm_controls}{$tm_ds} )
-            ? ( return ${ $self->{tm_controls}{$tm_ds} } )
-            : ( croak "No TM $tm_ds in screen!" );
-    }
-    else {
-        return $self->{tm_controls};
+sub register_tm_controls {
+    my $self = shift;
+    say "#! register_tm_controls called ";
+    my $controls_tm = $self->{tm_controls};
+    foreach my $name ( keys %{$controls_tm} ) {
+        my $ctrl = $controls_tm->{$name};
+        $self->add_tm_ctrl(
+            $name,
+            App::Fenix::TMCtrl->new(
+                name => $name,
+                type => 'xt',
+                ctrl => $ctrl,
+            )
+        );
     }
 }
+
+# sub get_controls {
+#     my ($self, $field) = @_;
+
+#     # croak "'get_controls' not implemented.\n"
+#     #     unless exists $self->{controls}
+#     #         and scalar %{ $self->{controls} };
+
+#     if ($field) {
+#         return $self->{controls}{$field};
+#     }
+#     else {
+#         return $self->{controls};
+#     }
+# }
+
+# sub get_tm_controls {
+#     my ( $self, $tm_ds ) = @_;
+
+#     return {} if !exists $self->{tm_controls};
+
+#     if ($tm_ds) {
+#         ( exists $self->{tm_controls}{$tm_ds} )
+#             ? ( return ${ $self->{tm_controls}{$tm_ds} } )
+#             : ( croak "No TM $tm_ds in screen!" );
+#     }
+#     else {
+#         return $self->{tm_controls};
+#     }
+# }
 
 sub get_rq_controls {
     my $self = shift;
