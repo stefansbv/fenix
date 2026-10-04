@@ -451,8 +451,8 @@ sub on_screen_mode_edit {
 sub on_screen_mode_sele {
     my $self = shift;
 
-    my $nb = $self->view->get_notebook();
-    $self->view->set_page_state( 'det', 'disabled');
+    my $nb = $self->notebook();
+    $self->notebook->set_page_state( 'det', 'disabled');
 
     return;
 }
@@ -1389,6 +1389,11 @@ sub set_geometry {
     unless ($geom) {
         $geom = $self->scrcfg->scr->{screen}{geometry};
     }
+    say " geom pre: $geom";
+    my ( $fw, $fh, $x, $y ) = $geom =~ m{(\d+)x(\d+)([+-]\d+)([+-]\d+)};
+    $geom = sprintf("%dx%d+%d+%d", $fw, $fh, $x, $y);
+    say " geom end: $geom";
+
     $self->view->set_geometry($geom);
     return;
 }
