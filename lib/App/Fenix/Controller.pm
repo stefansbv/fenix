@@ -381,12 +381,12 @@ sub on_screen_mode_idle {
 sub on_screen_mode_add {
     my ($self, $rules) = @_;
 
-    $self->record_clear;              # empty the main controls and TM
-    $self->tmatrix_set_selected();    # initialize selector
+    # $self->record_clear;              # empty the main controls and TM
+    # $self->tmatrix_set_selected();    # initialize selector
 
-    foreach my $tm_ds ( keys %{ $self->scrobj()->get_tm_controls() } ) {
-        $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
-    }
+    # foreach my $tm_ds ( keys %{ $self->scrobj()->get_tm_controls() } ) {
+    #     $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
+    # }
 
     $self->controls_state_set($rules);
 
@@ -908,23 +908,24 @@ sub toggle_mode_find {
 sub toggle_mode_add {
     my $self = shift;
 
-    say "toggle add modified=", $self->model->is_modified ? 'yes' : 'no'
-      if $self->debug;
+    # say "toggle add modified=", $self->model->is_modified ? 'yes' : 'no'
+    #   if $self->debug;
 
-    if ( $self->model->is_modified ) {
-        if ( $self->model->is_mode('edit') ) {
-            my $answer = $self->ask_to_save;
-            if ( !defined $answer ) {
-                $self->view->get_toolbar_btn('tb_ad')->deselect;
-                return;
-            }
-        }
-    }
-    $self->model->is_mode('add')
+    # TODO: implement is_modified
+    # if ( $self->model->is_modified ) {
+    #     if ( $self->model->get_mode('edit') ) {
+    #         my $answer = $self->ask_to_save;
+    #         if ( !defined $answer ) {
+    #             $self->view->get_toolbar_btn('tb_ad')->deselect;
+    #             return;
+    #         }
+    #     }
+    # }
+    $self->get_mode eq 'add'
         ? $self->set_app_mode('idle')
         : $self->set_app_mode('add');
 
-    $self->model->set_scrdata_rec(0);    # false = loaded,  true = modified,
+    # $self->model->set_scrdata_rec(0);    # false = loaded,  true = modified,
                                          # undef = unloaded
 
     $self->view->set_status( '', 'ms' );    # clear messages
