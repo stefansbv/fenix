@@ -538,11 +538,11 @@ sub controls_state_set {
 
     my @ctrls = $self->screen_rec->all_ctrls;
     foreach my $field ( @ctrls ) {
-        my $rec = $self->screen_rec->get_ctrl($field);
-        say "# name = ", $rec->name;
-        say "# type = ", $rec->type;
-        say "# ctrl = ", $rec->ctrl;
-        say "---";
+        # my $rec = $self->screen_rec->get_ctrl($field);
+        # say "# name = ", $rec->name;
+        # say "# type = ", $rec->type;
+        # say "# ctrl = ", $rec->ctrl;
+        # say "---";
 
     #     my $fld_cfg = $self->scrcfg($page)->maintable('columns', $field);
 
@@ -1131,30 +1131,9 @@ sub set_app_mode {
         say "set_app_mode: No screen_rec_class!";
         return;
     }
-
     $self->toggle_screen_interface_controls;
-    # if ( my $method_name = $self->{method_for_mode}{$mode} ) {
-    #     $self->$method_name();
-    # }
-    # else {
-    #     print "WW: '$mode' not implemented!\n";
-    # }
     return 1;    # to make ok from Test::More happy
                  # probably missing something :) TODO!
-}
-
-sub set_control_states {
-    my ( $self, $state, $rules ) = @_;
-    say "refresh: set_control_states";
-    $self->set_status( $state, 'md' );
-    $self->set_control_state($state);
-
-    dd $rules;
-    # foreach my $name ( keys %{ $rules } ) {
-    #     say " rule: $name";
-    #     my $state = $rules->{$name};
-    # }
-    return;
 }
 
 sub toggle_interface_controls {
@@ -1162,11 +1141,8 @@ sub toggle_interface_controls {
 
     my $conf = $self->toolbar->config;
     my $mode = $self->get_mode;
-    say " mode = $mode";
     my $page = $self->notebook->get_current_page;
-    say " page = $page";
-    # dd $conf;
-
+    say "toggle_interface_controls:  page = $page   mode = $mode";
     my $is_rec = $self->is_record;
 
     foreach my $name ( $conf->all_toolbar_names ) {
@@ -1226,20 +1202,25 @@ sub toggle_screen_interface_controls {
 
     #- Toolbar (table)
 
-    my $group_labels = $self->scrcfg->scr_toolbar_groups;
-    foreach my $label ( @{$group_labels} ) {
-        say " group labels = $label";
-        my ( $toolbars, $tb_attrs ) = $self->screen_rec->app_toolbar_names($label);
-        # foreach my $button_name ( @{$toolbars} ) {
-        #     my $status
-        #         = $self->scrcfg()->screen('style') eq 'report'
-        #         ? 'normal'
-        #         : $tb_attrs->{$button_name}{state}{$page}{$mode};
-        #     say " button_name: $button_name -> $status";
-        #     # $self->screen_rec_class($page)->enable_tool( $label, $button_name, $status );
-        #     $self->screen_rec_class->enable_tool( $label, $button_name, $status );
-        # }
-    }
+    # my $group_labels = $self->scrcfg->scr_toolbar_groups;
+    # foreach my $label ( @{$group_labels} ) {
+    #     say " group labels = $label";
+    #     my ( $toolbars, $tb_attrs )
+    #         = $self->screen_rec->app_toolbar_names($label);
+
+    #     dd $toolbars;
+    #     dd $tb_attrs;
+    #     foreach my $button_name ( @{$toolbars} ) {
+    #         say $button_name;
+    #         say $self->scrcfg->screen('style');
+    #         # my $status
+    #         #     = $self->scrcfg->screen('style') eq 'report'
+    #         #     ? 'normal'
+    #         #     : $tb_attrs->{$button_name}{state}{$page}{$mode};
+    #         # say " button_name: $button_name -> $status";
+    #         # $self->screen_rec->enable_tool( $label, $button_name, $status );
+    #     }
+    # }
     return;
 }
 
