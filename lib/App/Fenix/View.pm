@@ -823,6 +823,23 @@ sub list_locate {
     return $idx;
 }
 
+=head2 set_modified_record
+
+Set modified to 1 if not already set but only if in I<edit> or I<add>
+mode.
+
+=cut
+
+sub set_modified_record {
+    my $self = shift;
+    # if (   $self->model->is_mode('edit')
+    #     or $self->model->is_mode('add') )
+    # {
+    #     $self->model->set_scrdata_rec(1) if !$self->model->is_modified;
+    # }
+    return;
+}
+
 #--- End page list
 
 #-- Quit
