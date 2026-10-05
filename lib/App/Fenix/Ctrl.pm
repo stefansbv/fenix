@@ -5,6 +5,7 @@ package App::Fenix::Ctrl;
 use Moo;
 use App::Fenix::Types qw(
     Object
+    Maybe
     ScalarRef
     Str
 );
@@ -20,6 +21,12 @@ has 'type' => (
     is       => 'ro',
     isa      => Str,
     required => 1,
+);
+
+has 'variable' => (
+    is       => 'ro',
+    isa      => Maybe[Object],
+    required => 0,
 );
 
 has 'ctrl' => (
