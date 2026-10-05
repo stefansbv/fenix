@@ -312,15 +312,15 @@ sub run_screen {
     # Entry objects: var_asoc, var_obiect
     # Other configurations in 'orders.conf'
     $self->{controls} = {
-        customername   => [ 'e', undef,           $ecustomername ],
-        customernumber => [ 'e', undef,           $ecustomernumber ],
-        ordernumber    => [ 'e', undef,           $eordernumber ],
+        customername   => [ 'e', undef,          $ecustomername ],
+        customernumber => [ 'e', undef,          $ecustomernumber ],
+        ordernumber    => [ 'e', undef,          $eordernumber ],
         orderdate      => [ 'd', \$vorderdate,    $dorderdate ],
         requireddate   => [ 'd', \$vrequireddate, $drequireddate ],
         shippeddate    => [ 'd', \$vshippeddate,  $dshippeddate ],
-        statuscode     => [ 'b', \$vstatuscode,   $bstatuscode ],
-        comments       => [ 't', undef,           $tcomments ],
-        ordertotal     => [ 'e', undef,           $eordertotal ],
+        statuscode     => [ 'm', \$vstatuscode,   $bstatuscode ],
+        comments       => [ 't', undef,          $tcomments ],
+        ordertotal     => [ 'e', undef,          $eordertotal ],
     };
 
     # TableMatrix objects; just one for now :)
