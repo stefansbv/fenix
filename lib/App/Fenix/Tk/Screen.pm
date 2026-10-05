@@ -24,7 +24,7 @@ use App::Fenix::Toolbar;
 
 use Data::Dump;
 
-with qw/App::Fenix::Role::DBUtils/;
+with qw/App::Fenix::Role::DateUtils/;
 
 has config => (
     is       => 'ro',
@@ -112,15 +112,17 @@ sub register_controls {
     my $self = shift;
     say "#! register_controls called ";
     my $controls = $self->{controls};
-    foreach my $name (keys %{$controls}) {
+    foreach my $name ( keys %{$controls} ) {
         my $type = $controls->{$name}[0];
+        my $var  = $controls->{$name}[1];
         my $ctrl = $controls->{$name}[2];
         $self->add_ctrl(
             $name,
             App::Fenix::Ctrl->new(
-                name => $name,
-                type => $type,
-                ctrl => $ctrl,
+                name     => $name,
+                type     => $type,
+                variable => $var,
+                ctrl     => $ctrl,
             )
         );
     }
