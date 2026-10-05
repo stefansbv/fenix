@@ -54,7 +54,8 @@ sub run_screen {
         -disabledforeground => 'black',
     )->form(
         -top  => [ '&',            $lcustomername, 0 ],
-        -left => [ $ecustomername, 9 ],
+        # -left => [ $ecustomername, 9 ],
+        -right => [ %100, -10 ],
     );
 
     #- Contactlastname (contactlastname)
@@ -207,8 +208,8 @@ sub run_screen {
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
     )->form(
-        -top  => [ '&',           $lcountryname, 0 ],
-        -left => [ $ecountryname, 9 ],
+        -top   => [ '&', $lcountryname, 0 ],
+        -right => [ '&', $ecustomernumber, 0 ],
     );
 
     #- Salesrepemployee (salesrepemployee)
@@ -235,8 +236,8 @@ sub run_screen {
         -disabledbackground => $self->{bg},
         -disabledforeground => 'black',
     )->form(
-        -top  => [ '&', $lsalesrepemployee, 0 ],
-        -left => [ $esalesrepemployee, 9 ],
+        -top   => [ '&', $lsalesrepemployee, 0 ],
+        -right => [ '&', $ecustomernumber, 0 ],
     );
 
     #- Creditlimit (creditlimit)
