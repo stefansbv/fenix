@@ -23,7 +23,8 @@ use Tk;
 use Tk::Font;
 use Tk::widgets qw(MsgBox);
 
-with 'App::Fenix::Role::Utils';
+with qw/App::Fenix::Role::Utils
+        App::Fenix::Role::DateUtils/;
 
 use App::Fenix::X qw(hurl);
 use App::Fenix::Menubar;
@@ -327,6 +328,25 @@ sub control_write_c {
     return;
 }
 
+sub control_write_d {
+    my ( $self, $control, $value, $state, $date_format ) = @_;
+
+    # my ( $self, $field, $control_ref, $value, $state, $date_format ) = @_;
+    # unless ( blessed $control and $control->isa('Tk::DateEntry') ) {
+    #     warn qq(Widget for writing date '$field' not found\n);
+    #     return;
+    # }
+    $state = $state || $control->cget('-state');
+    $value = q{} unless defined $value;            # empty
+    if ($value) {
+        my ( $y, $m, $d ) = $self->dateentry_parse_date( 'iso', $value );
+        $value = $self->dateentry_format_date( $date_format, $y, $m, $d );
+    }
+    #${ $control_ref->[0] } = $value;
+    $control->configure( -state => $state );
+    return;
+}
+
 =head2 control_read
 
 Run the appropriate sub according to control (entry widget) type.
@@ -339,7 +359,7 @@ sub control_read {
     my $ctrlname = $control->name;
     my $sub_name = qq{control_read_$ctrltype};
     if ( $self->can($sub_name) ) {
-        return $self->$sub_name($control->ctrl, $control->name);
+        return $self->$sub_name($control->ctrl, $ctrlname, $control->variable);
     }
     else {
         print "WW: No '$ctrltype' ctrl type for reading '$ctrlname'!\n";
@@ -348,7 +368,7 @@ sub control_read {
 }
 
 sub control_read_m {
-    my ( $self, $control, $name ) = @_;
+    my ( $self, $control, $name, $ctrlvar ) = @_;
     unless ( blessed $control and $control->isa('Tk::JComboBox') ) {
         warn qq(Widget for reading combobox '$name' not found\n);
         return;
@@ -360,7 +380,7 @@ sub control_read_m {
 }
 
 sub control_read_e {
-    my ( $self, $control, $name ) = @_;
+    my ( $self, $control, $name, $ctrlvar ) = @_;
     unless ( blessed $control and $control->isa('Tk::Entry') ) {
         warn qq(Widget for reading entry '$name' not found\n);
         return;
@@ -369,7 +389,7 @@ sub control_read_e {
 }
 
 sub control_read_t {
-    my ( $self, $control, $name ) = @_;
+    my ( $self, $control, $name, $ctrlvar ) = @_;
     unless ( blessed $control and $control->isa('Tk::Frame') ) {
         warn qq(Widget for reading text '$name' not found\n);
         return;
@@ -378,12 +398,35 @@ sub control_read_t {
 }
 
 sub control_read_c {
-    my ( $self, $control, $name ) = @_;
+    my ( $self, $control, $name, $ctrlvar ) = @_;
     unless ( blessed $control and $control->isa('Tk::Checkbutton') ) {
         warn qq(WW: Widget for reading combobox '$name' not found\n);
         return;
     }
     return $control->{Value};
+}
+
+sub control_read_d {
+    my ( $self, $control, $name, $ctrlvar, $date_format ) = @_;
+    unless ( blessed $control and $control->isa('Tk::DateEntry') ) {
+        warn qq(WW: Widget for reading dateentry '$name' not found\n);
+        return;
+    }
+
+    # Value from widget variable or the empty string
+    my $value = ${ $ctrlvar } || q{};
+    if ($value) {
+
+        # Skip date formatting for find mode
+        if ( !$self->controller->is_mode('find') ) {
+            my ( $y, $m, $d )
+                = $self->dateentry_parse_date( $date_format, $value );
+            if ( $y and $m and $d ) {
+                $value = $self->dateentry_format_date( 'iso', $y, $m, $d );
+            }
+        }
+    }
+    return $value;
 }
 
 sub configure_controls {
