@@ -92,7 +92,7 @@ sub _build_config {
         App::Fenix::Config->new( mnemonic => $self->mnemonic );
     }
     catch {
-        hurl controller => 'EE Configuration error: "{error}"',
+        hurl controller => 'EE: Configuration error: "{error}"',
             error => $_;
     };
     $config->debug( $self->options->debug );
@@ -132,7 +132,7 @@ sub _build_model {
         );
     }
     catch {
-        hurl model => 'EE Model error: "{error}"', error => $_;
+        hurl model => 'EE: Model error: "{error}"', error => $_;
     };
     return $model;
 }
@@ -262,11 +262,16 @@ sub require_screen {
 
 has 'scrcfg' => (
     is      => 'ro',
-    isa     => FenixConfigScr,
+    isa     => Maybe[FenixConfigScr],
     lazy    => 1,
     clearer => 'reset_scrcfg',
     default => sub {
         my $self = shift;
+        say "* scrcfg build";
+        unless ($self->screen_rec_name) {
+            say "EE: No screen_rec_name in 'scrcfg' build";
+            return;
+        }
         return App::Fenix::Config::Screen->new(
             scrcfg_file => $self->config->screen_config_file_path(
                 $self->screen_rec_name
@@ -282,6 +287,7 @@ has 'screen_rec' => (
     clearer => 'reset_screen_rec',
     default => sub {
         my $self = shift;
+        say "* screen_rec build";
         my $class  = $self->screen_rec_class;
         my $screen = $class->new(
             config  => $self->config,
@@ -333,11 +339,11 @@ sub _init {
                 if ( my $e = Exception::Base->catch($_) ) {
                     if ( $e->isa('Exception::Db::Connect') ) {
                         $error = $e->usermsg;
-                        say "[EE] '$error'" if $self->debug;
+                        say "EE: '$error'" if $self->debug;
                         $error = $self->connect_dialog($error);
                     }
                     else {
-                        die "[EE] '$_'";
+                        die "EE: '$_'";
                     }
                 }
             }
@@ -533,8 +539,8 @@ sub controls_state_set {
 
     # return unless defined $self->scrcfg($page);
 
-    say "rules:";
-    dd $rules;
+    # say "rules:";
+    # dd $rules;
 
     my @ctrls = $self->screen_rec->all_ctrls;
     foreach my $field ( @ctrls ) {
@@ -655,11 +661,11 @@ sub connect_dialog {
                 if ( my $e = Exception::Base->catch($_) ) {
                     if ( $e->isa('Exception::Db::Connect') ) {
                         $error = $e->usermsg;
-                        say "[EE] '$error'" if $self->debug;
+                        say "EE: '$error'" if $self->debug;
                     }
                 }
                 else {
-                    die "[EE] '$_'";
+                    die "EE: '$_'";
                 }
             }
             finally {
@@ -1062,27 +1068,28 @@ sub screen_read {
     my $scrobj = $self->scrobj;    # current screen object
     my $scrcfg = $self->scrcfg;    # current screen config
 
-    my $ctrl_ref = $scrobj->get_controls();
+    # my $ctrl_ref = $scrobj->get_controls();
 
-    return unless scalar keys %{$ctrl_ref};
+    # return unless scalar keys %{$ctrl_ref};
 
     # Get configured date style, default is ISO
-    my $date_format = $self->cfg->application->{dateformat} || 'iso';
+    my $date_format = $self->config->application_dateformat || 'iso';
 
-    foreach my $field ( keys %{ $scrcfg->maintable('columns') } ) {
-        my $fld_cfg = $scrcfg->maintable('columns', $field);
+    foreach my $field ( keys %{ $self->scrcfg->maintable_columns } ) {
+        my $fld_cfg = $self->scrcfg->maintable->{columns}{$field};
 
         # Control config attributes
         my $ctrltype = $fld_cfg->{ctrltype};
         my $ctrlrw   = $fld_cfg->{readwrite};
 
         if ( !$all ) {
-            unless ( $self->model->is_mode('find') ) {
+            unless ( $self->is_mode('find') ) {
                 next if ( $ctrlrw eq 'r' ) or ( $ctrlrw eq 'ro' );
             }
         }
 
-        $self->ctrl_read_from($field, $date_format);
+        my $value = $self->_ctrl_read($field, $date_format);
+        say " [$field] value = $value";
     }
     return;
 }
@@ -1090,7 +1097,8 @@ sub screen_read {
 sub record_find_execute {
     my $self = shift;
 
-    # $self->screen_read();
+    $self->screen_read('all');
+
     # my $params = {};
 
     # # Columns data (from list header)
@@ -1674,9 +1682,57 @@ Proxy method for C<control_read> from the View class.
 =cut
 
 sub _ctrl_read {
-    my ($self, $name) = @_;
+    my ($self, $name, $date_format) = @_;
     my $ctrl = $self->screen_rec->get_ctrl($name);
-    return $self->view->control_read($ctrl);
+    return $self->view->control_read($ctrl, $date_format);
+}
+
+=head2 clean_and_save_value
+
+Trim value and add it to the C<_scrdata> global data structure.
+
+=cut
+
+sub clean_and_save_value {
+    my ($self, $field, $value, $ctrltype) = @_;
+
+    $value = $self->trim($value) if defined $value;
+
+    # Find mode
+    if ( $self->is_mode('find') ) {
+        if ($value) {
+            $self->{_scrdata}{$field} = $value;
+        }
+        else {
+            if ($ctrltype eq 'e') {
+                # Can't use numeric eq (==) here
+                if (defined($value) and ( $value =~ m{^0+$} ) ) {
+                    $self->{_scrdata}{$field} = $value;
+                }
+            }
+        }
+    }
+    # Add mode, non empty fields, 0 is allowed
+    elsif ( $self->is_mode('add') ) {
+        if ( defined($value) and ( $value =~ m{\S+} ) ) {
+            $self->{_scrdata}{$field} = $value;
+        }
+    }
+    # Edit mode, non empty fields, 0 is allowed
+    elsif ( $self->is_mode('edit') ) {
+        if ( defined($value) and ( $value =~ m{\S+} ) ) {
+            $self->{_scrdata}{$field} = $value;
+        }
+        else {
+            $self->{_scrdata}{$field} = undef;
+        }
+    }
+    else {
+        # Idle mode -> empty record
+        $self->{_scrdata}{$field} = undef;
+    }
+
+    return;
 }
 
 sub BUILD {
