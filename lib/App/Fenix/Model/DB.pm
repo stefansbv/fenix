@@ -88,7 +88,7 @@ Valid configuration options are:
 
 =item contains - the field value contains the search string
 
-=item full   - the field value equals the search string
+=item full     - the field value equals the search string
 
 =item date     - special case for date type fields
 
