@@ -9,7 +9,7 @@ use App::Fenix::Config::Toolbar;
 subtest 'Toolbar from framework toolbar.yml' => sub {
     my $yaml_file = path( qw(share etc toolbar.yml) );
     my $expected_tool = {
-        id    => 1013,
+        id    => 1007,
         help  => 'Quit the application',
         icon  => 'actexit16',
         sep   => 'after',
@@ -62,7 +62,7 @@ subtest 'Toolbar from framework toolbar.yml' => sub {
 subtest 'Toolbar from application toolbar.yml' => sub {
     my $yaml_file = path( qw(share apps test-tk etc toolbar.yml) );
     my $expected_tool = {
-        id    => 2001,
+        id    => 2000,
         help  => 'Add new row in table',
         icon  => 'actitemadd16',
         sep   => 'none',
