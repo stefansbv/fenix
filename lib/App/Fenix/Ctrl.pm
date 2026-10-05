@@ -25,7 +25,7 @@ has 'type' => (
 
 has 'variable' => (
     is       => 'ro',
-    isa      => Maybe[Object],
+    isa      => Maybe[Object|ScalarRef|Str],
     required => 0,
 );
 
