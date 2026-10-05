@@ -13,6 +13,7 @@ use File::Basename;
 use Class::Unload;
 use IPC::System::Simple 1.17 qw(run);
 use English;                                 # for $PERL_VERSION
+use Locale::TextDomain 1.20 qw(App-Fenix);
 use App::Fenix::Types qw(
     Maybe
     FenixOptions
@@ -691,6 +692,39 @@ sub _setup_events {
 
     #-  Menu Bar
 
+    #-- Toggle find mode - Menu
+    $self->view->event_handler_for_menu(
+        'mn_fm',
+        sub {
+            return if !defined $self->ask_to_save;
+
+            # From add or sele mode forbid find mode
+            $self->toggle_mode_find()
+                unless ( $self->is_mode('add')
+                    or $self->is_mode('sele') );
+        }
+    );
+
+    #-- Toggle execute find - Menu
+    $self->view->event_handler_for_menu(
+        'mn_fe',
+        sub {
+            $self->is_mode('find')
+                ? $self->record_find_execute
+                : $self->view->set_status('Not in find mode', 'ms', 'orange' );
+        }
+    );
+
+    #-- Toggle execute count - Menu
+    $self->view->event_handler_for_menu(
+        'mn_fc',
+        sub {
+            $self->is_mode('find')
+                ? $self->record_find_count
+                : $self->view->set_status('Not in find mode', 'ms', 'orange');
+        }
+    );
+
     #-- Exit
     $self->view->event_handler_for_menu(
         'mn_qt',
@@ -881,8 +915,90 @@ sub _setup_events {
     #-- Quit Ctrl-q
     $self->view->event_handler_for_key('<Control-q>', 'on_close_window');
 
+    #-- Reload - F5
+    # $self->view->frame->bind(
+    #     '<F5>' => sub {
+    #         $self->is_mode('edit')
+    #             ? $self->record_reload()
+    #             : $self->view->set_status('not-edit', 'ms', 'orange');
+    #     }
+    # );
+
+    #-- Toggle find mode - F7
+    $self->view->event_handler_for_key('<F7>', 'toggle_mode_find');
+
+    #-- Execute find - F8
+    $self->view->event_handler_for_key('<F8>', 'record_find_execute');
+
+    #-- Execute count - F9
+    # $self->view->frame->bind(
+    #     '<F9>' => sub {
+    #         ( $self->{_rscrcls} and $self->is_mode('find') )
+    #             ? $self->record_find_count
+    #             : $self->view->set_status('not-find', 'ms', 'orange');
+    #     }
+    # );
+
     return;
 }
+
+sub ask_to_save {
+    my ($self, $page) = @_;
+
+    return 0 unless $self->{_rscrcls}; # do we have record screen?
+
+    return 0 unless $self->is_record;
+
+    if (   $self->is_mode('edit')
+        or $self->is_mode('add') )
+    {
+        if ( $self->record_changed ) {
+            my $answer = $self->ask_to('save');
+
+            if ( $answer eq 'yes' ) {
+                $self->record_save();
+            }
+            elsif ( $answer eq 'no' ) {
+                $self->view->set_status(__ 'Not saved', 'ms', 'blue' );
+            }
+            else {
+                $self->view->set_status(__ 'Canceled', 'ms', 'blue');
+                return;
+            }
+        }
+    }
+
+    return 1;
+}
+
+sub ask_to {
+    my ( $self, $for_action ) = @_;
+
+    #- Dialog texts
+
+    my ($message, $details);
+    if ( $for_action eq 'save' ) {
+        $message = __ 'Record changed';
+        $details = __ 'Save record?';
+    }
+    elsif ( $for_action eq 'save_insert' ) {
+        $message = __ 'New record';
+        $details = __ 'Save record?';
+    }
+    elsif ( $for_action eq 'delete' ) {
+        $message = __ 'Delete record';
+        $details = __ 'Confirm record delete?';
+    }
+
+    # Message dialog
+    return $self->view->dialog_confirm($message, $details, 'question', 'ycn');
+}
+
+=head2 toggle_mode_find
+
+Toggle find mode, ask to save record if modified.
+
+=cut
 
 sub toggle_mode_find {
     my $self = shift;
@@ -897,7 +1013,7 @@ sub toggle_mode_find {
     #         return;
     #     }
     # }
-    $self->get_mode eq 'find'
+    $self->is_mode('find')
         ? $self->set_app_mode('idle')
         : $self->set_app_mode('find');
 
@@ -925,7 +1041,7 @@ sub toggle_mode_add {
     #         }
     #     }
     # }
-    $self->get_mode eq 'add'
+    $self->is_mode('add')
         ? $self->set_app_mode('idle')
         : $self->set_app_mode('add');
 
@@ -1271,6 +1387,11 @@ sub set_mode {
 sub get_mode {
     my ($self) = @_;
     return $self->get_state('gui_state');
+}
+
+sub is_mode {
+    my ($self, $mode) = @_;
+    return $mode eq $self->get_mode;
 }
 
 =head2 set_app_mode

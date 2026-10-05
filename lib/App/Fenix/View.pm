@@ -471,6 +471,16 @@ sub set_app_states {
     return;
 }
 
+sub toggle_mode_find {
+    my $self = shift;
+    $self->controller->toggle_mode_find;
+}
+
+sub record_find_execute {
+    my $self = shift;
+    $self->controller->record_find_execute;
+}
+
 sub BUILD {
     my ( $self, $args ) = @_;
     $self->frame;
