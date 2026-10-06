@@ -504,7 +504,7 @@ sub set_tb_buton_state {
 
 sub set_app_states {
     my ( $self, $state, $rules ) = @_;
-    say "(view) refresh: set_app_states";
+    # say "(view) refresh: set_app_states";
     $self->set_status( $state, 'md' );
 
     # Call methods in the controller

@@ -110,7 +110,7 @@ sub run_screen {
 
 sub register_controls {
     my $self = shift;
-    say "#! register_controls called ";
+    # say "#! register_controls called ";
     my $controls = $self->{controls};
     foreach my $name ( keys %{$controls} ) {
         my $type = $controls->{$name}[0];
@@ -131,7 +131,7 @@ sub register_controls {
 
 sub register_tm_controls {
     my $self = shift;
-    say "#! register_tm_controls called ";
+    # say "#! register_tm_controls called ";
     my $controls_tm = $self->{tm_controls};
     foreach my $name ( keys %{$controls_tm} ) {
         my $ctrl = $controls_tm->{$name};
