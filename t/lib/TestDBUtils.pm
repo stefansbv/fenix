@@ -1,7 +1,7 @@
 package TestDBUtils;
 
-use Moose;
+use Moo;
 
-with 'App::Fenix::Role::DBUtils';
+with qw/App::Fenix::Role::DBUtils/;
 
 1;
