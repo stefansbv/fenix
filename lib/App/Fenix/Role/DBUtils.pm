@@ -12,85 +12,85 @@ use Path::Tiny;
 use DateTime;
 use DateTime::Locale;
 
-# has '_transformations' => (
-#     is          => 'ro',
-#     handles_via => 'Hash',
-#     init_arg    => undef,
-#     default     => sub {
-#         return {
-#             datey   => 'year_month',
-#             dateym  => 'year_month',
-#             datemy  => 'year_month',
-#             dateiso => 'date_string',
-#             dateamb => 'date_string',
-#             nothing => 'do_error',
-#             error   => 'do_error',
-#         };
-#     },
-#     handles => { get_transformations => 'get', },
-# );
+has '_transformations' => (
+    is          => 'ro',
+    handles_via => 'Hash',
+    init_arg    => undef,
+    default     => sub {
+        return {
+            datey   => 'year_month',
+            dateym  => 'year_month',
+            datemy  => 'year_month',
+            dateiso => 'date_string',
+            dateamb => 'date_string',
+            nothing => 'do_error',
+            error   => 'do_error',
+        };
+    },
+    handles => { get_transformations => 'get', },
+);
 
-# sub dateentry_parse_date {
-#     my ( $self, $format, $date ) = @_;
-#     return unless $date;
+sub dateentry_parse_date {
+    my ( $self, $format, $date ) = @_;
+    return unless $date;
 
-#     # Default date style format
-#     $format = 'iso' unless $format;
+    # Default date style format
+    $format = 'iso' unless $format;
 
-#     my ( $y, $m, $d );
-#   SWITCH: for ($format) {
-#         /^$/ && die "dateentry_parse_date: the \$format parameter is required'\n";
-#         /german/i && do {
-#             ( $d, $m, $y )
-#                 = ( $date =~ m{([0-9]{2})\.([0-9]{2})\.([0-9]{4})} );
-#             last SWITCH;
-#         };
-#         /iso/i && do {
-#             ( $y, $m, $d )
-#                 = ( $date =~ m{([0-9]{4})\-([0-9]{2})\-([0-9]{2})} );
-#             last SWITCH;
-#         };
-#         /usa/i && do {
-#             ( $m, $d, $y )
-#                 = ( $date =~ m{([0-9]{2})\/([0-9]{2})\/([0-9]{4})} );
-#             last SWITCH;
-#         };
+    my ( $y, $m, $d );
+  SWITCH: for ($format) {
+        /^$/ && die "dateentry_parse_date: the \$format parameter is required'\n";
+        /german/i && do {
+            ( $d, $m, $y )
+                = ( $date =~ m{([0-9]{2})\.([0-9]{2})\.([0-9]{4})} );
+            last SWITCH;
+        };
+        /iso/i && do {
+            ( $y, $m, $d )
+                = ( $date =~ m{([0-9]{4})\-([0-9]{2})\-([0-9]{2})} );
+            last SWITCH;
+        };
+        /usa/i && do {
+            ( $m, $d, $y )
+                = ( $date =~ m{([0-9]{2})\/([0-9]{2})\/([0-9]{4})} );
+            last SWITCH;
+        };
 
-#         # DEFAULT
-#         die "dateentry_parse_date: unknown date format: $format\n";
-#     }
-#     return ( $y, $m, $d );
-# }
+        # DEFAULT
+        die "dateentry_parse_date: unknown date format: $format\n";
+    }
+    return ( $y, $m, $d );
+}
 
-# sub dateentry_format_date {
-#     my ( $self, $format, $y, $m, $d ) = @_;
-#     die "dateentry_format_date: the \$y, \$m and \$d parameters are required\n"
-#         unless defined $y and defined $m and defined $d;
+sub dateentry_format_date {
+    my ( $self, $format, $y, $m, $d ) = @_;
+    die "dateentry_format_date: the \$y, \$m and \$d parameters are required\n"
+        unless defined $y and defined $m and defined $d;
 
-#     # Default date style format
-#     $format = 'iso' unless $format;
+    # Default date style format
+    $format = 'iso' unless $format;
 
-#     my $date;
-#   SWITCH: for ($format) {
-#         /^$/ && die "dateentry_format_date: the \$format parameter is required\n";
-#         /german|dmy/i && do {
-#             $date = sprintf( "%02d.%02d.%4d", $d, $m, $y );
-#             last SWITCH;
-#         };
-#         /iso/i && do {
-#             $date = sprintf( "%4d-%02d-%02d", $y, $m, $d );
-#             last SWITCH;
-#         };
-#         /usa/i && do {
-#             $date = sprintf( "%02d/%02d/%4d", $m, $d, $y );
-#             last SWITCH;
-#         };
+    my $date;
+  SWITCH: for ($format) {
+        /^$/ && die "dateentry_format_date: the \$format parameter is required\n";
+        /german|dmy/i && do {
+            $date = sprintf( "%02d.%02d.%4d", $d, $m, $y );
+            last SWITCH;
+        };
+        /iso/i && do {
+            $date = sprintf( "%4d-%02d-%02d", $y, $m, $d );
+            last SWITCH;
+        };
+        /usa/i && do {
+            $date = sprintf( "%02d/%02d/%4d", $m, $d, $y );
+            last SWITCH;
+        };
 
-#         # DEFAULT
-#         die "dateentry_format_date: unknown date format: $format\n";
-#     }
-#     return $date;
-# }
+        # DEFAULT
+        die "dateentry_format_date: unknown date format: $format\n";
+    }
+    return $date;
+}
 
 sub quote4like {
     my ( $self, $text, $option ) = @_;
@@ -164,29 +164,29 @@ sub special_ops {
     ];
 }
 
-# sub process_date_string {
-#     my ( $self, $search_input ) = @_;
-#     my $dtype = $self->identify_date_string($search_input);
-#     my $where = $self->format_query($dtype);
-#     return $where;
-# }
+sub process_date_string {
+    my ( $self, $search_input ) = @_;
+    my $dtype = $self->identify_date_string($search_input);
+    my $where = $self->format_query($dtype);
+    return $where;
+}
 
-# sub identify_date_string {
-#     my ( $self, $str ) = @_;
-#     my $si = qr![-]!;
-#     my $so = qr![/]|[.]!;
-#     my $sa = qr![/]|[.]|[-]!;
+sub identify_date_string {
+    my ( $self, $str ) = @_;
+    my $si = qr![-]!;
+    my $so = qr![/]|[.]!;
+    my $sa = qr![/]|[.]|[-]!;
 
-#     #             when date format is...               type is ...
-#     return
-#           $str eq q{}                                ? 'nothing'
-#         : $str =~ m/^(\d{4})$si(\d{2})$si(\d{2})$/   ? "dateiso:$str"
-#         : $str =~ m/^(\d{2})$so(\d{2})$so(\d{4})$/   ? "dateamb:$str"
-#         : $str =~ m/^(\d{4})$sa(\d{1,2})$/           ? "dateym:$1:$2"
-#         : $str =~ m/^(\d{1,2})$sa(\d{4})$/           ? "datemy:$2:$1"
-#         : $str =~ m/^(\d{4})$/                       ? "datey:$1"
-#         :                                              "error:$str";
-# }
+    #             when date format is...               type is ...
+    return
+          $str eq q{}                                ? 'nothing'
+        : $str =~ m/^(\d{4})$si(\d{2})$si(\d{2})$/   ? "dateiso:$str"
+        : $str =~ m/^(\d{2})$so(\d{2})$so(\d{4})$/   ? "dateamb:$str"
+        : $str =~ m/^(\d{4})$sa(\d{1,2})$/           ? "dateym:$1:$2"
+        : $str =~ m/^(\d{1,2})$sa(\d{4})$/           ? "datemy:$2:$1"
+        : $str =~ m/^(\d{4})$/                       ? "datey:$1"
+        :                                              "error:$str";
+}
 
 sub format_query {
     my ( $self, $type ) = @_;
@@ -203,24 +203,24 @@ sub format_query {
     return $where;
 }
 
-# sub year_month {
-#     my ( $self, $year, $month ) = @_;
-#     my $where = {};
-#     $where->{-extractyear}  = [$year]  if ($year);
-#     $where->{-extractmonth} = [$month] if ($month);
-#     return $where;
-# }
+sub year_month {
+    my ( $self, $year, $month ) = @_;
+    my $where = {};
+    $where->{-extractyear}  = [$year]  if ($year);
+    $where->{-extractmonth} = [$month] if ($month);
+    return $where;
+}
 
-# sub date_string {
-#     my ($self, $date) = @_;
-#     return $date;
-# }
+sub date_string {
+    my ($self, $date) = @_;
+    return $date;
+}
 
-# sub do_error {
-#     my ($self, $date) = @_;
-#     die "String not identified or empty!\n";
-#     return;
-# }
+sub do_error {
+    my ($self, $date) = @_;
+    die "String not identified or empty!\n";
+    return;
+}
 
 sub ins_underline_mark {
     my ( $self, $label, $position ) = @_;
@@ -242,63 +242,63 @@ sub decode_unless_utf {
     return $value;
 }
 
-# sub dt_today {
-#     my ( $self, $locale ) = @_;
-#     $locale //= 'ro';    # the default locale is ro ;)
-#     return DateTime->now( locale => $locale );
-# }
+sub dt_today {
+    my ( $self, $locale ) = @_;
+    $locale //= 'ro';    # the default locale is ro ;)
+    return DateTime->now( locale => $locale );
+}
 
-# sub month_names {
-#     my ( $self, $format, $locale ) = @_;
-#     my $today = $self->dt_today($locale);
-#     my $arr_ref =
-#         $format eq 'abbrev' ? $today->locale->month_stand_alone_abbreviated
-#       : $format eq 'narrow' ? $today->locale->month_stand_alone_narrow
-#       : $format eq 'wide'   ? $today->locale->month_stand_alone_wide
-#       :                    undef;
-#     die "month_names: '$format' is not a valid format, try: abbrev, narrow or wide\n"
-#         unless $arr_ref;
-#     return $arr_ref;
-# }
+sub month_names {
+    my ( $self, $format, $locale ) = @_;
+    my $today = $self->dt_today($locale);
+    my $arr_ref =
+        $format eq 'abbrev' ? $today->locale->month_stand_alone_abbreviated
+      : $format eq 'narrow' ? $today->locale->month_stand_alone_narrow
+      : $format eq 'wide'   ? $today->locale->month_stand_alone_wide
+      :                    undef;
+    die "month_names: '$format' is not a valid format, try: abbrev, narrow or wide\n"
+        unless $arr_ref;
+    return $arr_ref;
+}
 
-# sub day_names {
-#     my ( $self, $format, $locale ) = @_;
-#     my $today = $self->dt_today($locale);
-#     my $arr_ref =
-#         $format eq 'abbrev' ? $today->locale->day_stand_alone_abbreviated
-#       : $format eq 'narrow' ? $today->locale->day_stand_alone_narrow
-#       : $format eq 'wide'   ? $today->locale->day_stand_alone_wide
-#       :                    undef;
-#     die "'$format' is not a valid format, try: abbrev, narrow or wide\n"
-#       unless $arr_ref;
-#     return $arr_ref;
-# }
+sub day_names {
+    my ( $self, $format, $locale ) = @_;
+    my $today = $self->dt_today($locale);
+    my $arr_ref =
+        $format eq 'abbrev' ? $today->locale->day_stand_alone_abbreviated
+      : $format eq 'narrow' ? $today->locale->day_stand_alone_narrow
+      : $format eq 'wide'   ? $today->locale->day_stand_alone_wide
+      :                    undef;
+    die "'$format' is not a valid format, try: abbrev, narrow or wide\n"
+      unless $arr_ref;
+    return $arr_ref;
+}
 
-# sub get_month_name {
-#     my ( $self, $month, $format, $locale ) = @_;
-#     die "get_month_name: missing month parameter"
-#         unless defined $month;
-#     die "get_month_name: expecting a number for month parameter"
-#         unless $month =~ m/\d{1,2}/gmi;
-#     die "get_month_name: wrong month parameter: $month"
-#         if $month <= 0 or $month > 12;
-#     my $months = $self->month_names( $format, $locale );
-#     my $i      = $month - 1;
-#     return $months->[$i];
-# }
+sub get_month_name {
+    my ( $self, $month, $format, $locale ) = @_;
+    die "get_month_name: missing month parameter"
+        unless defined $month;
+    die "get_month_name: expecting a number for month parameter"
+        unless $month =~ m/\d{1,2}/gmi;
+    die "get_month_name: wrong month parameter: $month"
+        if $month <= 0 or $month > 12;
+    my $months = $self->month_names( $format, $locale );
+    my $i      = $month - 1;
+    return $months->[$i];
+}
 
-# sub get_day_name {
-#     my ( $self, $day, $format, $locale ) = @_;
-#     die "get_day_name: missing day parameter"
-#         unless defined $day;
-#     die "get_day_name: expecting a number for day parameter"
-#         unless $day =~ m/\d/gmi;
-#     die "get_day_name: wrong day parameter: $day"
-#       if $day <= 0 or $day > 7;
-#     my $days = $self->day_names( $format, $locale );
-#     my $i    = $day - 1;
-#     return $days->[$i];
-# }
+sub get_day_name {
+    my ( $self, $day, $format, $locale ) = @_;
+    die "get_day_name: missing day parameter"
+        unless defined $day;
+    die "get_day_name: expecting a number for day parameter"
+        unless $day =~ m/\d/gmi;
+    die "get_day_name: wrong day parameter: $day"
+      if $day <= 0 or $day > 7;
+    my $days = $self->day_names( $format, $locale );
+    my $i    = $day - 1;
+    return $days->[$i];
+}
 
 no Moo::Role;
 
