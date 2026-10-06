@@ -4,7 +4,7 @@ package App::Fenix::Config::Instance;
 
 use feature 'say';
 use Moo;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 use Try::Tiny;
 use App::Fenix::Types qw(
     Path
@@ -24,7 +24,7 @@ has 'instance_file' => (
 
 has '_instance' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     builder     => '_build_instance',
@@ -35,7 +35,7 @@ has '_instance' => (
 
 has '_screen_names' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     handles     => {

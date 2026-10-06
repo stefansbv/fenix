@@ -3,7 +3,7 @@ package App::Fenix::Config::Main;
 # ABSTRACT: Main (generic) configurations
 
 use Moo;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 use App::Fenix::Types qw(
     Path
 );
@@ -19,7 +19,7 @@ has 'main_file' => (
 
 has '_main' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     builder     => '_build_main',

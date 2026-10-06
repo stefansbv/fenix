@@ -3,7 +3,7 @@ package App::Fenix::Config::Screen::Details;
 # ABSTRACT: Config details from the screen section
 
 use Moo;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 use App::Fenix::Types qw(
     HashRef
     Maybe
@@ -30,7 +30,7 @@ sub has_details_screen {
 
 has '_detail' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     lazy        => 1,
     default     => sub {
         my $self     = shift;

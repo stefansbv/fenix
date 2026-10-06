@@ -3,7 +3,7 @@ package App::Fenix::Config::Application;
 # ABSTRACT: Application configurations
 
 use Moo;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 use App::Fenix::Types qw(
     Path
 );
@@ -19,7 +19,7 @@ has 'application_file' => (
 
 has '_application' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     builder     => '_build_application',

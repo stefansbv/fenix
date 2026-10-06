@@ -4,7 +4,6 @@ package App::Fenix::Config::Screen;
 
 use feature 'say';
 use Moo;
-use MooX::HandlesVia;
 use App::Fenix::Types qw(
     HashRef
     Maybe

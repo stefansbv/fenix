@@ -3,7 +3,7 @@ package App::Fenix::Config::Menubar;
 # ABSTRACT: Menu configurations from YAML files
 
 use Moo;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 use App::Fenix::Types qw(
     Path
 );
@@ -19,7 +19,7 @@ has 'menubar_file' => (
 
 has '_menubar' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     builder     => '_build_menubar',
@@ -38,7 +38,7 @@ sub _build_menubar {
 
 has '_menubar_names' => (
     is          => 'ro',
-    handles_via => 'Array',
+    traits      => ['Array'],
     lazy        => 1,
     init_arg    => undef,
     handles     => {
