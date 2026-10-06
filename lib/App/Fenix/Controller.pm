@@ -488,6 +488,10 @@ sub screen_init_keys {
 
         # Register main table object on $page page
         $self->add_table( 'main', $table );
+
+        my $where = $table->build_sql_params_main('query');
+        dd $where;
+
     }
 
     #-- Dependent tables (TableMatrix)
@@ -819,15 +823,15 @@ sub _setup_events {
 
     $self->view->event_handler_for_notebook(
         'rec',
-        sub { say "on_page_rec_activate" }
+        sub { say "> on_page_rec_activate" }
     );
     $self->view->event_handler_for_notebook(
         'lst',
-        sub { say "on_page_lst_activate" }
+        sub { say "> on_page_lst_activate" }
     );
     $self->view->event_handler_for_notebook(
         'det',
-        sub { say "on_page_det_activate" }
+        sub { say "> on_page_det_activate" }
     );
 
     #-  Tool Bar
@@ -1062,15 +1066,8 @@ sub toggle_mode_add {
 sub screen_read {
     my ($self, $all) = @_;
 
-    # Initialize
-    $self->{_scrdata} = {};
-
     my $scrobj = $self->scrobj;    # current screen object
     my $scrcfg = $self->scrcfg;    # current screen config
-
-    # my $ctrl_ref = $scrobj->get_controls();
-
-    # return unless scalar keys %{$ctrl_ref};
 
     # Get configured date style, default is ISO
     my $date_format = $self->config->application_dateformat || 'iso';
@@ -1098,14 +1095,18 @@ sub record_find_execute {
     my $self = shift;
 
     $self->screen_read('all');
+    my $table  = $self->scrcfg->maintable('name');
+    say "* query table: $table";
+    # my @fields = keys %{ $self->scrcfg->maintable_columns };
 
-    # my $params = {};
-
-    # # Columns data (from list header)
-    # $params->{columns} = $self->list_column_names();
-
-    # # Table configs
-    # my $columns = $self->scrcfg('rec')->maintable('columns');
+    # query_record
+    my $opts = {
+        table   => $table,
+        columns => undef,
+        where   => { productcode => "S10_1678" },
+    };
+    my $rec = $self->model->db->query_record($opts);
+    dd $rec;
 
     # # Add findtype info to screen data
     # foreach my $field ( keys %{ $self->{_scrdata} } ) {
@@ -1121,10 +1122,6 @@ sub record_find_execute {
 
     #     $params->{where}{$field} = [ $value, $findtype ];
     # }
-
-    # # Table data
-    # $params->{table} = $self->table_key('rec','main')->view;
-    # $params->{pkcol} = $self->table_key('rec','main')->get_key(0)->name;
 
     # my ($ary_ref, $limit);
     # try {
@@ -1427,7 +1424,7 @@ sub toggle_interface_controls {
     my $conf = $self->toolbar->config;
     my $mode = $self->get_mode;
     my $page = $self->notebook->get_current_page;
-    say "toggle_interface_controls:  page = $page   mode = $mode";
+    # say "toggle_interface_controls:  page = $page   mode = $mode";
     my $is_rec = $self->is_record;
 
     foreach my $name ( $conf->all_toolbar_names ) {
