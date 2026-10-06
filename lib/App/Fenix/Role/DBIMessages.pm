@@ -4,11 +4,11 @@ package App::Fenix::Role::DBIMessages;
 
 use utf8;
 use Moo::Role;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 
 has '_messages' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     init_arg    => undef,
     default     => sub {
         return {

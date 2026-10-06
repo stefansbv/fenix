@@ -3,7 +3,7 @@ package App::Fenix::Tk::Statusbar;
 # ABSTRACT: Statusbar
 
 use Moo;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 use App::Fenix::Types qw(
     FenixConfig
     TkFrame
@@ -100,7 +100,7 @@ sub _build_statusbar {
 
 has '_components' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     default     => sub { {} },

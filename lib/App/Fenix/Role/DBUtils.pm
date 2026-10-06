@@ -5,7 +5,7 @@ package App::Fenix::Role::DBUtils;
 use feature 'say';
 use utf8;
 use Moo::Role;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 use Encode qw(is_utf8 decode);
 use Try::Tiny;
 use Path::Tiny;
@@ -14,7 +14,7 @@ use DateTime::Locale;
 
 has '_transformations' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     init_arg    => undef,
     default     => sub {
         return {

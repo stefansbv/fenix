@@ -3,12 +3,12 @@ package App::Fenix::Role::Observable;
 # ABSTRACT: Observable role
 
 use Moo::Role;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 use namespace::autoclean;
 
 has observers => (
     is          => 'ro',
-    handles_via => 'Array',
+    traits      => ['Array'],
     default     => sub { [] },
     handles     => {
         'add_observer'     => 'push',

@@ -3,7 +3,7 @@ package App::Fenix::Model::Update::Compare;
 # ABSTRACT: Update
 
 use Moo;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 use App::Fenix::Types qw(
     Int
     Bool
@@ -55,7 +55,7 @@ has 'db_fk_data' => (
 
 has 'db_data_hoh' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     lazy        => 1,
     default     => sub {
         my $self = shift;
@@ -76,7 +76,7 @@ has 'tm_fk_data' => (
 
 has 'tm_data_hoh' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     lazy        => 1,
     default     => sub {
         my $self = shift;

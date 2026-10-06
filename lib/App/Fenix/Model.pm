@@ -4,19 +4,22 @@ package App::Fenix::Model;
 
 use feature 'say';
 use Moo;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 use Try::Tiny;
 #use Path::Tiny;
 use App::Fenix::Types qw(
     Bool
     FenixConfig
     FenixModelDB
+    FenixModelTable
+    Maybe
     Path
     Str
 );
 use App::Fenix::X qw(hurl);
 use App::Fenix::Model::DB;
-use namespace::autoclean;
+use App::Fenix::Model::Table;
+use namespace::clean;
 
 has 'config' => (
     is       => 'ro',
@@ -52,7 +55,40 @@ has 'db' => (
     },
 );
 
-__PACKAGE__->meta->make_immutable;
+has '_table' => (
+    is       => 'ro',
+    traits   => ['Hash'],
+    isa      => Maybe [FenixModelTable],
+    lazy     => 1,
+    init_arg => undef,
+    clearer  => 'reset_table',
+    default  => sub {
+        my $self = shift;
+        say "* table build";
+
+        # my @fields    = keys %{ $self->scrcfg->maintable_columns };
+        # my @fields_rw = keys %{ $self->scrcfg->maintable_columns_rw };
+        # my $params    = {
+        #     page      => $self->notebook->get_current_page,
+        #     display   => 'record',
+        #     keys      => $self->scrcfg->maintable( 'keys', 'name' ),
+        #     table     => $self->scrcfg->maintable('name'),
+        #     view      => $self->scrcfg->maintable('view'),
+        #     fields    => \@fields,
+        #     fields_rw => \@fields_rw,
+        # };
+        # dd $params;
+
+        return App::Fenix::Model::Table->new( {} );
+    },
+        handles     => {
+        get_table  => 'get',
+        add_table  => 'set',
+        all_tables => 'keys',
+        rm_table   => 'delete',
+    },
+
+);
 
 1;
 

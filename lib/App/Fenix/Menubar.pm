@@ -4,7 +4,7 @@ package App::Fenix::Menubar;
 
 use feature 'say';
 use Moo;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 use App::Fenix::Types qw(
     FenixConfig
     FenixConfigMenu
@@ -42,7 +42,7 @@ has 'menu_bar' => (
 
 has '_menus' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     lazy        => 1,
     default     => sub { {} },
     handles     => {
