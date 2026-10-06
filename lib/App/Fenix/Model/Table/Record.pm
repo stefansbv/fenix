@@ -17,7 +17,9 @@ sub get_href {
     return { $self->name => $self->value };
 }
 
-__PACKAGE__->meta->make_immutable;
+1;
+
+=pod
 
 =head1 SYNOPSIS
 

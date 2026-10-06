@@ -77,6 +77,4 @@ sub _build_panel {
     return $self->frame;
 }
 
-__PACKAGE__->meta->make_immutable;
-
 1;

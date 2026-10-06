@@ -146,8 +146,6 @@ sub _build_uri_from_yaml {
     return $uri;
 }
 
-__PACKAGE__->meta->make_immutable;
-
 1;
 
 __END__

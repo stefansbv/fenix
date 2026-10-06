@@ -49,8 +49,6 @@ sub get_application_limits {
     }
 }
 
-__PACKAGE__->meta->make_immutable;
-
 1;
 
 __END__

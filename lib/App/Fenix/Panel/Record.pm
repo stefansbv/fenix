@@ -25,6 +25,4 @@ sub _build_panel {
     return $f;
 }
 
-__PACKAGE__->meta->make_immutable;
-
 1;

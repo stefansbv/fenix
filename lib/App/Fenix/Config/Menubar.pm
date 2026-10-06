@@ -51,8 +51,6 @@ has '_menubar_names' => (
     },
 );
 
-__PACKAGE__->meta->make_immutable;
-
 1;
 
 __END__

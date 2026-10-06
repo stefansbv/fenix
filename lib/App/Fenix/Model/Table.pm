@@ -172,8 +172,6 @@ sub build_sql_params_deps {
     return $meta;
 }
 
-__PACKAGE__->meta->make_immutable;
-
 1;
 
 =head1 SYNOPSIS

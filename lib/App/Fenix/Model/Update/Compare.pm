@@ -167,7 +167,7 @@ sub aoh_to_hoh {
     return \%hoh;
 }
 
-__PACKAGE__->meta->make_immutable;
+1;
 
 __END__
 

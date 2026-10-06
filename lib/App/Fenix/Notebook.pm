@@ -193,6 +193,4 @@ sub _set_event_handler {
     return;
 }
 
-__PACKAGE__->meta->make_immutable;
-
 1;

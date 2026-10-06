@@ -93,8 +93,6 @@ has 'match' => (
     },
 );
 
-__PACKAGE__->meta->make_immutable;
-
 1;
 
 =head1 SYNOPSIS

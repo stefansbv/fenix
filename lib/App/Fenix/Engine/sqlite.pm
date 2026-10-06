@@ -229,8 +229,6 @@ sub alter_dsn {
 
 sub has_feature_returning { 0 }
 
-__PACKAGE__->meta->make_immutable;
-
 1;
 
 __END__

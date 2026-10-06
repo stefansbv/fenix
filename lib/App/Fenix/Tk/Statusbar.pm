@@ -116,6 +116,4 @@ sub make {
     return $self->status;
 }
 
-__PACKAGE__->meta->make_immutable;
-
 1;

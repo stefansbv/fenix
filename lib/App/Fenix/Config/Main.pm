@@ -64,8 +64,6 @@ sub get_resource_path {
     }
 }
 
-__PACKAGE__->meta->make_immutable;
-
 1;
 
 __END__

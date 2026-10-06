@@ -50,8 +50,7 @@ sub fkcol_where {
     return $where;
 }
 
-
-__PACKAGE__->meta->make_immutable;
+1;
 
 __END__
 

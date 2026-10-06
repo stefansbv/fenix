@@ -281,8 +281,6 @@ sub table_list {
 
 sub has_feature_returning { 1 }
 
-__PACKAGE__->meta->make_immutable;
-
 1;
 
 __END__
