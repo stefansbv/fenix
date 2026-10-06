@@ -24,7 +24,7 @@ use App::Fenix::Toolbar;
 
 use Data::Dump;
 
-with qw/App::Fenix::Role::DateUtils/;
+with qw/App::Fenix::Role::DBUtils/;
 
 has config => (
     is       => 'ro',
