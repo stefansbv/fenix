@@ -21,7 +21,7 @@ use namespace::autoclean;
 
 use Data::Dump qw/dump/;
 
-with 'App::Fenix::Role::DBUtils';
+with qw/App::Fenix::Role::DBUtils/;
 
 has 'config' => (
     is       => 'ro',
