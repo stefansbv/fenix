@@ -5,7 +5,7 @@ package App::Fenix::Controller;
 use feature 'say';
 use utf8;
 use Moo;
-use MooX::HandlesVia; # Data::Perl::Collection::Hash::MooseLike
+use Sub::HandlesVia;
 use Try::Tiny;
 use Path::Tiny;
 use List::Util qw(any);
@@ -102,7 +102,7 @@ sub _build_config {
 
 =head2 model
 
-An attribute tha holds the model instance object.
+An attribute that holds the model instance object.
 
 =cut
 
@@ -115,6 +115,7 @@ has 'model' => (
         get_dir_for
         get_file_for
         get_path_for
+        table
     )],
 );
 
@@ -229,15 +230,15 @@ has 'screen_rec_class' => (
 # _tblkeys
 has '_table_meta' => (
     is          => 'ro',
-    handles_via => 'Hash',
+    traits      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     default     => sub { {} },
     handles     => {
-        get_table  => 'get',
-        add_table  => 'set',
-        all_tables => 'keys',
-        rm_table   => 'delete',
+        get_table_meta  => 'get',
+        add_table_meta  => 'set',
+        all_tables_meta => 'keys',
+        rm_table_meta   => 'delete',
     },
 );
 
@@ -487,10 +488,10 @@ sub screen_init_keys {
     if ( ref $table ) {
 
         # Register main table object on $page page
-        $self->add_table( 'main', $table );
+        $self->add_table_meta( 'main', $table );
 
-        my $where = $table->build_sql_params_main('query');
-        dd $where;
+        # my $where = $table->build_sql_params_main('query');
+        # dd $where;
 
     }
 
@@ -521,7 +522,7 @@ sub screen_init_keys {
         if ( ref $table ) {
 
             # Register main table object on $page page
-            $self->add_table( $tm, $table );
+            $self->add_table_meta( $tm, $table );
         }
     }
 
@@ -605,7 +606,7 @@ Return the table metadata on the $page with $name.
 sub table_meta {
     my ($self, $name) = @_;
     die "table_meta: Unknown 'name' parameter" unless $name;
-    return $self->get_table($name);
+    return $self->get_table_meta($name);
 }
 
 =head2 is_record
@@ -1333,12 +1334,12 @@ sub screen_module_load {
     # $self->setup_bindings_table();
 
     # Set table metadata
-    $self->rm_table( $self->all_tables );     # reset
-    $self->screen_init_keys( 'rec', $self->scrcfg );
-    my @tables = $self->all_tables;
-    foreach my $t (@tables) {
-        say "# table: $t  ", $self->get_table($t)->table;
-    }
+    # $self->rm_table( $self->all_tables );     # reset
+    # $self->screen_init_keys( 'rec', $self->scrcfg );
+    # my @tables = $self->all_tables;
+    # foreach my $t (@tables) {
+    #     say "# table: $t  ", $self->get_table($t)->table;
+    # }
 
     $self->set_app_mode('idle');
 
@@ -1756,8 +1757,6 @@ sub DEMOLISH {
     my $log_file = App::Fenix::Config::log_file_name;
     unlink $log_file if -f $log_file && -z $log_file;
 }
-
-__PACKAGE__->meta->make_immutable;
 
 1;
 
