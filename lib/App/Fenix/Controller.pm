@@ -473,7 +473,7 @@ sub screen_init_keys {
     my @fields    = keys %{ $self->scrcfg->maintable_columns };
     my @fields_rw = keys %{ $self->scrcfg->maintable_columns_rw };
     my $params    = {
-        page      => 'rec',
+        page      => $self->notebook->get_current_page,
         display   => 'record',
         keys      => $self->scrcfg->maintable( 'keys', 'name' ),
         table     => $self->scrcfg->maintable('name'),
