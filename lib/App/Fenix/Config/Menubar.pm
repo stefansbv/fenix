@@ -19,7 +19,7 @@ has 'menubar_file' => (
 
 has '_menubar' => (
     is          => 'ro',
-    traits      => ['Hash'],
+    handles_via      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     builder     => '_build_menubar',
@@ -38,7 +38,7 @@ sub _build_menubar {
 
 has '_menubar_names' => (
     is          => 'ro',
-    traits      => ['Array'],
+    handles_via      => ['Array'],
     lazy        => 1,
     init_arg    => undef,
     handles     => {

@@ -57,7 +57,7 @@ has 'db' => (
 
 has '_table' => (
     is       => 'ro',
-    traits   => ['Hash'],
+    handles_via   => ['Hash'],
     isa      => Maybe [FenixModelTable],
     lazy     => 1,
     init_arg => undef,

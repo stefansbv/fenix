@@ -19,7 +19,7 @@ has 'main_file' => (
 
 has '_main' => (
     is          => 'ro',
-    traits      => ['Hash'],
+    handles_via      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     builder     => '_build_main',

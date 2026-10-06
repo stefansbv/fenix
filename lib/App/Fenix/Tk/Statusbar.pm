@@ -100,7 +100,7 @@ sub _build_statusbar {
 
 has '_components' => (
     is          => 'ro',
-    traits      => ['Hash'],
+    handles_via      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     default     => sub { {} },

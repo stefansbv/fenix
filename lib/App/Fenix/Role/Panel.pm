@@ -12,7 +12,7 @@ use namespace::clean;
 
 has '_controls' => (
     is          => 'ro',
-    traits      => ['Hash'],
+    handles_via      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     default     => sub { {} },

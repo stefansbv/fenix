@@ -55,7 +55,7 @@ has 'db_fk_data' => (
 
 has 'db_data_hoh' => (
     is          => 'ro',
-    traits      => ['Hash'],
+    handles_via      => ['Hash'],
     lazy        => 1,
     default     => sub {
         my $self = shift;
@@ -76,7 +76,7 @@ has 'tm_fk_data' => (
 
 has 'tm_data_hoh' => (
     is          => 'ro',
-    traits      => ['Hash'],
+    handles_via      => ['Hash'],
     lazy        => 1,
     default     => sub {
         my $self = shift;

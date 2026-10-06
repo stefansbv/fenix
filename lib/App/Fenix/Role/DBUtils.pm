@@ -14,7 +14,7 @@ use DateTime::Locale;
 
 has '_transformations' => (
     is          => 'ro',
-    traits      => ['Hash'],
+    handles_via      => ['Hash'],
     init_arg    => undef,
     default     => sub {
         return {

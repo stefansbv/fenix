@@ -3,7 +3,7 @@ package  App::Fenix::Config::Toolbar;
 # ABSTRACT: Toolbar configurations
 
 use Moo;
-use MooX::HandlesVia;
+use MooX::HandlesVia; # Changing to Sub::HandlesVia crashes the state test :(
 use App::Fenix::Types qw(
     Path
 );

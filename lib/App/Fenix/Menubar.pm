@@ -42,7 +42,7 @@ has 'menu_bar' => (
 
 has '_menus' => (
     is          => 'ro',
-    traits      => ['Hash'],
+    handles_via      => ['Hash'],
     lazy        => 1,
     default     => sub { {} },
     handles     => {

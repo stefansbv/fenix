@@ -8,7 +8,7 @@ use namespace::clean;
 
 has observers => (
     is          => 'ro',
-    traits      => ['Array'],
+    handles_via      => ['Array'],
     default     => sub { [] },
     handles     => {
         'add_observer'     => 'push',

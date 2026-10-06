@@ -30,7 +30,7 @@ sub has_details_screen {
 
 has '_detail' => (
     is          => 'ro',
-    traits      => ['Hash'],
+    handles_via      => ['Hash'],
     lazy        => 1,
     default     => sub {
         my $self     = shift;

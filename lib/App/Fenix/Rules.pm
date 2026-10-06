@@ -8,7 +8,7 @@ use namespace::clean;
 
 has 'rules' => (
     is       => 'ro',
-    traits   => ['Hash'],
+    handles_via   => ['Hash'],
     required => 1,
     lazy     => 1,
     default  => sub {

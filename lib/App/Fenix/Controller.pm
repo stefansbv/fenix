@@ -230,7 +230,7 @@ has 'screen_rec_class' => (
 # _tblkeys
 has '_table_meta' => (
     is          => 'ro',
-    traits      => ['Hash'],
+    handles_via      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     default     => sub { {} },

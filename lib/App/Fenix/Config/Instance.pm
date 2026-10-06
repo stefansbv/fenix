@@ -24,7 +24,7 @@ has 'instance_file' => (
 
 has '_instance' => (
     is          => 'ro',
-    traits      => ['Hash'],
+    handles_via      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     builder     => '_build_instance',
@@ -35,7 +35,7 @@ has '_instance' => (
 
 has '_screen_names' => (
     is          => 'ro',
-    traits      => ['Hash'],
+    handles_via      => ['Hash'],
     lazy        => 1,
     init_arg    => undef,
     handles     => {

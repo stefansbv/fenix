@@ -8,7 +8,7 @@ use Sub::HandlesVia;
 
 has '_messages' => (
     is          => 'ro',
-    traits      => ['Hash'],
+    handles_via      => ['Hash'],
     init_arg    => undef,
     default     => sub {
         return {
