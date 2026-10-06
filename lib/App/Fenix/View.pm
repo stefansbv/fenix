@@ -23,8 +23,7 @@ use Tk;
 use Tk::Font;
 use Tk::widgets qw(MsgBox);
 
-with qw/App::Fenix::Role::Utils
-        App::Fenix::Role::DateUtils/;
+with qw/App::Fenix::Role::Utils/;
 
 use App::Fenix::X qw(hurl);
 use App::Fenix::Menubar;
