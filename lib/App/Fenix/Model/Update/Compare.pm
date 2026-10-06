@@ -15,7 +15,7 @@ use App::Fenix::Types qw(
 );
 use Data::Compare;
 use List::Compare;
-use namespace::autoclean;
+use namespace::clean;
 
 has 'debug' => (
     is      => 'ro',

@@ -9,7 +9,7 @@ use App::Fenix::Types qw(
     HashRef
     FenixCompare
 );
-use namespace::autoclean;
+use namespace::clean;
 
 has 'debug' => (
     is      => 'ro',

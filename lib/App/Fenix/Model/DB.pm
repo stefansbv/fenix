@@ -17,7 +17,7 @@ use App::Fenix::Types qw(
 use App::Fenix::Exceptions;
 use App::Fenix::Config;
 use App::Fenix::Target;
-use namespace::autoclean;
+use namespace::clean;
 
 use Data::Dump qw/dump/;
 

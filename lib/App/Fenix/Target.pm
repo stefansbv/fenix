@@ -10,7 +10,7 @@ use App::Fenix::Types qw(
     FenixEngine
     URIdb
 );
-use namespace::autoclean;
+use namespace::clean;
 
 has name => (
     is       => 'ro',

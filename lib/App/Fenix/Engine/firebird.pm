@@ -11,7 +11,7 @@ use App::Fenix::Types qw(
     DBIdb
 );
 use App::Fenix::Exceptions;
-use namespace::autoclean;
+use namespace::clean;
 
 extends 'App::Fenix::Engine';
 sub dbh;                                     # required by DBIEngine;

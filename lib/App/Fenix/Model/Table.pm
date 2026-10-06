@@ -11,7 +11,7 @@ use App::Fenix::Types qw(
     FenixRecord
 );
 use App::Fenix::Model::Table::Record;
-use namespace::autoclean;
+use namespace::clean;
 use Data::Dump qw/dump/;
 
 has 'table' => (

@@ -7,7 +7,7 @@ use Type::Utils qw(enum);
 use App::Fenix::Types qw(
     Str
 );
-use namespace::autoclean;
+use namespace::clean;
 
 with 'App::Fenix::Role::Observable';
 

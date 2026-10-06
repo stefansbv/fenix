@@ -9,7 +9,7 @@ use App::Fenix::Types qw(
     Str
 );
 use App::Fenix::Ctrl;
-use namespace::autoclean;
+use namespace::clean;
 
 has 'view' => (
     is       => 'ro',

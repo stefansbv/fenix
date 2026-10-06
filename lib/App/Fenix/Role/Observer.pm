@@ -3,7 +3,7 @@ package App::Fenix::Role::Observer;
 # ABSTRACT: Observer role
 
 use Moo::Role;
-use namespace::autoclean;
+use namespace::clean;
 
 requires 'update';
 

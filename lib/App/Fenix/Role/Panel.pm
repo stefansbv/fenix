@@ -8,7 +8,7 @@ use App::Fenix::Types qw(
     FenixConfig
     TkFrame
 );
-use namespace::autoclean;
+use namespace::clean;
 
 has '_controls' => (
     is          => 'ro',

@@ -9,7 +9,7 @@ use App::Fenix::Types qw(
     Maybe
     Str
 );
-use namespace::autoclean;
+use namespace::clean;
 
 #use Data::Dump qw/dump/;
 

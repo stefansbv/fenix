@@ -9,7 +9,7 @@ use App::Fenix::Types qw(
     FenixView
 );
 use App::Fenix::Rules;
-use namespace::autoclean;
+use namespace::clean;
 
 with 'App::Fenix::Role::Observer';
 

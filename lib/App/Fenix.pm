@@ -11,7 +11,7 @@ use App::Fenix::Types qw(
     FenixController
 );
 use App::Fenix::Controller;
-use namespace::autoclean;
+use namespace::clean;
 
 with 'MooX::Log::Any';
 

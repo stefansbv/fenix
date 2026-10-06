@@ -4,7 +4,7 @@ package App::Fenix::Role::Observable;
 
 use Moo::Role;
 use Sub::HandlesVia;
-use namespace::autoclean;
+use namespace::clean;
 
 has observers => (
     is          => 'ro',

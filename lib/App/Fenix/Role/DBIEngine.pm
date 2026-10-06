@@ -8,7 +8,7 @@ use Moo::Role;
 use DBIx::Connector;
 use Try::Tiny;
 use Locale::TextDomain qw(App-Fenix);
-use namespace::autoclean;
+use namespace::clean;
 
 with 'MooX::Log::Any';
 

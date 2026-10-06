@@ -9,7 +9,7 @@ use App::Fenix::Types qw(
     FenixTarget
 );
 use App::Fenix::Exceptions;
-use namespace::autoclean;
+use namespace::clean;
 
 has target => (
     is       => 'ro',

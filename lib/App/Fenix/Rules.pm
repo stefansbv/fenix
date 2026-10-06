@@ -4,7 +4,7 @@ package App::Fenix::Rules;
 
 use Moo;
 use Sub::HandlesVia;
-use namespace::autoclean;
+use namespace::clean;
 
 has 'rules' => (
     is       => 'ro',

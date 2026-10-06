@@ -24,7 +24,7 @@ use App::Fenix::Config::Connection;
 use App::Fenix::Config::Main;
 use App::Fenix::Config::Application;
 use App::Fenix::Config::Instance;
-use namespace::autoclean;
+use namespace::clean;
 
 with 'App::Fenix::Role::Paths';
 

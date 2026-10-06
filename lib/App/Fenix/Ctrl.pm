@@ -9,7 +9,7 @@ use App::Fenix::Types qw(
     ScalarRef
     Str
 );
-use namespace::autoclean;
+use namespace::clean;
 
 has 'name' => (
     is       => 'ro',

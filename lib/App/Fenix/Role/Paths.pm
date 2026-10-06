@@ -14,7 +14,7 @@ use App::Fenix::Types qw(
     Maybe
     Str
 );
-use namespace::autoclean;
+use namespace::clean;
 
 =head3 module_path
 
