@@ -3,7 +3,7 @@ package App::Fenix::Model::Table;
 # ABSTRACT: Database table meta data
 
 use Moo;
-use MooX::HandlesVia;
+use Sub::HandlesVia;
 use App::Fenix::Types qw(
     ArrayRef
     Maybe
@@ -39,7 +39,7 @@ has 'display' => (
 
 has '_keys' => (
     is          => 'ro',
-    handles_via => 'Array',
+    traits      => ['Array'],
     init_arg    => 'keys',
     required    => 1,
     lazy        => 1,
