@@ -5,7 +5,6 @@ package App::Fenix::Config;
 use feature 'say';
 use utf8;
 use Moo;
-use MooX::HandlesVia;
 use App::Fenix::Types qw(
     Bool
     Maybe

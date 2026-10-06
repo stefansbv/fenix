@@ -3,7 +3,6 @@ package App::Fenix::Model::Update;
 # ABSTRACT: Update
 
 use Moo;
-use MooX::HandlesVia;
 use App::Fenix::Types qw(
     Bool
     Str

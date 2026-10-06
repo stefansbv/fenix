@@ -3,7 +3,6 @@ package App::Fenix::Toolbar;
 # ABSTRACT: Tk Toolbar Control
 
 use Moo;
-use MooX::HandlesVia;
 use App::Fenix::Types qw(
     ArrayRef
     FenixConfigTool
