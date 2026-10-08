@@ -465,7 +465,7 @@ sub on_screen_mode_sele {
 }
 
 sub screen_init_keys {
-    my ($self, $page, $scrcfg) = @_;
+    my ($self) = @_;
 
     #-- Main table on the '$page' page
 
@@ -487,9 +487,6 @@ sub screen_init_keys {
 
         # Register main table object on $page page
         $self->add_table_meta( 'main', $table );
-
-        # my $where = $table->build_sql_params_main('query');
-        # dd $where;
 
     }
 
@@ -1065,8 +1062,8 @@ sub toggle_mode_add {
 sub screen_read {
     my ($self, $all) = @_;
 
-    my $scrobj = $self->scrobj;    # current screen object
-    my $scrcfg = $self->scrcfg;    # current screen config
+    # my $scrobj = $self->scrobj;    # current screen object
+    # my $scrcfg = $self->scrcfg;    # current screen config
 
     # Get configured date style, default is ISO
     my $date_format = $self->config->application_dateformat || 'iso';
@@ -1094,33 +1091,28 @@ sub record_find_execute {
     my $self = shift;
 
     $self->screen_read('all');
-    my $table  = $self->scrcfg->maintable('name');
-    say "* query table: $table";
-    # my @fields = keys %{ $self->scrcfg->maintable_columns };
 
-    # query_record
-    my $opts = {
-        table   => $table,
-        columns => undef,
-        where   => { productcode => "S10_1678" },
-    };
-    my $rec = $self->model->db->query_record($opts);
-    dd $rec;
+    my $params = $self->get_table_meta('main')->build_sql_params_main('query');
+    # $params->{where} = { productcode => "S10_1678" };
+    dd $params;
+    # my $rec = $self->model->db->query_record($params);
+    # dd $rec;
 
-    # # Add findtype info to screen data
-    # foreach my $field ( keys %{ $self->{_scrdata} } ) {
-    #     my $value = $self->{_scrdata}{$field};
-    #     chomp $value;
-    #     my $findtype = $columns->{$field}{findtype};
+    # Add findtype info to screen data
+    foreach my $field ( keys %{ $self->scrcfg->maintable_columns } ) {
+        say $field;
+        # my $value = $self->{_scrdata}{$field}
+        # chomp $value;
+        # my $findtype = $columns->{$field}{findtype};
 
-    #     # Create a where clause like this:
-    #     #  field1 IS NOT NULL and field2 IS NULL
-    #     # for entry values equal to '%' or '!'
-    #     $findtype = q{notnull} if $value eq q{%};
-    #     $findtype = q{isnull}  if $value eq q{!};
+        # # Create a where clause like this:
+        # #  field1 IS NOT NULL and field2 IS NULL
+        # # for entry values equal to '%' or '!'
+        # $findtype = q{notnull} if $value eq q{%};
+        # $findtype = q{isnull}  if $value eq q{!};
 
-    #     $params->{where}{$field} = [ $value, $findtype ];
-    # }
+        # $params->{where}{$field} = [ $value, $findtype ];
+    }
 
     # my ($ary_ref, $limit);
     # try {
@@ -1332,12 +1324,12 @@ sub screen_module_load {
     # $self->setup_bindings_table();
 
     # Set table metadata
-    # $self->rm_table( $self->all_tables );     # reset
-    # $self->screen_init_keys( 'rec', $self->scrcfg );
-    # my @tables = $self->all_tables;
-    # foreach my $t (@tables) {
-    #     say "# table: $t  ", $self->get_table($t)->table;
-    # }
+    $self->rm_table_meta($_) for $self->all_tables_meta;     # reset
+    $self->screen_init_keys;
+    my @tables = $self->all_tables_meta;
+    foreach my $t (@tables) {
+        say "# table: $t  ", $self->get_table_meta($t)->table;
+    }
 
     $self->set_app_mode('idle');
 
