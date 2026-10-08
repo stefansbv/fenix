@@ -115,7 +115,6 @@ has 'model' => (
         get_dir_for
         get_file_for
         get_path_for
-        table
     )],
 );
 
@@ -332,7 +331,6 @@ sub _init {
     my $error = '';
     $self->delay_start(
         sub {
-            say 'connecting...';
             try {
                 $self->model->db->dbh;
             }
@@ -1517,10 +1515,10 @@ sub set_geometry {
     unless ($geom) {
         $geom = $self->scrcfg->scr->{screen}{geometry};
     }
-    say " geom pre: $geom";
+    # say " geom pre: $geom";
     my ( $fw, $fh, $x, $y ) = $geom =~ m{(\d+)x(\d+)([+-]\d+)([+-]\d+)};
     $geom = sprintf("%dx%d+%d+%d", $fw, $fh, $x, $y);
-    say " geom end: $geom";
+    # say " geom end: $geom";
 
     $self->view->set_geometry($geom);
     return;

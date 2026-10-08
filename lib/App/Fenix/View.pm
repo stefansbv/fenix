@@ -563,19 +563,21 @@ sub get_geometry {
     # All dimensions are in pixels.
     my $sh = $win->screenheight;
     my $sw = $win->screenwidth;
-    say "---";
-    print "# system   = $wsys\n";
-    print "# name     = $name\n";
-    print "# geometry = $geom\n";
-    print "# screen   = $sw x $sh\n";
-    say "---";
+    if ( $self->verbose ) {
+        say "---";
+        print "# system   = $wsys\n";
+        print "# name     = $name\n";
+        print "# geometry = $geom\n";
+        print "# screen   = $sw x $sh\n";
+        say "---";
+    }
     return $geom;
 }
 
 sub set_geometry_main {
     my $self = shift;
     my $geom = $self->config->instance->get_screen('main');
-    say "# geom = $geom";
+    # say "# geom = $geom";
     unless ($geom) {
         $geom = '800x600+20+20';              # default geom
     }

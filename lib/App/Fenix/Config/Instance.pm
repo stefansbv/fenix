@@ -52,7 +52,7 @@ sub _build_instance {
     my $instance_file = $self->instance_file;
     if ( $instance_file->is_file ) {
         $instance_file = $instance_file->stringify;
-        say "# loading instance file\n    '$instance_file'";
+        # say "# loading instance file\n    '$instance_file'";
         my $yaml = $self->load_yaml($instance_file);
         return $yaml;
     }

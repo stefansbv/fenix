@@ -55,40 +55,40 @@ has 'db' => (
     },
 );
 
-has '_table' => (
-    is       => 'ro',
-    handles_via   => ['Hash'],
-    isa      => Maybe [FenixModelTable],
-    lazy     => 1,
-    init_arg => undef,
-    clearer  => 'reset_table',
-    default  => sub {
-        my $self = shift;
-        say "* table build";
+# has '_table' => (
+#     is       => 'ro',
+#     handles_via   => ['Hash'],
+#     isa      => Maybe [FenixModelTable],
+#     lazy     => 1,
+#     init_arg => undef,
+#     clearer  => 'reset_table',
+#     default  => sub {
+#         my $self = shift;
+#         say "* table build";
 
-        # my @fields    = keys %{ $self->scrcfg->maintable_columns };
-        # my @fields_rw = keys %{ $self->scrcfg->maintable_columns_rw };
-        # my $params    = {
-        #     page      => $self->notebook->get_current_page,
-        #     display   => 'record',
-        #     keys      => $self->scrcfg->maintable( 'keys', 'name' ),
-        #     table     => $self->scrcfg->maintable('name'),
-        #     view      => $self->scrcfg->maintable('view'),
-        #     fields    => \@fields,
-        #     fields_rw => \@fields_rw,
-        # };
-        # dd $params;
+#         # my @fields    = keys %{ $self->scrcfg->maintable_columns };
+#         # my @fields_rw = keys %{ $self->scrcfg->maintable_columns_rw };
+#         # my $params    = {
+#         #     page      => $self->notebook->get_current_page,
+#         #     display   => 'record',
+#         #     keys      => $self->scrcfg->maintable( 'keys', 'name' ),
+#         #     table     => $self->scrcfg->maintable('name'),
+#         #     view      => $self->scrcfg->maintable('view'),
+#         #     fields    => \@fields,
+#         #     fields_rw => \@fields_rw,
+#         # };
+#         # dd $params;
 
-        return App::Fenix::Model::Table->new( {} );
-    },
-        handles     => {
-        get_table  => 'get',
-        add_table  => 'set',
-        all_tables => 'keys',
-        rm_table   => 'delete',
-    },
+#         return App::Fenix::Model::Table->new( {} );
+#     },
+#         handles     => {
+#         get_table  => 'get',
+#         add_table  => 'set',
+#         all_tables => 'keys',
+#         rm_table   => 'delete',
+#     },
 
-);
+# );
 
 1;
 

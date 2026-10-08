@@ -39,7 +39,7 @@ has 'display' => (
 
 has '_keys' => (
     is          => 'ro',
-    handles_via      => ['Array'],
+    handles_via => ['Array'],
     init_arg    => 'keys',
     required    => 1,
     lazy        => 1,
