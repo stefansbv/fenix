@@ -147,9 +147,9 @@ sub build_sql_params_main {
     $meta->{table} = $sql eq 'query' ? $self->view : $self->table;
     $meta->{columns} = $self->fields if $sql ne 'delete';
     $meta->{pkcol}   = $self->pkcol  if $sql eq 'insert';
-    foreach my $key ( $self->all_keys ) {
-        $meta->{where}{ $key->name } = $key->value;
-    }
+    # foreach my $key ( $self->all_keys ) {
+    #     $meta->{where}{ $key->name } = $key->value;
+    # }
     return $meta;
 }
 

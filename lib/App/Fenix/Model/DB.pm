@@ -215,7 +215,7 @@ sub query_record {
     my $sql = SQL::Abstract::More->new( special_ops => $self->special_ops );
 
     my ( $stmt, @bind ) = $sql->select( $table, $cols, $where );
-    $self->debug_print_sql('query_record', $stmt, \@bind) if $self->debug;
+    $self->debug_print_sql('query_record', $stmt, \@bind); #  if $self->debug;
 
     my $hash_ref;
     try {

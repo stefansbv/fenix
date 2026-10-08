@@ -241,6 +241,21 @@ has '_table_meta' => (
     },
 );
 
+# _scrdata
+has '_screen_data' => (
+    is          => 'ro',
+    handles_via => ['Hash'],
+    lazy        => 1,
+    init_arg    => undef,
+    default     => sub { {} },
+    handles     => {
+        get_scr_data  => 'get',
+        add_scr_data  => 'set',
+        all_scr_data  => 'keys',
+        rm_scr_data   => 'delete',
+    },
+);
+
 sub require_screen {
     my ( $self, $module, $from_tools ) = @_;
     my ( $class, $module_file ) =
@@ -1009,8 +1024,8 @@ Toggle find mode, ask to save record if modified.
 sub toggle_mode_find {
     my $self = shift;
 
-    say "toggle find modified=", $self->model->is_modified ? 'yes' : 'no'
-      if $self->debug;
+    # say "toggle find modified=", $self->model->is_modified ? 'yes' : 'no'
+    #   if $self->debug;
 
     # if ( $self->model->is_modified ) {
     #     my $answer = $self->ask_to_save;
@@ -1062,9 +1077,6 @@ sub toggle_mode_add {
 sub screen_read {
     my ($self, $all) = @_;
 
-    # my $scrobj = $self->scrobj;    # current screen object
-    # my $scrcfg = $self->scrcfg;    # current screen config
-
     # Get configured date style, default is ISO
     my $date_format = $self->config->application_dateformat || 'iso';
 
@@ -1074,15 +1086,14 @@ sub screen_read {
         # Control config attributes
         my $ctrltype = $fld_cfg->{ctrltype};
         my $ctrlrw   = $fld_cfg->{readwrite};
-
         if ( !$all ) {
             unless ( $self->is_mode('find') ) {
                 next if ( $ctrlrw eq 'r' ) or ( $ctrlrw eq 'ro' );
             }
         }
-
         my $value = $self->_ctrl_read($field, $date_format);
-        say " [$field] value = $value";
+        say " [$field]\tvalue = $value" if $self->debug;
+        $self->add_scr_data($field, $value);
     }
     return;
 }
@@ -1093,34 +1104,42 @@ sub record_find_execute {
     $self->screen_read('all');
 
     my $params = $self->get_table_meta('main')->build_sql_params_main('query');
-    # $params->{where} = { productcode => "S10_1678" };
-    dd $params;
-    # my $rec = $self->model->db->query_record($params);
-    # dd $rec;
+    # dd $params;
 
     # Add findtype info to screen data
     foreach my $field ( keys %{ $self->scrcfg->maintable_columns } ) {
-        say $field;
-        # my $value = $self->{_scrdata}{$field}
-        # chomp $value;
-        # my $findtype = $columns->{$field}{findtype};
+        if ( my $value = $self->get_scr_data($field) ) {
+            chomp $value;
+            next unless $value;
+            my $fld_cfg  = $self->scrcfg->maintable->{columns}{$field};
+            my $findtype = $fld_cfg->{findtype};
 
-        # # Create a where clause like this:
-        # #  field1 IS NOT NULL and field2 IS NULL
-        # # for entry values equal to '%' or '!'
-        # $findtype = q{notnull} if $value eq q{%};
-        # $findtype = q{isnull}  if $value eq q{!};
+            # Create a where clause like this:
+            #  field1 IS NOT NULL and field2 IS NULL
+            # for entry values equal to '%' or '!'
+            $findtype = q{notnull} if $value eq q{%};
+            $findtype = q{isnull}  if $value eq q{!};
 
-        # $params->{where}{$field} = [ $value, $findtype ];
+            $params->{where}{$field} = [ $value, $findtype ];
+        }
     }
+    dd $params;
+    my $opts = $self->model->db->build_sql_where($params);
+    dd $opts;
+    $params->{where} = $opts;
+    dd $params;
 
-    # my ($ary_ref, $limit);
-    # try {
-    #      ($ary_ref, $limit) = $self->model->query_records_find($params);
-    # }
-    # catch {
-    #     $self->catch_db_exceptions($_);
-    # };
+    my $rec = $self->model->db->query_record($params);
+    dd $rec;
+
+#     my ($ary_ref, $limit);
+#     try {
+#          ($ary_ref, $limit) = $self->model->query_records_find($params);
+#     }
+#     catch {
+# #        $self->catch_db_exceptions($_);
+#     };
+#     dd $ary_ref;
 
     # # return unless defined $ary_ref->[0];     # test if AoA ?
     # unless (ref $ary_ref eq 'ARRAY') {
