@@ -19,6 +19,7 @@ use App::Fenix::Types qw(
     FenixOptions
     FenixConfig
     FenixConfigScr
+    FenixTkScreen
     FenixModel
     FenixState
     FenixView
@@ -297,7 +298,7 @@ has 'scrcfg' => (
 
 has 'screen_rec' => (
     is      => 'ro',
-    # isa     => FenixConfigScr,
+    isa     => FenixTkScreen,
     lazy    => 1,
     clearer => 'reset_screen_rec',
     default => sub {
@@ -1123,9 +1124,6 @@ sub record_find_execute {
 
     # Columns data (from list header)
     $params->{columns} = $self->list_column_names();
-
-    # Table configs
-    my $columns = $self->scrcfg->maintable('columns');
 
     # Add findtype info to screen data
     foreach my $field ( keys %{ $self->scrcfg->maintable_columns } ) {

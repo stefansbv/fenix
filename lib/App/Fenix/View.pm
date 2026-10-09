@@ -15,7 +15,7 @@ use App::Fenix::Types qw(
     FenixModel
     FenixNotebook
     FenixPanel
-    FenixStatusbar
+    FenixTkStatusbar
     FenixToolbar
     Int
     TkFrame
@@ -118,7 +118,7 @@ has 'toolbar' => (
 
 has 'statusbar' => (
     is      => 'ro',
-    isa     => FenixStatusbar,
+    isa     => FenixTkStatusbar,
     lazy    => 1,
     default => sub {
         my $self = shift;
