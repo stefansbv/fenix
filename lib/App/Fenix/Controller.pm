@@ -547,7 +547,7 @@ sub controls_state_set {
 
     return unless $page;
 
-    my $bg = $self->scrobj->get_bgcolor;
+    my $bg = $self->scrobj->bg;
 
     # # Enable controls for report style screen
     # $control_states = $self->control_states('edit')
