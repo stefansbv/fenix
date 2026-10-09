@@ -228,6 +228,65 @@ sub query_record {
     return $hash_ref;
 }
 
+sub query_records_count {
+    my ( $self, $opts ) = @_;
+
+    my $table = $opts->{table};
+    my $pkcol = $opts->{pkcol} ? $opts->{pkcol} : '*';
+    my $where = $self->build_sql_where($opts);
+
+    return if !ref $where;
+
+    my $sql = SQL::Abstract::More->new( special_ops => $self->special_ops );
+
+    my ( $stmt, @bind ) = $sql->select( $table, ["COUNT($pkcol)"], $where );
+    $self->debug_print_sql('query_records_count', $stmt, \@bind)
+        if $self->debug;
+
+    my $record_count;
+    try {
+        my $sth = $self->dbh->prepare($stmt);
+        $sth->execute(@bind);
+        ($record_count) = $sth->fetchrow_array();
+    }
+    catch {
+        $self->db_exception($_, 'Count failed');
+    };
+
+    $record_count = 0 unless defined $record_count;
+
+    return $record_count;
+}
+
+sub query_records_find {
+    my ( $self, $opts ) = @_;
+
+    my $table = $opts->{table};
+    my $cols  = $opts->{columns};
+    my $pkcol = $opts->{pkcol};
+    my $where = $self->build_sql_where($opts);
+
+    return if !ref $where;
+
+    my $sql = SQL::Abstract::More->new( special_ops => $self->special_ops );
+
+    my ( $stmt, @bind ) = $sql->select( $table, $cols, $where, $pkcol );
+    $self->debug_print_sql('query_records_find', $stmt, \@bind)
+        if $self->debug;
+
+    my $search_limit = $self->config->application->{limits}{search} || 100;
+    my $args = { MaxRows => $search_limit };    # limit search result
+    my $ary_ref;
+    try {
+        $ary_ref = $self->dbh->selectall_arrayref( $stmt, $args, @bind );
+    }
+    catch {
+        $self->db_exception($_, 'Find failed');
+    };
+
+    return ($ary_ref, $search_limit);
+}
+
 sub debug_print_sql {
     my ( $self, $meth, $stmt, $bind ) = @_;
     warn "debug_print_sql: wrong params!"

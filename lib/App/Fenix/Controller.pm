@@ -1098,13 +1098,34 @@ sub screen_read {
     return;
 }
 
+sub list_column_names {
+    my $self = shift;
+
+    my $header_look = $self->scrcfg->list_header('lookup');
+    my $header_cols = $self->scrcfg->list_header('column');
+
+    my $columns = [];
+    push @{$columns}, @{$header_look};
+    push @{$columns}, @{$header_cols};
+
+    return $columns;
+}
+
 sub record_find_execute {
     my $self = shift;
 
     $self->screen_read('all');
 
-    my $params = $self->get_table_meta('main')->build_sql_params_main('query');
-    # dd $params;
+    # my $p = $self->get_table_meta('main')->build_sql_params_main('query');
+    # dd $p;
+
+    my $params = {};
+
+    # Columns data (from list header)
+    $params->{columns} = $self->list_column_names();
+
+    # Table configs
+    my $columns = $self->scrcfg->maintable('columns');
 
     # Add findtype info to screen data
     foreach my $field ( keys %{ $self->scrcfg->maintable_columns } ) {
@@ -1123,55 +1144,52 @@ sub record_find_execute {
             $params->{where}{$field} = [ $value, $findtype ];
         }
     }
-    dd $params;
-    my $opts = $self->model->db->build_sql_where($params);
-    dd $opts;
-    $params->{where} = $opts;
-    dd $params;
 
-    my $rec = $self->model->db->query_record($params);
-    dd $rec;
+    # Table data
+    my $meta = $self->get_table_meta('main');
+    $params->{table} = $meta->view;
+    $params->{pkcol} = $meta->pkcol;
 
-#     my ($ary_ref, $limit);
-#     try {
-#          ($ary_ref, $limit) = $self->model->query_records_find($params);
-#     }
-#     catch {
-# #        $self->catch_db_exceptions($_);
-#     };
-#     dd $ary_ref;
+    my ( $ary_ref, $limit );
+    try {
+        ( $ary_ref, $limit ) = $self->model->db->query_records_find($params);
+    }
+    catch {
+        $self->catch_db_exceptions($_);
+    };
+    dd $ary_ref;
 
-    # # return unless defined $ary_ref->[0];     # test if AoA ?
-    # unless (ref $ary_ref eq 'ARRAY') {
-    #     # die "Find failed!";
-    #     return;
-    # }
+    # return unless defined $ary_ref->[0];     # test if AoA ?
+    unless (ref $ary_ref eq 'ARRAY') {
+        # die "Find failed!";
+        return;
+    }
 
-    # my $record_count = scalar @{$ary_ref};
-    # my $msg1 = __n 'record', 'records', $record_count;
-    # my $msg0 = $record_count == $limit
-    #          ? __ 'first'
-    #          : q{};
+    my $record_count = scalar @{$ary_ref};
+    my $msg1 = __n 'record', 'records', $record_count;
+    my $msg0 = $record_count == $limit
+             ? __ 'first'
+             : q{};
 
-    # my $message = __x(
-    #     "{pre} {count} {post}",
-    #     pre   => $msg0,
-    #     count => $record_count,
-    #     post  => $msg1
-    # );
-    # $self->view->set_status($message, 'ms', 'darkgreen');
+    my $message = __x(
+        "{pre} {count} {post}",
+        pre   => $msg0,
+        count => $record_count,
+        post  => $msg1
+    );
+    $self->view->set_status( $message, 'ms', 'darkgreen' );
 
-    # $self->view->list_init();
-    # my $record_inlist = $self->view->list_populate($ary_ref);
-    # $self->view->list_raise() if $record_inlist > 0;
+    $self->view->list_init;
+    my $record_inlist = $self->view->list_populate($ary_ref);
+    $self->notebook->set_current_page('lst') if $record_inlist > 0;
 
-    # # Double check
-    # if ($record_inlist != $record_count) {
-    #     die "Record count error?!";
-    # }
+    # Double check
+    if ( $record_inlist != $record_count ) {
+        die "Record count error?!";
+    }
 
-    # # Set mode to sele if found
-    # $self->set_app_mode('sele') if $record_inlist > 0;
+    # Set mode to sele if found
+    $self->set_app_mode('sele') if $record_inlist > 0;
 
     return;
 }
@@ -1179,42 +1197,45 @@ sub record_find_execute {
 sub record_find_count {
     my $self = shift;
 
-    # $self->screen_read();
+    $self->screen_read('all');
 
-    # # Table configs
-    # my $columns = $self->scrcfg('rec')->maintable('columns');
+    # Table configs
+    my $columns = $self->scrcfg->maintable('columns');
 
-    # my $params = {};
+    my $params = {};
 
-    # # Add findtype info to screen data
-    # foreach my $field ( keys %{ $self->{_scrdata} } ) {
-    #     my $value = $self->{_scrdata}{$field};
-    #     chomp $value;
-    #     my $findtype = $columns->{$field}{findtype};
+    # Add findtype info to screen data
+    foreach my $field ( keys %{ $self->scrcfg->maintable_columns } ) {
+        if ( my $value = $self->get_scr_data($field) ) {
+            chomp $value;
+            my $fld_cfg  = $self->scrcfg->maintable->{columns}{$field};
+            my $findtype = $fld_cfg->{findtype};
 
-    #     # Create a where clause like this:
-    #     #  field1 IS NOT NULL and field2 IS NULL
-    #     # for entry values equal to '%' or '!'
-    #     $findtype = q{notnull} if $value eq q{%};
-    #     $findtype = q{isnull}  if $value eq q{!};
+            # Create a where clause like this:
+            #  field1 IS NOT NULL and field2 IS NULL
+            # for entry values equal to '%' or '!'
+            $findtype = q{notnull} if $value eq q{%};
+            $findtype = q{isnull}  if $value eq q{!};
 
-    #     $params->{where}{$field} = [ $value, $findtype ];
-    # }
+            $params->{where}{$field} = [ $value, $findtype ];
+        }
+    }
 
-    # # Table data
-    # $params->{table} = $self->table_key('rec','main')->view;
-    # $params->{pkcol} = $self->table_key('rec','main')->get_key(0)->name;
+    # Table data
+    my $meta = $self->get_table_meta('main');
+    $params->{table} = $meta->view;
+    $params->{pkcol} = $meta->pkcol;
 
-    # my $record_count;
-    # try {
-    #     $record_count = $self->model->query_records_count($params);
-    # }
-    # catch {
-    #     $self->catch_db_exceptions($_);
-    # };
+    my $record_count;
+    try {
+        $record_count = $self->model->db->query_records_count($params);
+    }
+    catch {
+        $self->catch_db_exceptions($_);
+    };
 
-    # my $msg = __ 'records';
-    # $self->view->set_status( "$record_count $msg", 'ms', 'darkgreen' );
+    my $msg = __ 'records';
+    $self->view->set_status( "$record_count $msg", 'ms', 'darkgreen' );
 
     return;
 }
@@ -1737,6 +1758,54 @@ sub clean_and_save_value {
     else {
         # Idle mode -> empty record
         $self->{_scrdata}{$field} = undef;
+    }
+
+    return;
+}
+
+sub catch_db_exceptions {
+    my ($self, $exc) = @_;
+
+    my ($message, $details);
+
+    if ( my $e = Exception::Base->catch($exc) ) {
+        if ( $e->isa('Exception::Db::SQL') ) {
+            $message = $e->usermsg;
+            $details = $e->logmsg;
+            print "Exc isa SQL ($message, $details)\n";
+        }
+        elsif ( $e->isa('Exception::Db::Connect') ) {
+            $message = $e->usermsg;
+            $details = $e->logmsg;
+            print "Exception is a Connect ($message, $details)\n";
+        }
+        else {
+            warn "*** Unknown exception:\n";
+            $self->log->error( $e->to_string );
+            $e->throw;          # rethrow the exception
+            return;
+        }
+
+        $self->message_dialog($message, $details, 'error', 'close');
+    }
+
+    return;
+}
+
+sub catch_data_exceptions {
+    my ($self, $exc) = @_;
+
+    if ( my $e = Exception::Base->catch($exc) ) {
+        if ( $e->isa('Exception::Data::Missing') ) {
+            $self->reset_tb_button_state;
+            $self->message_tiler( $e->usermsg, $e->labels );
+            $e->throw;          # rethrow the exception
+        }
+        else {
+            warn "*** Unknown exception:\n";
+            $self->log->error( $e->to_string );
+            $e->throw;          # rethrow the exception
+        }
     }
 
     return;

@@ -6,6 +6,7 @@ use feature 'say';;
 use utf8;
 use Moo;
 use Scalar::Util qw(blessed);
+use POSIX qw (floor);
 use App::Fenix::Types qw(
     Bool
     FenixConfig
