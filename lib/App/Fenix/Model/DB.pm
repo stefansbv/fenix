@@ -205,6 +205,76 @@ sub cmp_function {
     return $cmp;
 }
 
+sub tbl_dict_query {
+    my ( $self, $para, $label_lbl, $value_lbl ) = @_;
+
+    my $where;
+    if ( $para->{table} eq 'codificari' ) {
+        $where->{variabila} = $para->{field};
+    }
+
+    my $table  = $para->{table};
+    my $fields = [ $para->{code}, $para->{name} ];
+    my $order  = $para->{orderby} || $para->{name};
+
+    my $sql = SQL::Abstract::More->new();
+
+    my ( $stmt, @bind ) = $sql->select( $table, $fields, $where, $order );
+    $self->debug_print_sql('tbl_dict_query', $stmt, \@bind);# if $self->debug;
+
+    my $sth;
+    try { $sth = $self->dbh->prepare($stmt); }
+    catch {
+        $self->db_exception($_, 'Table dictionary query failed');
+    };
+
+    my @dictrows;
+    try {
+        @bind ? $sth->execute(@bind) : $sth->execute();
+        while ( my $row_rf = $sth->fetchrow_arrayref() ) {
+            push @dictrows, {
+                $label_lbl => $self->decode_unless_utf( $row_rf->[1] ),
+                $value_lbl => $self->decode_unless_utf( $row_rf->[0] ),
+            };
+        }
+    }
+    catch {
+        $self->db_exception($_, 'Table dictionary query failed');
+    };
+
+    return \@dictrows;
+}
+
+sub tbl_lookup_query {
+    my ( $self, $para, $debug ) = @_;
+
+    my $table  = $para->{table};
+    my $fields = [ $para->{field} ];
+    my $where  = $para->{where};
+
+    my $sql = SQL::Abstract::Mode->new();
+
+    my ( $stmt, @bind ) = $sql->select( $table, $fields, $where );
+    $self->debug_print_sql('tbl_lookup_query', $stmt, \@bind) if $self->debug;
+
+    my $sth;
+    try { $sth = $self->dbh->prepare($stmt); }
+    catch {
+        $self->db_exception($_, 'Lookup failed');
+    };
+
+    my $row_rf;
+    try {
+        @bind ? $sth->execute(@bind) : $sth->execute();
+        $row_rf = $sth->fetchrow_arrayref();
+    }
+    catch {
+        $self->db_exception($_, 'Lookup failed');
+    };
+
+    return $row_rf;
+}
+
 sub query_record {
     my ( $self, $opts ) = @_;
 
@@ -355,5 +425,11 @@ sub db_exception {
 # table => "v_orders",
 # where => { customername => ["%", "notnull"], statuscode => ["C", "full"] },
 # }
+
+sub decode_unless_utf {
+    my ($self, $value) = @_;
+    $value = decode( 'utf8', $value ) unless is_utf8($value);
+    return $value;
+}
 
 1;

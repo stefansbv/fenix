@@ -116,5 +116,35 @@ subtest 'Model DB with URI' => sub {
 
 };
 
+subtest 'Model DB - test tbl_dict_query' => sub {
+    ok my $db = App::Fenix::Model::DB->new( config => $config, ),
+        'new db instance';
+
+    my ( $label_lbl, $value_lbl ) = ( '-name', '-value' );
+
+    my $para = {
+        code    => "code",
+        default => "not set",
+        name    => "description",
+        orderby => "",
+        table   => "status",
+    };
+
+    ok my $rec = $db->tbl_dict_query( $para, $label_lbl, $value_lbl );
+    # dump $rec;
+
+    is(
+        $rec,
+        array {
+            item hash {
+                field '-name'  => match qr/[\w\s]/;
+                field '-value' => match qr/[\w]/;
+                end;
+            };
+            etc;
+        }, 'the records should match'
+    );
+
+};
 
 done_testing;
