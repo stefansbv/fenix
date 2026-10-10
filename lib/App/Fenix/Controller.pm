@@ -5,6 +5,8 @@ package App::Fenix::Controller;
 use feature 'say';
 use utf8;
 use Moo;
+use Data::Compare;
+use Scalar::Util qw(blessed looks_like_number);
 use Sub::HandlesVia;
 use Try::Tiny;
 use Path::Tiny;
@@ -42,7 +44,8 @@ use App::Fenix::Tk::Dialog::Login;
 
 use Data::Dump;
 
-with 'MooX::Log::Any';
+with qw/App::Fenix::Role::Utils
+        MooX::Log::Any/;
 
 =head2 options
 
@@ -385,7 +388,7 @@ sub on_screen_mode_idle {
 
     # Empty the main controls and TM, if any
 
-    # $self->record_clear;
+    $self->record_clear;
 
     my @tm_ctrls = $self->screen_rec->all_tm_ctrls;
     foreach my $tm (@tm_ctrls) {
@@ -410,7 +413,7 @@ sub on_screen_mode_idle {
 sub on_screen_mode_add {
     my ($self, $rules) = @_;
 
-    # $self->record_clear;              # empty the main controls and TM
+    $self->record_clear;              # empty the main controls and TM
     # $self->tmatrix_set_selected();    # initialize selector
 
     # foreach my $tm_ds ( keys %{ $self->scrobj()->get_tm_controls() } ) {
@@ -442,7 +445,7 @@ sub on_screen_mode_find {
 
     # Empty the main controls and TM, if any
 
-    # $self->record_clear;
+    $self->record_clear;
 
     # foreach my $tm_ds ( keys %{ $self->scrobj->get_tm_controls() } ) {
     #     $self->scrobj()->get_tm_controls($tm_ds)->clear_all();
@@ -842,7 +845,7 @@ sub _setup_events {
 
     $self->view->event_handler_for_notebook(
         'rec',
-        sub { say "> on_page_rec_activate" }
+        sub { $self->on_page_rec_activate }
     );
     $self->view->event_handler_for_notebook(
         'lst',
@@ -971,6 +974,196 @@ sub _setup_events {
     return;
 }
 
+sub on_page_rec_activate {
+    my $self = shift;
+
+    say "call on_page_rec_activate";
+
+    $self->view->set_status( '', 'ms' );    # clear
+    if ( $self->is_mode('sele') ) {
+        $self->set_app_mode('edit');
+    }
+    else {
+        $self->toggle_interface_controls;
+    }
+
+    $self->view->notebook->set_page_state( 'lst', 'normal');
+
+    return unless $self->view->notebook->get_previous_page eq 'lst';
+
+    my $selected_href = $self->view->list_read_selected;
+    unless ($selected_href) {
+        $self->view->set_status( __ 'Not selected', 'ms', 'orange' );
+        $self->set_app_mode('idle');
+        return;
+    }
+
+    #- Compare Key values, load record only if different
+
+    # $self->ask_to_save if $self->model->is_modified;
+
+    if ( my $table_key = $self->get_table_meta('main') ) {
+        my @current  = $table_key->map_keys( sub { $_->value } );
+        my @selected = values %{$selected_href};
+        my $dc       = Data::Compare->new( \@selected, \@current );
+        my $diff     = $dc->Cmp ? 0 : 1;
+        print "R: different? ", $diff ? 'YES ' : 'NO ', "\n" if $self->verbose;
+        $self->record_load_new($selected_href); # if $diff;
+        #dd $table_key;
+    }
+
+    # $self->toggle_detail_tab;
+
+    return;
+}
+
+sub screen_store_key_values {
+    my ( $self, $record_href ) = @_;
+    foreach my $field ( keys %{$record_href} ) {
+        my $value = $record_href->{$field};
+        $self->get_table_meta('main')->update_key_field( $field, $value );
+    }
+    return;
+}
+
+sub screen_clear_key_values {
+    my $self = shift;
+    my $table_keys = $self->get_table_meta('main');
+    return unless blessed $table_keys;
+    foreach my $key ( $table_keys->all_keys ) {
+        $key->value(undef);
+    }
+    return;
+}
+
+sub make_empty_record {
+    my $self = shift;
+    my $record = {};
+    foreach my $field ( keys %{ $self->scrcfg->maintable_columns } ) {
+        $record->{$field} = undef;
+    }
+    return $record;
+}
+
+sub record_clear {
+    my $self = shift;
+    my $record = $self->make_empty_record();
+    $self->screen_write($record);
+    $self->screen_clear_key_values;
+    #$self->model->unset_scrdata_rec();    # false = loaded,  true = modified,
+                                          # undef = unloaded
+    return;
+}
+
+sub record_load_new {
+    my ( $self, $selected_href ) = @_;
+    $self->screen_store_key_values($selected_href);
+    # $self->tmatrix_set_selected();    # initialize selector
+    $self->record_load();
+    # if ( $self->model->is_loaded ) {
+    #     $self->view->set_status(__ 'Record loaded (r)', 'ms', 'blue');
+    # }
+    return;
+}
+
+sub main_table_metadata {
+    my ( $self, $for_sql ) = @_;
+
+    my $metadata = {};
+    my $table_key = $self->get_table_meta('main');
+
+    if ( $for_sql eq 'qry' ) {
+        $metadata->{table} = $table_key->view;
+        my @keys = $table_key->all_keys;
+        foreach my $key (@keys) {
+            $metadata->{where}{ $key->name } = $key->value;
+        }
+    }
+    elsif ( ( $for_sql eq 'upd' ) or ( $for_sql eq 'del' ) ) {
+        $metadata->{table} = $table_key->table;
+        my @keys = $table_key->all_keys;
+        foreach my $key (@keys) {
+            $metadata->{where}{ $key->name } = $key->value;
+        }
+    }
+    elsif ( $for_sql eq 'ins' ) {
+        $metadata->{table} = $table_key->table;
+        $metadata->{pkcol} = $table_key->pkcol;
+    }
+    else {
+        warn "Wrong parameter: $for_sql\n";
+        return;
+    }
+    return $metadata;
+}
+
+sub record_load {
+    my $self = shift;
+
+    my $page = $self->view->notebook->get_current_page;
+
+    #-  Main table
+    #     my $p_meta = $self->get_table_meta('main')->build_sql_params_main('query');
+    #dd $p_meta;
+
+    my $p_meta = $self->main_table_metadata('qry');
+    dd $p_meta;
+
+    my $record;
+    try {
+        $record = $self->model->db->query_record($p_meta);
+    }
+    catch {
+        $self->catch_db_exceptions($_);
+    };
+    # dd $record;
+
+    my $textstr = __ 'Empty record';
+    $self->view->status_message("error#$textstr")
+        if scalar keys %{$record} <= 0;
+
+    $self->screen_write($record);
+
+    # #- Dependent table(s), (if any)
+    # foreach my $tm_ds ( keys %{ $self->scrobj($page)->get_tm_controls() } ) {
+    #     my $tm_params = $self->dep_table_metadata( $tm_ds, 'qry' );
+    #     my $records;
+    #     try {
+    #         $records = $self->model->table_batch_query($tm_params);
+    #     }
+    #     catch {
+    #         $self->catch_db_exceptions($_);
+    #     };
+    #     my $tmx = $self->scrobj($page)->get_tm_controls($tm_ds);
+    #     $tmx->clear_all();
+    #     $tmx->fill($records);
+
+    #     my $sc = $self->scrcfg($page)->deptable_selectorcol($tm_ds);
+    #     $tmx->tmatrix_make_selector($sc) if $sc;
+    # }
+
+    # # Save record as witness reference for comparison
+    # $self->save_screendata( $self->storable_file_name('orig') );
+
+    # # Trigger on_load_record method from screen if defined
+    # if ($self->scrobj($page)->can('on_load_record')) {
+    #     $self->scrobj($page)->on_load_record();
+    #     print "---\n";
+    #     warn "The 'on_load_record' method is deprecated, use 'on_record_loaded' instead.\n";
+    #     print "---\n";
+    # }
+
+    # $self->model->set_scrdata_rec(0);    # false = loaded,  true = modified,
+    #                                      # undef = unloaded
+
+    # # Trigger 'on_record_loaded' method in screen if defined
+    # $self->scrobj($page)->on_record_loaded
+    #     if ( $page eq 'rec' or $page eq 'det' )
+    #     and $self->scrobj($page)->can('on_record_loaded');
+
+    return;
+}
+
 sub ask_to_save {
     my ($self, $page) = @_;
 
@@ -1085,9 +1278,6 @@ sub toggle_mode_add {
 sub screen_read {
     my ($self, $all) = @_;
 
-    # Get configured date style, default is ISO
-    my $date_format = $self->config->application_dateformat || 'iso';
-
     foreach my $field ( keys %{ $self->scrcfg->maintable_columns } ) {
         my $fld_cfg = $self->scrcfg->maintable->{columns}{$field};
 
@@ -1099,10 +1289,67 @@ sub screen_read {
                 next if ( $ctrlrw eq 'r' ) or ( $ctrlrw eq 'ro' );
             }
         }
-        my $value = $self->_ctrl_read($field, $date_format);
+        my $value = $self->_ctrl_read($field);
         say " [$field]\tvalue = $value" if $self->debug;
         $self->add_scr_data($field, $value);
     }
+    return;
+}
+
+sub format_number {
+    my ( $self, $value, $numscale ) = @_;
+
+    # Check if looks like a number
+    return $value unless looks_like_number $value;
+
+    $value = 0 unless defined $value;
+    $value = sprintf( "%.${numscale}f", $value );
+
+    return $value;
+}
+
+sub screen_write {
+    my ( $self, $record ) = @_;
+
+    #- Use current page
+    my $page = $self->notebook->get_current_page;
+
+    return if $page eq 'lst';
+
+    # my $ctrl_ref = $self->scrobj($page)->get_controls();
+    # return unless scalar keys %{$ctrl_ref};    # no controls?
+
+    # my $cfg_ref = $self->scrcfg($page);
+
+    # my $cfgdeps = $self->scrcfg($page)->dependencies;
+
+    foreach my $field ( keys %{ $self->scrcfg->maintable_columns } ) {
+
+        # Skip field if not in record
+        next unless exists $record->{$field};
+
+        my $fld_cfg = $self->scrcfg->maintable->{columns}{$field};
+
+        # Defaults in columns config?
+        my $value = $record->{$field}
+            || ( $self->is_mode('add') ? $fld_cfg->{default} : undef );
+
+        if (defined $value) {
+            $value = $self->decode_unless_utf($value);
+
+            # Trim spaces and '\n' from the end
+            $value = $self->trim($value) if $value;
+
+            # Number
+            if (   ( $fld_cfg->{datatype} eq 'numeric' )
+                or ( $fld_cfg->{datatype} eq 'integer' ) )
+            {
+                $value = $self->format_number( $value, $fld_cfg->{numscale} );
+            }
+        }
+        $self->_ctrl_write($field, $value, undef);
+    }
+
     return;
 }
 
@@ -1162,7 +1409,7 @@ sub record_find_execute {
     catch {
         $self->catch_db_exceptions($_);
     };
-    dd $ary_ref;
+    # dd $ary_ref;
 
     # return unless defined $ary_ref->[0];     # test if AoA ?
     unless (ref $ary_ref eq 'ARRAY') {
@@ -1697,10 +1944,10 @@ Proxy method for C<control_write> from the View class.
 =cut
 
 sub _ctrl_write {
-    my ($self, $name, $value) = @_;
+    my ($self, $name, $value, $state) = @_;
     my $ctrl = $self->screen_rec->get_ctrl($name);
     if ($ctrl) {
-        $self->view->control_write( $ctrl, $value );
+        $self->view->control_write( $ctrl, $value, $state );
     }
     else {
         warn "WW: Control name '$name', not found\n";
@@ -1715,9 +1962,9 @@ Proxy method for C<control_read> from the View class.
 =cut
 
 sub _ctrl_read {
-    my ($self, $name, $date_format) = @_;
+    my ($self, $name) = @_;
     my $ctrl = $self->screen_rec->get_ctrl($name);
-    return $self->view->control_read($ctrl, $date_format);
+    return $self->view->control_read($ctrl);
 }
 
 =head2 clean_and_save_value

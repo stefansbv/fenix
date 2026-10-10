@@ -68,6 +68,68 @@ sub decode_unless_utf {
     return $value;
 }
 
+sub dateentry_parse_date {
+    my ( $self, $format, $date ) = @_;
+    return unless $date;
+
+    # Default date style format
+    $format = 'iso' unless $format;
+
+    my ( $y, $m, $d );
+  SWITCH: for ($format) {
+        /^$/ && die "dateentry_parse_date: the \$format parameter is required'\n";
+        /german/i && do {
+            ( $d, $m, $y )
+                = ( $date =~ m{([0-9]{2})\.([0-9]{2})\.([0-9]{4})} );
+            last SWITCH;
+        };
+        /iso/i && do {
+            ( $y, $m, $d )
+                = ( $date =~ m{([0-9]{4})\-([0-9]{2})\-([0-9]{2})} );
+            last SWITCH;
+        };
+        /usa/i && do {
+            ( $m, $d, $y )
+                = ( $date =~ m{([0-9]{2})\/([0-9]{2})\/([0-9]{4})} );
+            last SWITCH;
+        };
+
+        # DEFAULT
+        die "dateentry_parse_date: unknown date format: $format\n";
+    }
+    return ( $y, $m, $d );
+}
+
+sub dateentry_format_date {
+    my ( $self, $format, $y, $m, $d ) = @_;
+    die "dateentry_format_date: the \$y, \$m and \$d parameters are required\n"
+        unless defined $y and defined $m and defined $d;
+
+    # Default date style format
+    $format = 'iso' unless $format;
+
+    my $date;
+  SWITCH: for ($format) {
+        /^$/ && die "dateentry_format_date: the \$format parameter is required\n";
+        /german|dmy/i && do {
+            $date = sprintf( "%02d.%02d.%4d", $d, $m, $y );
+            last SWITCH;
+        };
+        /iso/i && do {
+            $date = sprintf( "%4d-%02d-%02d", $y, $m, $d );
+            last SWITCH;
+        };
+        /usa/i && do {
+            $date = sprintf( "%02d/%02d/%4d", $m, $d, $y );
+            last SWITCH;
+        };
+
+        # DEFAULT
+        die "dateentry_format_date: unknown date format: $format\n";
+    }
+    return $date;
+}
+
 no Moo::Role;
 
 1;

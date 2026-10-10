@@ -19,6 +19,7 @@ use App::Fenix::Types qw(
     FenixToolbar
     Int
     TkFrame
+    Str
 );
 use Tk;
 use Tk::Font;
@@ -89,6 +90,19 @@ has '_tset' => (
     isa     => Int,
     default => sub {0},
 );
+
+has 'dateformat' => (
+    is       => 'ro',
+    isa      => Str,
+    lazy     => 1,
+    required => 0,
+    default => sub {
+        my $self = shift;
+        return $self->config->application_dateformat || 'iso';
+    },
+);
+
+#- 'Bars
 
 has 'menubar' => (
     is      => 'ro',
@@ -247,7 +261,7 @@ sub set_status {
 sub log_message {
     my ( $self, $message ) = @_;
     my $control = $self->logger_panel->get_ctrl('logger');
-    $self->control_write_t( $control->ctrl, $message, 'append' );
+    $self->control_write_t( $control->ctrl, 'logger', $message, undef, 'append' );
     $control->ctrl->see('end');
     return;
 }
@@ -259,12 +273,12 @@ Run the appropriate sub according to control (entry widget) type.
 =cut
 
 sub control_write {
-    my ($self, $control, $value, $state) = @_;
+    my ($self, $control, $value) = @_;
     my $ctrltype = $control->type;
     my $ctrlname = $control->name;
     my $sub_name = qq{control_write_$ctrltype};
     if ( $self->can($sub_name) ) {
-        $self->$sub_name($control->ctrl, $value, $state);
+        $self->$sub_name($control->ctrl, $ctrlname, $value, $control->variable);
     }
     else {
         print "WW: No '$ctrltype' ctrl type for writing '$ctrlname'!\n";
@@ -279,7 +293,11 @@ Write to a Tk::Entry widget.  If I<$value> not true, than only delete.
 =cut
 
 sub control_write_e {
-    my ( $self, $control, $value ) = @_;
+    my ( $self, $control, $ctrlname, $value, $ctrlvar ) = @_;
+    unless ( blessed $control and $control->isa('Tk::Entry') ) {
+        warn qq(Widget for writing entry '$ctrlname' not found\n);
+        return;
+    }
     my $state = $control->cget ('-state');
     $control->configure( -state => 'normal' );
     $control->delete( 0, 'end' );
@@ -295,7 +313,11 @@ Write to a Tk::Text widget.  If I<$value> not true, than only delete.
 =cut
 
 sub control_write_t {
-    my ( $self, $control, $value, $is_append ) = @_;
+    my ( $self, $control, $ctrlname, $value, $ctrlvar, $is_append ) = @_;
+    unless ( blessed $control and $control->isa('Tk::Frame') ) {
+        warn qq(Widget for writing text '$ctrlname' not found\n);
+        return;
+    }
     my $state = $control->cget ('-state');
     $value = q{} unless defined $value;    # empty
     $control->configure( -state => 'normal' );
@@ -309,14 +331,14 @@ sub control_write_t {
 }
 
 sub control_write_c {
-    my ( $self, $control, $value, $state ) = @_;
-    # unless ( blessed $control and $control->isa('Tk::Checkbutton') ) {
-    #     warn qq(Widget for writing checkbox '\$field' not found\n);
-    #     return;
-    # }
+    my ( $self, $control, $ctrlname, $value, $ctrlvar ) = @_;
+    unless ( blessed $control and $control->isa('Tk::Checkbutton') ) {
+        warn qq(Widget for writing checkbutton '$ctrlname' not found\n);
+        return;
+    }
     my $off_value = $control->cget('-offvalue');
     my $on_value  = $control->cget('-onvalue');
-    $state = $state || $control->cget('-state');
+    my $state = $control->cget('-state');
     $value = $off_value unless $value;
     if ( $value eq $on_value ) {
         $control->select;
@@ -329,20 +351,31 @@ sub control_write_c {
 }
 
 sub control_write_d {
-    my ( $self, $control, $value, $state, $date_format ) = @_;
-
-    # my ( $self, $field, $control_ref, $value, $state, $date_format ) = @_;
-    # unless ( blessed $control and $control->isa('Tk::DateEntry') ) {
-    #     warn qq(Widget for writing date '$field' not found\n);
-    #     return;
-    # }
-    $state = $state || $control->cget('-state');
+    my ( $self, $control, $ctrlname, $value, $ctrlvar ) = @_;
+    my $state = $control->cget('-state');
     $value = q{} unless defined $value;            # empty
     if ($value) {
         my ( $y, $m, $d ) = $self->dateentry_parse_date( 'iso', $value );
-        $value = $self->dateentry_format_date( $date_format, $y, $m, $d );
+        $value = $self->dateentry_format_date( $self->dateformat, $y, $m, $d );
     }
-    #${ $control_ref->[0] } = $value;
+    ${ $ctrlvar } = $value;
+    $control->configure( -state => $state );
+    return;
+}
+
+sub control_write_m {
+    my ( $self, $control, $ctrlname, $value, $ctrlvar ) = @_;
+    unless ( blessed $control and $control->isa('Tk::JComboBox') ) {
+        warn qq(Widget for writing combobox '$ctrlname' not found\n);
+        return;
+    }
+    my $state = $control->cget('-state');
+    if ($value) {
+        $control->setSelected( $value, -type => 'value' );
+    }
+    else {
+        ${ $ctrlvar } = q{};    # Empty
+    }
     $control->configure( -state => $state );
     return;
 }
@@ -407,7 +440,7 @@ sub control_read_c {
 }
 
 sub control_read_d {
-    my ( $self, $control, $name, $ctrlvar, $date_format ) = @_;
+    my ( $self, $control, $name, $ctrlvar ) = @_;
     unless ( blessed $control and $control->isa('Tk::DateEntry') ) {
         warn qq(WW: Widget for reading dateentry '$name' not found\n);
         return;
@@ -420,7 +453,7 @@ sub control_read_d {
         # Skip date formatting for find mode
         if ( !$self->controller->is_mode('find') ) {
             my ( $y, $m, $d )
-                = $self->dateentry_parse_date( $date_format, $value );
+                = $self->dateentry_parse_date( $self->dateformat, $value );
             if ( $y and $m and $d ) {
                 $value = $self->dateentry_format_date( 'iso', $y, $m, $d );
             }

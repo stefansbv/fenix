@@ -236,11 +236,11 @@ sub deaccent {
     return $text;
 }
 
-sub decode_unless_utf {
-    my ($self, $value) = @_;
-    $value = decode( 'utf8', $value ) unless is_utf8($value);
-    return $value;
-}
+# sub decode_unless_utf {
+#     my ($self, $value) = @_;
+#     $value = decode( 'utf8', $value ) unless is_utf8($value);
+#     return $value;
+# }
 
 sub dt_today {
     my ( $self, $locale ) = @_;
