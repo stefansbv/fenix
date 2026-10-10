@@ -1,5 +1,5 @@
 #
-# Testing App::Fenix::Model::Table
+# Testing App::Fenix::Model::Table::Meta
 #
 
 use strict;
@@ -7,7 +7,7 @@ use warnings;
 use Test2::V0;
 use lib qw( lib ../lib );
 
-use App::Fenix::Model::Table;
+use App::Fenix::Model::Table::Meta;
 
 #-- Test Key and Value modules
 
@@ -22,7 +22,7 @@ subtest 'Generic table' => sub {
         fields_rw => [qw{field1 field2 field3}],
     };
 
-    ok my $table = App::Fenix::Model::Table->new($params), 'new table object';
+    ok my $table = App::Fenix::Model::Table::Meta->new($params), 'new table object';
 
     is $table->page, 'rec', 'page';
     is $table->display, 'record', 'display';
@@ -108,7 +108,7 @@ subtest 'main table - orders' => sub {
         ],
     };
 
-    ok my $table = App::Fenix::Model::Table->new($params), 'new table object';
+    ok my $table = App::Fenix::Model::Table::Meta->new($params), 'new table object';
 
     is $table->page, 'rec', 'page';
     is $table->display, 'record', 'display';
@@ -148,7 +148,7 @@ subtest 'dependent table - orderdetails' => sub {
         ],
     };
 
-    ok my $table = App::Fenix::Model::Table->new($params), 'new table object';
+    ok my $table = App::Fenix::Model::Table::Meta->new($params), 'new table object';
 
     is $table->page, 'rec', 'page';
     is $table->display, 'table', 'display';
