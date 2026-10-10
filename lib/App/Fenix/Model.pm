@@ -11,14 +11,14 @@ use App::Fenix::Types qw(
     Bool
     FenixConfig
     FenixModelDB
-    FenixModelTable
+    FenixModelTableMeta
+    FenixModelTableData
     Maybe
     Path
     Str
 );
 use App::Fenix::X qw(hurl);
 use App::Fenix::Model::DB;
-use App::Fenix::Model::Table;
 use namespace::clean;
 
 has 'config' => (
@@ -55,15 +55,32 @@ has 'db' => (
     },
 );
 
+# _tblkeys
+has '_table_meta' => (
+    is          => 'ro',
+    handles_via      => ['Hash'],
+    #isa         => Maybe[FenixModelTableMeta], ???
+    lazy        => 1,
+    init_arg    => undef,
+    clearer     => 'reset_table_meta',
+    default     => sub { {} },
+    handles     => {
+        get_table_meta  => 'get',
+        add_table_meta  => 'set',
+        all_tables_meta => 'keys',
+        rm_table_meta   => 'delete',
+    },
+);
+
 has '_table' => (
     is       => 'ro',
     handles_via   => ['Hash'],
-    isa      => Maybe[FenixModelTable],
+    #isa      => Maybe[FenixModelTableData], ???
     lazy     => 1,
     init_arg => undef,
     clearer  => 'reset_table',
-    default  => sub { {} },
-        handles     => {
+    default     => sub { {} },
+    handles     => {
         get_table  => 'get',
         add_table  => 'set',
         all_tables => 'keys',

@@ -32,7 +32,7 @@ use App::Fenix::Options;
 use App::Fenix::Config;
 use App::Fenix::Config::Screen;
 use App::Fenix::Model;
-use App::Fenix::Model::Table;
+use App::Fenix::Model::Table::Meta;
 use App::Fenix::State;
 use App::Fenix::Refresh;
 use App::Fenix::View;
@@ -116,6 +116,11 @@ has 'model' => (
         get_dir_for
         get_file_for
         get_path_for
+        get_table_meta
+        add_table_meta
+        all_tables_meta
+        rm_table_meta
+        reset_table_meta
     )],
 );
 
@@ -227,20 +232,20 @@ has 'screen_rec_class' => (
     isa => Maybe[Str],
 );
 
-# _tblkeys
-has '_table_meta' => (
-    is          => 'ro',
-    handles_via      => ['Hash'],
-    lazy        => 1,
-    init_arg    => undef,
-    default     => sub { {} },
-    handles     => {
-        get_table_meta  => 'get',
-        add_table_meta  => 'set',
-        all_tables_meta => 'keys',
-        rm_table_meta   => 'delete',
-    },
-);
+# # _tblkeys
+# has '_table_meta' => (
+#     is          => 'ro',
+#     handles_via      => ['Hash'],
+#     lazy        => 1,
+#     init_arg    => undef,
+#     default     => sub { {} },
+#     handles     => {
+#         get_table_meta  => 'get',
+#         add_table_meta  => 'set',
+#         all_tables_meta => 'keys',
+#         rm_table_meta   => 'delete',
+#     },
+# );
 
 # _scrdata
 has '_screen_data' => (
@@ -483,6 +488,8 @@ sub on_screen_mode_sele {
 sub screen_init_keys {
     my ($self) = @_;
 
+    #$self->reset_table_meta;
+
     #-- Main table on the '$page' page
 
     my @fields    = keys %{ $self->scrcfg->maintable_columns };
@@ -498,7 +505,7 @@ sub screen_init_keys {
     };
 
     # dd $params;
-    my $table = App::Fenix::Model::Table->new($params);
+    my $table = App::Fenix::Model::Table::Meta->new($params);
     if ( ref $table ) {
 
         # Register main table object on $page page
@@ -529,7 +536,7 @@ sub screen_init_keys {
             fields_rw => \@fields_rw,
         };
         # dd $params;
-        my $table = App::Fenix::Model::Table->new($params);
+        my $table = App::Fenix::Model::Table::Meta->new($params);
         if ( ref $table ) {
 
             # Register main table object on $page page
@@ -547,7 +554,7 @@ sub controls_state_set {
 
     return unless $page;
 
-    my $bg = $self->scrobj->bg;
+    my $bg = $self->view->frame->cget('-background');
 
     # # Enable controls for report style screen
     # $control_states = $self->control_states('edit')
@@ -629,7 +636,7 @@ Return true if a record is loaded in the main screen.
 sub is_record {
     my $self  = shift;
     my $table = $self->table_meta('main');
-    return if !$table or !$table->isa('Fenix::Model::Table');
+    return if !$table or !$table->isa('Fenix::Model::Table::Meta');
     return $table->get_key(0)->value;
 }
 

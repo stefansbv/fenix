@@ -1,4 +1,4 @@
-package App::Fenix::Model::Table;
+package App::Fenix::Model::Table::Meta;
 
 # ABSTRACT: Database table meta data
 
@@ -176,7 +176,7 @@ sub build_sql_params_deps {
 
 =head1 SYNOPSIS
 
-    my $table  = App::Fenix::Model::Table->new(
+    my $table  = App::Fenix::Model::Table::Meta->new(
         keys   => [ 'key_field1', 'key_field2' ],
         table  => 'table_name',
         view   => 'view_name',
