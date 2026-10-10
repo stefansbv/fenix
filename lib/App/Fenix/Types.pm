@@ -46,7 +46,8 @@ use Type::Library 0.040 -base, -declare => qw(
     FenixConfigInst
     FenixConfigScr
     FenixModelDB
-    FenixModelTable
+    FenixModelTableMeta
+    FenixModelTableData
 );
 use Type::Utils -all;
 use Types::Standard -types;
@@ -81,7 +82,8 @@ class_type FenixConfigApp,  { class => 'App::Fenix::Config::Application' };
 class_type FenixConfigInst, { class => 'App::Fenix::Config::Instance' };
 class_type FenixConfigScr,  { class => 'App::Fenix::Config::Screen' };
 class_type FenixModelDB,    { class => 'App::Fenix::Model::DB' };
-class_type FenixModelTable, { class => 'App::Fenix::Model::Table' };
+class_type FenixModelTableMeta, { class => 'App::Fenix::Model::Table::Meta' };
+class_type FenixModelTableData, { class => 'App::Fenix::Model::Table::Data' };
 class_type FenixController, { class => 'App::Fenix::Controller' };
 
 class_type TkStatusbar,     { class => 'Tk::StatusBar' };
