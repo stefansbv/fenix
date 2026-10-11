@@ -235,21 +235,6 @@ has 'screen_rec_class' => (
     isa => Maybe[Str],
 );
 
-# # _tblkeys
-# has '_table_meta' => (
-#     is          => 'ro',
-#     handles_via      => ['Hash'],
-#     lazy        => 1,
-#     init_arg    => undef,
-#     default     => sub { {} },
-#     handles     => {
-#         get_table_meta  => 'get',
-#         add_table_meta  => 'set',
-#         all_tables_meta => 'keys',
-#         rm_table_meta   => 'delete',
-#     },
-# );
-
 # _scrdata
 has '_screen_data' => (
     is          => 'ro',
@@ -542,11 +527,10 @@ sub screen_init_keys {
         my $table = App::Fenix::Model::Table::Meta->new($params);
         if ( ref $table ) {
 
-            # Register main table object on $page page
+            # Register xdtable object on $page page
             $self->add_table_meta( $tm, $table );
         }
     }
-
     return;
 }
 
@@ -1017,6 +1001,97 @@ sub on_page_rec_activate {
     return;
 }
 
+=head2 screen_load_lists
+
+Load options in Listbox like widgets - JCombobox support only.
+
+All JComboBox widgets must have a <lists_ds> record in config to
+define where the data for the list come from:
+
+Data source for list widgets (JCombobox)
+
+ <lists_ds>
+     <statuscode>
+         orderby = description
+         table   = status
+         code    = code
+         name    = description
+         default = none
+     </statuscode>
+ </lists_ds>
+
+Tip:
+
+With the PostgreSQL engine, when the C<cod> field is used for the
+orderby column from the C<codificari> table, the orderby config can
+have a type cast C<::> operator:
+
+ <lists_ds>
+    <luna>
+        orderby         = cod::numeric
+        name            = denumire
+        table           = public.luni
+        default         =
+        code            = cod
+    </luna>
+ </lists_ds>
+
+This is needed, in this case, because the cod field of the
+C<codificari> table is of type VARCHAR and without the cast operator
+the order is wrong for the month names.
+
+=cut
+
+sub screen_load_lists {
+    my $self = shift;
+
+    # Entry objects hash
+    # my @ctrls = $self->screen_rec->all_ctrls;
+    # foreach my $field ( @ctrls ) {
+    #     my $rec = $self->screen_rec->get_ctrl($field);
+    #     if ( $self->debug ) {
+    #         say "# name = ", $rec->name;
+    #         say "# type = ", $rec->type;
+    #         say "# ctrl = ", $rec->ctrl;
+    #         say "---";
+    #     }
+    # }
+
+    # return unless scalar @ctrls;
+
+    foreach my $field ( keys %{ $self->scrcfg->maintable_columns } ) {
+
+        # Control config attributes
+        my $fld_cfg  = $self->scrcfg->maintable('columns', $field);
+        my $ctrltype = $fld_cfg->{ctrltype};
+        my $ctrlrw   = $fld_cfg->{readwrite};
+
+        my $para = $self->scrcfg->lists_ds($field);
+
+        next unless defined $para;      # should not happen
+        next unless scalar %{$para};    # skip empty config for lists_ds
+
+        # Query table and return data to fill the lists
+
+        my $choices = $self->model->get_codes( $field, $para, $ctrltype );
+        my $rec = $self->screen_rec->get_ctrl($field);
+
+        if ( $ctrltype eq 'm' ) {
+            if ( my $control = $rec->ctrl ) {
+                $self->view->list_control_choices($control, $choices);
+            }
+            else {
+                print "EE: config error for '$field'\n";
+            }
+        }
+        else {
+            print "EE: No '$ctrltype' ctrl type for writing '$field'!\n";
+        }
+    }
+
+    return;
+}
+
 sub screen_store_key_values {
     my ( $self, $record_href ) = @_;
     foreach my $field ( keys %{$record_href} ) {
@@ -1066,11 +1141,11 @@ sub record_load_new {
     return;
 }
 
-sub main_table_metadata {
-    my ( $self, $for_sql ) = @_;
+sub get_table_metadata {
+    my ( $self, $name, $for_sql ) = @_;
 
     my $metadata = {};
-    my $table_key = $self->get_table_meta('main');
+    my $table_key = $self->get_table_meta($name);
 
     if ( $for_sql eq 'qry' ) {
         $metadata->{table} = $table_key->view;
@@ -1106,8 +1181,8 @@ sub record_load {
     #     my $p_meta = $self->get_table_meta('main')->build_sql_params_main('query');
     #dd $p_meta;
 
-    my $p_meta = $self->main_table_metadata('qry');
-    dd $p_meta;
+    my $p_meta = $self->get_table_metadata('main', 'qry');
+    # dd $p_meta;
 
     my $record;
     try {
@@ -1124,23 +1199,29 @@ sub record_load {
 
     $self->screen_write($record);
 
-    # #- Dependent table(s), (if any)
-    # foreach my $tm_ds ( keys %{ $self->scrobj($page)->get_tm_controls() } ) {
-    #     my $tm_params = $self->dep_table_metadata( $tm_ds, 'qry' );
-    #     my $records;
-    #     try {
-    #         $records = $self->model->table_batch_query($tm_params);
-    #     }
-    #     catch {
-    #         $self->catch_db_exceptions($_);
-    #     };
-    #     my $tmx = $self->scrobj($page)->get_tm_controls($tm_ds);
-    #     $tmx->clear_all();
-    #     $tmx->fill($records);
+    #- Dependent table(s), (if any)
+    my @tables = $self->all_tables_meta;
+    foreach my $t (@tables) {
+        say "# table: $t  ", $self->get_table_meta($t)->table;
+        next if $t eq 'main';
 
-    #     my $sc = $self->scrcfg($page)->deptable_selectorcol($tm_ds);
-    #     $tmx->tmatrix_make_selector($sc) if $sc;
-    # }
+        my $p_meta = $self->get_table_metadata( $t, 'qry' );
+        dd $p_meta;
+
+        # my $records;
+        # try {
+        #     $records = $self->model->table_batch_query($tm_params);
+        # }
+        # catch {
+        #     $self->catch_db_exceptions($_);
+        # };
+        # my $tmx = $self->scrobj($page)->get_tm_controls($tm_ds);
+        # $tmx->clear_all();
+        # $tmx->fill($records);
+
+        # my $sc = $self->scrcfg($page)->deptable_selectorcol($tm_ds);
+        # $tmx->tmatrix_make_selector($sc) if $sc;
+    }
 
     # # Save record as witness reference for comparison
     # $self->save_screendata( $self->storable_file_name('orig') );
@@ -1654,8 +1735,8 @@ sub screen_module_load {
     # Update window geometry
     $self->set_geometry();
 
-    # # Load lists into ComboBox type widgets
-    # $self->screen_load_lists();
+    # Load lists into ComboBox type widgets
+    $self->screen_load_lists();
 
     # # Trigger on_load_screen method from screen if defined
     # $self->scrobj('rec')->on_load_screen()

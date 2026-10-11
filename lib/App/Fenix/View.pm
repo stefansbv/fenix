@@ -266,6 +266,19 @@ sub log_message {
     return;
 }
 
+=head2 list_control_choices
+
+Configure choices for list controls (JComboBox).
+
+=cut
+
+sub list_control_choices {
+    my ($self, $control, $choices) = @_;
+    $control->removeAllItems();
+    $control->configure( -choices => $choices );
+    return;
+}
+
 =head2 control_write
 
 Run the appropriate sub according to control (entry widget) type.

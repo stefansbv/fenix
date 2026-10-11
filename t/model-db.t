@@ -6,6 +6,7 @@ use App::Fenix::Config;
 use App::Fenix::Model::DB;
 
 use Data::Dump qw/dump/;
+
 my $args = {
     mnemonic => 'test-tk',
     user     => 'user',

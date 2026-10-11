@@ -19,7 +19,10 @@ use App::Fenix::Types qw(
 );
 use App::Fenix::X qw(hurl);
 use App::Fenix::Model::DB;
+use App::Fenix::Codings;
 use namespace::clean;
+
+use Data::Dump qw/dump/;
 
 has 'config' => (
     is       => 'ro',
@@ -72,7 +75,7 @@ has '_table_meta' => (
     },
 );
 
-has '_table' => (
+has '_table_data' => (
     is          => 'ro',
     handles_via => ['Hash'],
     #isa      => Maybe[FenixModelTableData], ???
@@ -87,6 +90,20 @@ has '_table' => (
         rm_table   => 'delete',
     },
 );
+
+=head2 get_codes
+
+Return the data structure used to fill the list of choices for JComboBox widgets.
+
+=cut
+
+sub get_codes {
+    my ( $self, $field, $para, $widget ) = @_;
+    my $codings = App::Fenix::Codings->new(
+        model_db => $self->db,
+    );
+    return $codings->get_coding_init( $field, $para, $widget );
+}
 
 1;
 

@@ -426,10 +426,23 @@ sub db_exception {
 # where => { customername => ["%", "notnull"], statuscode => ["C", "full"] },
 # }
 
+# also in the Utils role
 sub decode_unless_utf {
     my ($self, $value) = @_;
     $value = decode( 'utf8', $value ) unless is_utf8($value);
     return $value;
+}
+
+sub user_message {
+    my ($self, $error) = @_;
+
+    $error =~ s{[\n\r]}{ }gmix;
+    my $user_message = $self->dbc->parse_error($error);
+    $user_message =~ s{"\."}{\.}gmix;        # "d"."t" ->  "d.t"
+
+    #$self->_print($user_message);
+
+    return $user_message;
 }
 
 1;
